@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 class HeaderComponent extends Component {
   render() {
@@ -235,9 +236,9 @@ class HeaderComponent extends Component {
                     <a href="index.html" className="nav-item nav-link active">
                       Home
                     </a>
-                    <a href="shop.html" className="nav-item nav-link">
+                    <Link to="/shop" className="nav-item nav-link">
                       Shop
-                    </a>
+                    </Link>
                     <a href="detail.html" className="nav-item nav-link">
                       Shop Detail
                     </a>
@@ -258,9 +259,9 @@ class HeaderComponent extends Component {
                         </a>
                       </div>
                     </div>
-                    <a href="contact.html" className="nav-item nav-link">
+                    <Link to="/contact" className="nav-item nav-link">
                       Contact
-                    </a>
+                    </Link>
                   </div>
                   <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
                     <a href className="btn px-0">
