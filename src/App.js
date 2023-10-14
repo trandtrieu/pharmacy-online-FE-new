@@ -12,23 +12,23 @@ import ShopComponent from "./pages/ShopComponent";
 import CartComponent from "./pages/CartComponent";
 import WishlistComponent from "./pages/WishlistComponent";
 import ContactComponent from "./pages/ContactComponent";
+import DetailProductComponent from "./pages/DetailProductComponent";
 
 function App() {
   return (
     <Router>
       <ToastContainer />
       <HeaderComponent />
-      <CarouselComponent />
-      <CategoriesComponent />
+
       <Switch>
-        {/* <Route path="/" exact component={BodyHomeComponent} />
-        <Route path="/home" component={BodyHomeComponent} />
-        <Route path="/about" component={AboutComponent} /> */}
-        {/* <Route
-          path="/single-product/:productId"
-          component={SingleProductComponent}
-        />
+        <Route path="/" exact component={HomeProduct} />
+        <Route path="/home" component={HomeProduct} />
+        {/* <Route path="/about" component={AboutComponent} /> */}
         <Route
+          path="/detail-product/:productId"
+          component={DetailProductComponent}
+        />
+        {/* <Route
           path="/category/:category_id"
           component={CategoryProductComponent}
         /> */}

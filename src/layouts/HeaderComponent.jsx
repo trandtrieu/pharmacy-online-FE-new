@@ -212,14 +212,17 @@ class HeaderComponent extends Component {
             </div>
             <div className="col-lg-9">
               <nav className="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
-                <a href className="text-decoration-none d-block d-lg-none">
+                <Link
+                  to="/home"
+                  className="text-decoration-none d-block d-lg-none"
+                >
                   <span className="h1 text-uppercase text-dark bg-light px-2">
                     Multi
                   </span>
                   <span className="h1 text-uppercase text-light bg-primary px-2 ml-n1">
                     Shop
                   </span>
-                </a>
+                </Link>
                 <button
                   type="button"
                   className="navbar-toggler"
@@ -233,9 +236,9 @@ class HeaderComponent extends Component {
                   id="navbarCollapse"
                 >
                   <div className="navbar-nav mr-auto py-0">
-                    <a href="index.html" className="nav-item nav-link active">
+                    <Link to="/home" className="nav-item nav-link active">
                       Home
-                    </a>
+                    </Link>
                     <Link to="/shop" className="nav-item nav-link">
                       Shop
                     </Link>
