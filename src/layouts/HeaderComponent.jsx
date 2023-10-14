@@ -267,7 +267,7 @@ class HeaderComponent extends Component {
                     </Link>
                   </div>
                   <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
-                    <a href className="btn px-0">
+                    <Link to="/wishlist" className="btn px-0">
                       <i className="fas fa-heart text-primary" />
                       <span
                         className="badge text-secondary border border-secondary rounded-circle"
@@ -275,8 +275,8 @@ class HeaderComponent extends Component {
                       >
                         0
                       </span>
-                    </a>
-                    <a href className="btn px-0 ml-3">
+                    </Link>
+                    <Link to="/cart" className="btn px-0 ml-3">
                       <i className="fas fa-shopping-cart text-primary" />
                       <span
                         className="badge text-secondary border border-secondary rounded-circle"
@@ -284,7 +284,7 @@ class HeaderComponent extends Component {
                       >
                         0
                       </span>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </nav>

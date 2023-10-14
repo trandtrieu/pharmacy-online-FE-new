@@ -4,6 +4,9 @@ import CategoriesComponent from "../layouts/CategoriesComponent";
 import ProductServices from "../services/ProductServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
+import WishListServices from "../services/WishListServices";
+import CartServices from "../services/CartServices";
 
 class HomeProduct extends Component {
   constructor(props) {
@@ -21,6 +24,33 @@ class HomeProduct extends Component {
       .catch((error) => {
         console.error("Lỗi khi tải sản phẩm:", error);
       });
+  }
+
+  addWishListProduct(product_id) {
+    const accountId = 4; // Replace with the actual account ID
+    WishListServices.addToWishlist(accountId, product_id)
+      .then((response) => {
+        console.log("Product added to wishlist:", response.data);
+        toast.success("Product added to wishlist successfully!");
+      })
+      .catch((error) => {
+        console.error("Error adding product to wishlist:", error);
+      });
+  }
+  addProductToCart(product_id) {
+    const accountId = 4; // Replace with the actual account ID
+    CartServices.addToCart(accountId, product_id, 1)
+      .then((response) => {
+        console.log("Product added to cart:", response.data);
+        toast.success("Product added to cart successfully!");
+      })
+      .catch((error) => {
+        console.error("Error adding product to cart:", error);
+      });
+  }
+
+  viewProduct(productId) {
+    this.props.history.push(`/detail-product/${productId}`);
   }
   render() {
     return (
@@ -47,13 +77,27 @@ class HomeProduct extends Component {
                       alt={`Imagee 0`}
                     />
                     <div className="product-action">
-                      <a className="btn btn-outline-dark btn-square" href>
+                      <a
+                        className="btn btn-outline-dark btn-square"
+                        href
+                        onClick={() => this.addProductToCart(product.productId)}
+                      >
                         <i className="fa fa-shopping-cart" />
                       </a>
-                      <a className="btn btn-outline-dark btn-square" href>
+                      <a
+                        className="btn btn-outline-dark btn-square"
+                        href
+                        onClick={() =>
+                          this.addWishListProduct(product.productId)
+                        }
+                      >
                         <i className="far fa-heart" />
                       </a>
-                      <a className="btn btn-outline-dark btn-square" href>
+                      <a
+                        className="btn btn-outline-dark btn-square"
+                        href
+                        onClick={() => this.viewProduct(product.productId)}
+                      >
                         <FontAwesomeIcon icon={faCircleInfo} />{" "}
                       </a>
                     </div>

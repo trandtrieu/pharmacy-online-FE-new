@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const PRODUCT_API_BASE_URL = "http://localhost:8080/pharmacy-online/products";
-const CART_API_BASE_URL = "http://localhost:8080/pharmacy-online/cart";
 
 class ProductServices {
   getProducts() {
@@ -10,18 +9,6 @@ class ProductServices {
 
   getProductById(productId) {
     return axios.get(PRODUCT_API_BASE_URL + "/" + productId);
-  }
-
-  addToCart(accountId, productId, quantity) {
-    return axios.post(
-      CART_API_BASE_URL +
-        "/add-cart?accountId=" +
-        accountId +
-        "&productId=" +
-        productId +
-        "&quantity=" +
-        quantity
-    );
   }
 
   getProductsByCategory(category_id) {

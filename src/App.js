@@ -1,10 +1,8 @@
 import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
+
 import HeaderComponent from "./layouts/HeaderComponent";
-import CarouselComponent from "./layouts/CarouselComponent";
-import CategoriesComponent from "./layouts/CategoriesComponent";
-import FeatureComponent from "./layouts/FeatureComponent";
 import HomeComponent from "./pages/HomeComponent";
-import RecentProduct from "./pages/RecentProduct";
 import FooterComponent from "./layouts/FooterComponent";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -17,8 +15,8 @@ import DetailProductComponent from "./pages/DetailProductComponent";
 function App() {
   return (
     <Router>
-      <ToastContainer />
       <HeaderComponent />
+      <ToastContainer />
 
       <Switch>
         <Route path="/" exact component={HomeComponent} />
