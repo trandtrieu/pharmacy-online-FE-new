@@ -3,7 +3,7 @@ import HeaderComponent from "./layouts/HeaderComponent";
 import CarouselComponent from "./layouts/CarouselComponent";
 import CategoriesComponent from "./layouts/CategoriesComponent";
 import FeatureComponent from "./layouts/FeatureComponent";
-import HomeProduct from "./pages/HomeProduct";
+import HomeComponent from "./pages/HomeComponent";
 import RecentProduct from "./pages/RecentProduct";
 import FooterComponent from "./layouts/FooterComponent";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -21,8 +21,8 @@ function App() {
       <HeaderComponent />
 
       <Switch>
-        <Route path="/" exact component={HomeProduct} />
-        <Route path="/home" component={HomeProduct} />
+        <Route path="/" exact component={HomeComponent} />
+        <Route path="/home" component={HomeComponent} />
         {/* <Route path="/about" component={AboutComponent} /> */}
         <Route
           path="/detail-product/:productId"
