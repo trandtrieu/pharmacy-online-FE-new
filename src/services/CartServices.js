@@ -27,6 +27,12 @@ class CartServices {
   updateCart(updatedCartData) {
     return axios.put(CART_API_BASE_URL + "/update-cart", updatedCartData);
   }
+
+  getNumberProductInCart(accountId) {
+    return axios.get(
+      CART_API_BASE_URL + "/count-cart-product?accountId=" + accountId
+    );
+  }
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

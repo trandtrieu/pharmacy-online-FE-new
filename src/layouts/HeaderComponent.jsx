@@ -1,8 +1,42 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom";
-
+import CategoryServices from "../services/CategoryServices";
+import CartServices from "../services/CartServices";
+const accountId = 4;
 class HeaderComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      categories: [],
+      cartItemCount: 0,
+    };
+  }
+
+  componentDidMount() {
+    CategoryServices.getCategoryType()
+      .then((res) => {
+        this.setState({
+          categories: res.data,
+        });
+        // console.log(this.state.categories);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải sản phẩm:", error);
+      });
+
+    CartServices.getNumberProductInCart(accountId)
+      .then((res) => {
+        this.setState({
+          cartItemCount: res.data,
+        });
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
+      });
+  }
   render() {
+    const { cartItemCount } = this.state;
+
     return (
       <>
         <div className="container-fluid">
@@ -42,46 +76,6 @@ class HeaderComponent extends Component {
                     </button>
                   </div>
                 </div>
-                <div className="btn-group mx-2">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-light dropdown-toggle"
-                    data-toggle="dropdown"
-                  >
-                    USD
-                  </button>
-                  <div className="dropdown-menu dropdown-menu-right">
-                    <button className="dropdown-item" type="button">
-                      EUR
-                    </button>
-                    <button className="dropdown-item" type="button">
-                      GBP
-                    </button>
-                    <button className="dropdown-item" type="button">
-                      CAD
-                    </button>
-                  </div>
-                </div>
-                <div className="btn-group">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-light dropdown-toggle"
-                    data-toggle="dropdown"
-                  >
-                    EN
-                  </button>
-                  <div className="dropdown-menu dropdown-menu-right">
-                    <button className="dropdown-item" type="button">
-                      FR
-                    </button>
-                    <button className="dropdown-item" type="button">
-                      AR
-                    </button>
-                    <button className="dropdown-item" type="button">
-                      RU
-                    </button>
-                  </div>
-                </div>
               </div>
               <div className="d-inline-flex align-items-center d-block d-lg-none">
                 <a href className="btn px-0 ml-2">
@@ -109,10 +103,10 @@ class HeaderComponent extends Component {
             <div className="col-lg-4">
               <a href className="text-decoration-none">
                 <span className="h1 text-uppercase text-primary bg-dark px-2">
-                  Multi
+                  Pharmacy
                 </span>
                 <span className="h1 text-uppercase text-dark bg-primary px-2 ml-n1">
-                  Shop
+                  Online
                 </span>
               </a>
             </div>
@@ -159,54 +153,16 @@ class HeaderComponent extends Component {
                 style={{ width: "calc(100% - 30px)", zIndex: 999 }}
               >
                 <div className="navbar-nav w-100">
-                  <div className="nav-item dropdown dropright">
-                    <a
-                      href="/"
-                      className="nav-link dropdown-toggle"
-                      data-toggle="dropdown"
-                    >
-                      Dresses{" "}
-                      <i className="fa fa-angle-right float-right mt-1" />
-                    </a>
-                    <div className="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                      <a href className="dropdown-item">
-                        Men's Dresses
+                  {this.state.categories.map((category) => (
+                    <li key={category.category_id}>
+                      <a
+                        href={`/category/${category.category_id}`}
+                        className="nav-item nav-link"
+                      >
+                        {category.category_name}
                       </a>
-                      <a href className="dropdown-item">
-                        Women's Dresses
-                      </a>
-                      <a href className="dropdown-item">
-                        Baby's Dresses
-                      </a>
-                    </div>
-                  </div>
-                  <a href className="nav-item nav-link">
-                    Shirts
-                  </a>
-                  <a href className="nav-item nav-link">
-                    Jeans
-                  </a>
-                  <a href className="nav-item nav-link">
-                    Swimwear
-                  </a>
-                  <a href className="nav-item nav-link">
-                    Sleepwear
-                  </a>
-                  <a href className="nav-item nav-link">
-                    Sportswear
-                  </a>
-                  <a href className="nav-item nav-link">
-                    Jumpsuits
-                  </a>
-                  <a href className="nav-item nav-link">
-                    Blazers
-                  </a>
-                  <a href className="nav-item nav-link">
-                    Jackets
-                  </a>
-                  <a href className="nav-item nav-link">
-                    Shoes
-                  </a>
+                    </li>
+                  ))}
                 </div>
               </nav>
             </div>
@@ -282,7 +238,7 @@ class HeaderComponent extends Component {
                         className="badge text-secondary border border-secondary rounded-circle"
                         style={{ paddingBottom: "2px" }}
                       >
-                        0
+                        {cartItemCount}
                       </span>
                     </Link>
                   </div>
