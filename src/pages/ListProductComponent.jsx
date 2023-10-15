@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import ProductServices from '../services/ProductServices';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -9,14 +9,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 class ListProductComponent extends Component {
     constructor(props) {
+
         super(props)
+        this.searchTimeout = null;
 
         this.state = {
-            products: []
+            products: [],
+            search: ''
         }
         this.addProduct = this.addProduct.bind(this);
         this.editProduct = this.editProduct.bind(this);
         this.deleteProduct = this.deleteProduct.bind(this);
+        this.setSearch = this.setSearch.bind(this);
+
     }
 
     deleteProduct(id) {
@@ -38,6 +43,24 @@ class ListProductComponent extends Component {
     addProduct() {
         this.props.history.push('/add-product/_add');
     }
+    // setSearch = (event) => {
+    //     // this.setState = ({ search: event.target.value });
+    //     this.setState({ search: event.target.value });
+
+    //     console.log(event.target.value)
+    // }
+    setSearch = (event) => {
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+
+        const searchTerm = event.target.value;
+
+        this.searchTimeout = setTimeout(() => {
+            this.setState({ search: searchTerm.toLowerCase() });
+            console.log(searchTerm);
+        }, 400);
+    }
 
     render() {
         return (
@@ -55,6 +78,26 @@ class ListProductComponent extends Component {
                                 </div>
                             </div>
                         </div>
+                        <div style={{ width: '100%' }} className="search ">
+                            <div className="col-lg-4 col-6 text-left m-3 ">
+                                <form action >
+                                    <div className="input-group">
+                                        <input
+                                            name='search'
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Search for products"
+                                            onChange={this.setSearch}
+                                        />
+                                        <div className="input-group-append">
+                                            <button className="input-group-text bg-transparent text-primary">
+                                                <i className="fa fa-search" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <table class="table table-striped table-hover">
                             <span></span>
                             <thead>
@@ -68,7 +111,11 @@ class ListProductComponent extends Component {
                             </thead>
                             <tbody>
                                 {
-                                    this.state.products.map(
+                                    this.state.products.filter((product) => {
+                                        const searchTerm = this.state.search.toLowerCase();
+                                        const productName = product.name.toLowerCase();
+                                        return searchTerm === '' ? true : productName.includes(searchTerm);
+                                    }).map(
                                         product =>
                                             <tr key="{product.productId}">
                                                 <td><img style={{ width: '100%' }} src={`/assets/images/${product.imageUrls[0]}`} alt=""
