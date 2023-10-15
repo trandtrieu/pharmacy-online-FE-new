@@ -21,7 +21,9 @@ class CategoriesComponent extends Component {
         console.error("Lỗi khi tải sản phẩm:", error);
       });
   }
-
+  viewProductByCategory(category_id) {
+    this.props.history.push(`/category/${category_id}`);
+  }
   render() {
     return (
       <>
@@ -35,8 +37,12 @@ class CategoriesComponent extends Component {
               <div
                 className="col-lg-3 col-md-4 col-sm-6 pb-1"
                 key={category.category_id}
+                // onClick={() => this.viewProductByCategory(category.category_id)}
               >
-                <a className="text-decoration-none" href>
+                <a
+                  className="text-decoration-none"
+                  href={`/category/${category.category_id}`}
+                >
                   <div className="cat-item d-flex align-items-center mb-4">
                     <div
                       className="overflow-hidden"

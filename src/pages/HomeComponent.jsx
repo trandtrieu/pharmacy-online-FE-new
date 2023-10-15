@@ -52,6 +52,7 @@ class HomeProduct extends Component {
   viewProduct(productId) {
     this.props.history.push(`/detail-product/${productId}`);
   }
+
   render() {
     return (
       <>

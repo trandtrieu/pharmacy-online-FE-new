@@ -11,6 +11,7 @@ import CartComponent from "./pages/CartComponent";
 import WishlistComponent from "./pages/WishlistComponent";
 import ContactComponent from "./pages/ContactComponent";
 import DetailProductComponent from "./pages/DetailProductComponent";
+import CategoryProduct from "./pages/CategoryProduct";
 
 function App() {
   return (
@@ -21,15 +22,11 @@ function App() {
       <Switch>
         <Route path="/" exact component={HomeComponent} />
         <Route path="/home" component={HomeComponent} />
-        {/* <Route path="/about" component={AboutComponent} /> */}
         <Route
           path="/detail-product/:productId"
           component={DetailProductComponent}
         />
-        {/* <Route
-          path="/category/:category_id"
-          component={CategoryProductComponent}
-        /> */}
+        <Route path="/category/:category_id" component={CategoryProduct} />
         <Route path="/contact" component={ContactComponent} />
         <Route path="/shop" component={ShopComponent} />
         <Route path="/cart" component={CartComponent} />
