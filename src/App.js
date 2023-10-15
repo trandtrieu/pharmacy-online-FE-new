@@ -11,6 +11,8 @@ import CartComponent from "./pages/CartComponent";
 import WishlistComponent from "./pages/WishlistComponent";
 import ContactComponent from "./pages/ContactComponent";
 import DetailProductComponent from "./pages/DetailProductComponent";
+import ListProductComponent from "./pages/ListProductComponent";
+import CreateProductComponent from "./pages/CreateProductComponent";
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
           path="/detail-product/:productId"
           component={DetailProductComponent}
         />
+        <Route path="/add-product/:id" component={CreateProductComponent}></Route>
+        <Route path="/viewproduct" component={ListProductComponent} />
         {/* <Route
           path="/category/:category_id"
           component={CategoryProductComponent}

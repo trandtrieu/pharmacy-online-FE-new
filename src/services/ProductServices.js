@@ -16,6 +16,19 @@ class ProductServices {
       PRODUCT_API_BASE_URL + "/category?category_id=" + category_id
     ); //http://localhost:8080/pharmacy-online/products/category?category_id=2
   }
+
+
+  deleteProduct(productId) {
+    return axios.delete(PRODUCT_API_BASE_URL + '/' + productId);
+  }
+
+  CreateProduct(product) {
+    return axios.post(PRODUCT_API_BASE_URL, product);
+  }
+
+  UpdateProduct(product, productId) {
+    return axios.put(PRODUCT_API_BASE_URL + '/' + productId, product);
+  }
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

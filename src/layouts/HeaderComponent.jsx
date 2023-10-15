@@ -265,6 +265,27 @@ class HeaderComponent extends Component {
                     <Link to="/contact" className="nav-item nav-link">
                       Contact
                     </Link>
+
+                    <div className="nav-item dropdown">
+                      <a
+                        href="/"
+                        className="nav-link dropdown-toggle"
+                        data-toggle="dropdown"
+                      >
+                        Manage <i className="fa fa-angle-down mt-1" />
+                      </a>
+                      <div className="dropdown-menu bg-primary rounded-0 border-0 m-0">
+                        <Link to="/viewproduct" className="dropdown-item">
+                          Manage Product
+                        </Link>
+                        <Link to="/" className="dropdown-item">
+                          Manage User
+                        </Link>
+                        <Link to="/" className="dropdown-item">
+                          Manage Blog
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                   <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
                     <Link to="/wishlist" className="btn px-0">
