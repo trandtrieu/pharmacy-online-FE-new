@@ -192,15 +192,13 @@ class HeaderComponent extends Component {
                   id="navbarCollapse"
                 >
                   <div className="navbar-nav mr-auto py-0">
-                    <Link to="/home" className="nav-item nav-link active">
+                    <Link to="/home" className="nav-item nav-link">
                       Home
                     </Link>
                     <Link to="/shop" className="nav-item nav-link">
                       Shop
                     </Link>
-                    <a href="detail.html" className="nav-item nav-link">
-                      Shop Detail
-                    </a>
+
                     <div className="nav-item dropdown">
                       <a
                         href="/"

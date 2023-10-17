@@ -30,10 +30,9 @@ class CartServices {
 
   getNumberProductInCart(accountId) {
     return axios.get(
-      CART_API_BASE_URL + "/count-cart-product?accountId=" + accountId
+      CART_API_BASE_URL + "/count-product-cart?accountId=" + accountId
     );
   }
 }
-
 // eslint-disable-next-line import/no-anonymous-default-export
 export default new CartServices();

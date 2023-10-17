@@ -71,20 +71,17 @@ class WishlistComponent extends Component {
                       <div className="card shadow-0 border rounded-3">
                         <div className="card-body">
                           <div className="row">
-                            <div className="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
-                              <div
-                                className=" hover-zoom ripple rounded ripple-surface"
-                                style={{ height: "188px", width: "220px" }}
-                              >
-                                {wishlistItem.imageUrls.length > 0 && (
-                                  <img
-                                    src={`../assets/images/${wishlistItem.imageUrls[0]}`}
-                                    alt=""
-                                    className="w-100"
-                                    style={{ height: "100%" }}
-                                  />
-                                )}
-                              </div>
+                            <div
+                              className="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0"
+                              style={{ height: "188px", width: "40px" }}
+                            >
+                              {wishlistItem.imageUrls.length > 0 && (
+                                <img
+                                  src={`../assets/images/${wishlistItem.imageUrls[0]}`}
+                                  alt=""
+                                  style={{ height: "100%", width: "100%" }}
+                                />
+                              )}
                             </div>
                             <div className="col-md-6 col-lg-6 col-xl-6">
                               <div className="">

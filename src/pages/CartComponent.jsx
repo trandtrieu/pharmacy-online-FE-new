@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import CartServices from "../services/CartServices";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCircleQuestion, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip as ReactTooltip } from "react-tooltip";
+
 const accountId = 4;
 class CartComponent extends Component {
   constructor(props) {
@@ -29,6 +31,9 @@ class CartComponent extends Component {
     let total = 0;
     for (const cartItem of carts) {
       total += cartItem.productDetail.price * cartItem.quantity;
+    }
+    if (total >= 300) {
+      total -= 30;
     }
     return total;
   }
@@ -85,10 +90,41 @@ class CartComponent extends Component {
   render() {
     return (
       <>
+        <ReactTooltip id="my-tooltip" type="error" place="top" />
+
         {/* Cart Start */}
         <div className="container-fluid">
           <div className="row px-xl-5">
             <div className="col-lg-8 table-responsive mb-5">
+              <div class="row">
+                <div class="col-md-10">
+                  <div
+                    class="progress mb-2"
+                    role="progressbar"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    <div
+                      class="progress-bar"
+                      role="progressbar"
+                      style={{
+                        width: `${(this.calculateTotalPrice() / 300) * 100}%`,
+                      }}
+                      aria-valuemin="0"
+                      aria-valuemax="100" // Set the aria-valuemax to 100 initially
+                    ></div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <h6
+                    data-tooltip-id="my-tooltip"
+                    data-tooltip-content="Pharmacity provides free delivery for orders with a value of 300,000 VND or higher."
+                  >
+                    Policy <FontAwesomeIcon icon={faCircleQuestion} />
+                  </h6>
+                </div>
+              </div>
+
               <table className="table table-light table-borderless table-hover text-center mb-0">
                 <thead className="thead-dark">
                   <tr>
@@ -118,34 +154,42 @@ class CartComponent extends Component {
                           className="input-group quantity mx-auto"
                           style={{ width: "100px" }}
                         >
-                          <div className="input-group-btn">
-                            <button className="btn btn-sm btn-primary btn-minus">
-                              <i className="fa fa-minus" />
-                            </button>
-                          </div>
                           <input
-                            type="text"
+                            min={0}
+                            type="number"
                             className="form-control form-control-sm bg-secondary border-0 text-center"
                             value={cartItem.quantity}
+                            onChange={(e) =>
+                              this.handleQuantityChange(
+                                cartItem.cartId,
+                                e.target.value
+                              )
+                            }
                           />
-                          <div className="input-group-btn">
-                            <button className="btn btn-sm btn-primary btn-plus">
-                              <i className="fa fa-plus" />
-                            </button>
-                          </div>
                         </div>
                       </td>
                       <td className="align-middle">
                         {" "}
                         ${cartItem.productDetail.price * cartItem.quantity}
                       </td>
-                      <td className="align-middle">
+                      <td
+                        className="align-middle"
+                        onClick={() =>
+                          this.handleRemoveFromCart(cartItem.cartId)
+                        }
+                      >
                         <FontAwesomeIcon icon={faTrash} />{" "}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              <button
+                onClick={this.handleUpdateCart} // Call the update function when the button is clicked
+                className="btn btn-primary float-md-right mt-3"
+              >
+                Update Cart
+              </button>
             </div>
             <div className="col-lg-4">
               <form className="mb-30" action>
@@ -160,23 +204,14 @@ class CartComponent extends Component {
                   </div>
                 </div>
               </form>
+
               <h5 className="section-title position-relative text-uppercase mb-3">
                 <span className="bg-secondary pr-3">Cart Summary</span>
               </h5>
               <div className="bg-light p-30 mb-5">
-                <div className="border-bottom pb-2">
-                  <div className="d-flex justify-content-between mb-3">
-                    <h6>Subtotal</h6>
-                    <h6>$150</h6>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <h6 className="font-weight-medium">Shipping</h6>
-                    <h6 className="font-weight-medium">$10</h6>
-                  </div>
-                </div>
                 <div className="pt-2">
                   <div className="d-flex justify-content-between mt-2">
-                    <h5>Total</h5>
+                    <h5>Cart Total</h5>
                     <h5>$ {this.calculateTotalPrice()}</h5>
                   </div>
                   <button className="btn btn-block btn-primary font-weight-bold my-3 py-3">
