@@ -216,8 +216,9 @@ class HeaderComponent extends Component {
                         </a>
                       </div>
                     </div>
-                    <Link to="/contact" className="nav-item nav-link">
-                      Contact
+
+                    <Link to="/prescription" className="nav-item nav-link">
+                      Prescription
                     </Link>
                   </div>
                   <div className="navbar-nav ml-auto py-0 d-none d-lg-block">

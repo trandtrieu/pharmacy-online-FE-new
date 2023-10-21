@@ -64,9 +64,8 @@ class HomeProduct extends Component {
             <span className="bg-secondary pr-3">Featured Products</span>
           </h2>
           <div className="row px-xl-5">
-            {" "}
             {this.state.products.map((product) => (
-              <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
+              <div className="col-lg-2 col-md-2 col-sm-6 pb-1">
                 <div
                   className="product-item bg-light mb-4"
                   key={product.product_id}
@@ -106,6 +105,9 @@ class HomeProduct extends Component {
                   <div className="text-center py-4">
                     <a className="h6 text-decoration-none text-truncate" href>
                       {product.name}
+                    </a>
+                    <a className="h6 text-decoration-none text-truncate" href>
+                      {product.createdDate}
                     </a>
                     <div className="d-flex align-items-center justify-content-center mt-2">
                       <h5>${product.price}</h5>

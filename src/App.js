@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify";
 import ShopComponent from "./pages/ShopComponent";
 import CartComponent from "./pages/CartComponent";
 import WishlistComponent from "./pages/WishlistComponent";
-import ContactComponent from "./pages/ContactComponent";
+import PrescriptionComponent from "./pages/PrescriptionComponent";
 import DetailProductComponent from "./pages/DetailProductComponent";
 import CategoryProduct from "./pages/CategoryProduct";
 
@@ -27,10 +27,14 @@ function App() {
           component={DetailProductComponent}
         />
         <Route path="/category/:category_id" component={CategoryProduct} />
-        <Route path="/contact" component={ContactComponent} />
+        <Route path="/prescription" component={PrescriptionComponent} />
         <Route path="/shop" component={ShopComponent} />
         <Route path="/cart" component={CartComponent} />
         <Route path="/wishlist" component={WishlistComponent} />
+        <Route
+          path="/prescription/:accountId"
+          component={PrescriptionComponent}
+        />
       </Switch>
       <FooterComponent />
     </Router>

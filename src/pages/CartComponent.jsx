@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleQuestion, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { faSquareFacebook } from "@fortawesome/free-brands-svg-icons";
 
 const accountId = 4;
 class CartComponent extends Component {
@@ -32,9 +33,9 @@ class CartComponent extends Component {
     for (const cartItem of carts) {
       total += cartItem.productDetail.price * cartItem.quantity;
     }
-    if (total >= 300) {
-      total -= 30;
-    }
+    // if (total >= 300) {
+    //   total -= 30;
+    // }
     return total;
   }
 
@@ -53,10 +54,8 @@ class CartComponent extends Component {
   };
 
   handleQuantityChange = (cartId, newQuantity) => {
-    // Find the cart item to update in the state
     const updatedCarts = this.state.carts.map((cartItem) => {
       if (cartItem.cartId === cartId) {
-        // Update the quantity for the specified cart item
         return {
           ...cartItem,
           quantity: newQuantity,
@@ -65,11 +64,9 @@ class CartComponent extends Component {
       return cartItem;
     });
 
-    // Update the state with the new cart items
     this.setState({ carts: updatedCarts });
   };
 
-  // Function to update the cart in the database
   handleUpdateCart = () => {
     const updatedCartData = this.state.carts.map((cartItem) => {
       return {
@@ -78,7 +75,6 @@ class CartComponent extends Component {
       };
     });
 
-    // Send a request to update the cart in the database
     CartServices.updateCart(updatedCartData)
       .then(() => {
         toast.success("Cart updated successfully!");
@@ -118,9 +114,10 @@ class CartComponent extends Component {
                 <div class="col-md-2">
                   <h6
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-content="Pharmacity provides free delivery for orders with a value of 300,000 VND or higher."
+                    data-tooltip-content="Pharmacity provides free delivery for orders with a value of 30$ or higher."
                   >
                     Policy <FontAwesomeIcon icon={faCircleQuestion} />
+                    Policy <FontAwesomeIcon icon={faSquareFacebook} />
                   </h6>
                 </div>
               </div>
@@ -213,6 +210,10 @@ class CartComponent extends Component {
                   <div className="d-flex justify-content-between mt-2">
                     <h5>Cart Total</h5>
                     <h5>$ {this.calculateTotalPrice()}</h5>
+                  </div>
+                  <div className="d-flex justify-content-between mt-2">
+                    <h6>Free shipping</h6>
+                    <h6>$ {this.calculateTotalPrice()}</h6>
                   </div>
                   <button className="btn btn-block btn-primary font-weight-bold my-3 py-3">
                     Proceed To Checkout
