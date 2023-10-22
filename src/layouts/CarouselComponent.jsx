@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 class CarouselComponent extends Component {
   render() {
@@ -36,18 +37,18 @@ class CarouselComponent extends Component {
                     <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
                       <div className="p-3" style={{ maxWidth: "700px" }}>
                         <h1 className="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                          Men Fashion
+                          Pharmacy
                         </h1>
                         <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
                           Lorem rebum magna amet lorem magna erat diam stet.
                           Sadips duo stet amet amet ndiam elitr ipsum diam
                         </p>
-                        <a
+                        <Link
                           className="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                          href="/"
+                          to="/shop"
                         >
                           Shop Now
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -64,18 +65,18 @@ class CarouselComponent extends Component {
                     <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
                       <div className="p-3" style={{ maxWidth: "700px" }}>
                         <h1 className="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                          Women Fashion
+                          Pharmacy{" "}
                         </h1>
                         <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
                           Lorem rebum magna amet lorem magna erat diam stet.
                           Sadips duo stet amet amet ndiam elitr ipsum diam
                         </p>
-                        <a
+                        <Link
                           className="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                          href="/"
+                          to="/shop"
                         >
                           Shop Now
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -92,18 +93,18 @@ class CarouselComponent extends Component {
                     <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
                       <div className="p-3" style={{ maxWidth: "700px" }}>
                         <h1 className="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                          Kids Fashion
+                          Pharmacy{" "}
                         </h1>
                         <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
                           Lorem rebum magna amet lorem magna erat diam stet.
                           Sadips duo stet amet amet ndiam elitr ipsum diam
                         </p>
-                        <a
+                        <Link
                           className="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                          href="/"
+                          to="/shop"
                         >
                           Shop Now
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -120,9 +121,9 @@ class CarouselComponent extends Component {
                 <div className="offer-text">
                   <h6 className="text-white text-uppercase">Save 20%</h6>
                   <h3 className="text-white mb-3">Special Offer</h3>
-                  <a href className="btn btn-primary">
+                  <Link to="/shop" className="btn btn-primary">
                     Shop Now
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="product-offer mb-30" style={{ height: "200px" }}>
@@ -134,9 +135,9 @@ class CarouselComponent extends Component {
                 <div className="offer-text">
                   <h6 className="text-white text-uppercase">Save 20%</h6>
                   <h3 className="text-white mb-3">Special Offer</h3>
-                  <a href className="btn btn-primary">
+                  <Link to="/shop" className="btn btn-primary">
                     Shop Now
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

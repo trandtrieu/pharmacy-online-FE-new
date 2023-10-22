@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import CategoryServices from "../services/CategoryServices";
 import CartServices from "../services/CartServices";
+import WishListServices from "../services/WishListServices";
 const accountId = 4;
 class HeaderComponent extends Component {
   constructor(props) {
@@ -9,21 +10,10 @@ class HeaderComponent extends Component {
     this.state = {
       categories: [],
       cartItemCount: 0,
+      wishlistItemCount: 0,
     };
   }
-
-  componentDidMount() {
-    CategoryServices.getCategoryType()
-      .then((res) => {
-        this.setState({
-          categories: res.data,
-        });
-        // console.log(this.state.categories);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      });
-
+  updateCartItemCount = () => {
     CartServices.getNumberProductInCart(accountId)
       .then((res) => {
         this.setState({
@@ -33,10 +23,40 @@ class HeaderComponent extends Component {
       .catch((error) => {
         console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
       });
+  };
+  updateWishListItemCount = () => {
+    WishListServices.countProduct(accountId)
+      .then((res) => {
+        this.setState({
+          wishlistItemCount: res.data,
+        });
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
+      });
+  };
+  componentDidMount() {
+    CategoryServices.getCategoryType()
+      .then((res) => {
+        this.setState({
+          categories: res.data,
+        });
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải sản phẩm:", error);
+      });
+
+    // Khởi tạo giá trị cartItemCount
+    this.updateCartItemCount();
+    this.updateWishListItemCount();
+
+    setInterval(this.updateCartItemCount, 100);
+    setInterval(this.updateWishListItemCount, 100);
   }
+
   render() {
     const { cartItemCount } = this.state;
-
+    const { wishlistItemCount } = this.state;
     return (
       <>
         <div className="container-fluid">
@@ -228,7 +248,7 @@ class HeaderComponent extends Component {
                         className="badge text-secondary border border-secondary rounded-circle"
                         style={{ paddingBottom: "2px" }}
                       >
-                        0
+                        {wishlistItemCount}
                       </span>
                     </Link>
                     <Link to="/cart" className="btn px-0 ml-3">

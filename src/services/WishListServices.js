@@ -17,6 +17,10 @@ class WishListServices {
       WISHLIST_API_BASE_URL + "/" + accountId + "/remove-product/" + productId
     );
   }
+
+  countProduct(accountId) {
+    return axios.get(WISHLIST_API_BASE_URL + "/count/" + accountId);
+  }
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

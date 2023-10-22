@@ -15,6 +15,7 @@ class PrescriptionComponent extends Component {
       email: "",
       imageUrls: "",
       note: "",
+      errorMessage: "", // Thêm trạng thái lỗi
     };
     this.changeNameHandler = this.changeNameHandler.bind(this);
     this.changeEmailHandler = this.changeEmailHandler.bind(this);
@@ -40,6 +41,27 @@ class PrescriptionComponent extends Component {
   };
   sendPresciption = (e) => {
     e.preventDefault();
+
+    if (
+      this.state.name.trim() === "" ||
+      this.state.phone.trim() === "" ||
+      this.state.email.trim() === "" ||
+      this.state.imageUrls.trim() === ""
+    ) {
+      this.setState({ errorMessage: "Vui lòng điền đầy đủ thông tin." });
+
+      return;
+    }
+
+    if (!/^\d{10}$/.test(this.state.phone)) {
+      this.setState({
+        errorMessage: "Số điện thoại phải có đúng 10 chữ số.",
+      });
+
+      return;
+    }
+    this.setState({ errorMessage: "" });
+
     let prescription = {
       name: this.state.name,
       phone: this.state.phone,
@@ -68,14 +90,13 @@ class PrescriptionComponent extends Component {
                 <form name="sentMessage" id="contactForm">
                   <h4>
                     <FontAwesomeIcon icon={fa1} className="icon1" /> Take a
-                    photo of the prescription
+                    photo of the prescription{" "}
                   </h4>
-                  <p>
-                    Maximum 5 images and each image size must not exceed 10 MB.
-                  </p>
+
                   <p>
                     The prescription must be valid: complete and clear
-                    information, intact and valid (within 5 days).
+                    information, intact and valid (within 5 days).{" "}
+                    <span className="label-require">*</span>
                   </p>
                   <div className="mb-3">
                     <input
@@ -84,24 +105,18 @@ class PrescriptionComponent extends Component {
                       value={this.state.imageUrls}
                       onChange={this.changeImageHandler}
                     />
+                    {this.state.errorMessage && (
+                      <div className="help-block text-danger">
+                        {this.state.errorMessage}
+                      </div>
+                    )}
                   </div>
-                  <div className="control-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="note"
-                      placeholder="Enter note"
-                      required="required"
-                      value={this.state.note}
-                      onChange={this.changeNoteHandler}
-                    />
-                    <p className="help-block text-danger" />
-                  </div>
+
                   <h4>
                     <FontAwesomeIcon icon={fa2} className="icon1" /> Enter
                     contact information
                   </h4>
-                  <div className="control-group">
+                  <div className="control-group mb-3">
                     <label>
                       Full name <span className="label-require">*</span>
                     </label>
@@ -114,7 +129,11 @@ class PrescriptionComponent extends Component {
                       value={this.state.name}
                       onChange={this.changeNameHandler}
                     />
-                    <p className="help-block text-danger" />
+                    {this.state.errorMessage && (
+                      <div className="help-block text-danger">
+                        {this.state.errorMessage}
+                      </div>
+                    )}
                   </div>
                   <div className="control-group">
                     <label>
@@ -133,7 +152,7 @@ class PrescriptionComponent extends Component {
                   </div>
                   <div className="control-group">
                     <label>
-                      Phone number <span className="label-require">*</span>
+                      Email <span className="label-require">*</span>
                     </label>
                     <input
                       type="text"
@@ -145,6 +164,18 @@ class PrescriptionComponent extends Component {
                       onChange={this.changeEmailHandler}
                     />
                     <p className="help-block text-danger" />
+                  </div>
+                  <div className="control-group mb-3">
+                    <label>Note</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="note"
+                      placeholder="Enter note"
+                      required="required"
+                      value={this.state.note}
+                      onChange={this.changeNoteHandler}
+                    />
                   </div>
                   <div>
                     <button

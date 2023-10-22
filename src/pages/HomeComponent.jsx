@@ -7,6 +7,7 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import WishListServices from "../services/WishListServices";
 import CartServices from "../services/CartServices";
+import PrescriptionBanner from "./PrescriptionBanner";
 
 class HomeProduct extends Component {
   constructor(props) {
@@ -51,6 +52,7 @@ class HomeProduct extends Component {
 
   viewProduct(productId) {
     this.props.history.push(`/detail-product/${productId}`);
+    // window.scrollTo(0, 0);
   }
 
   render() {
@@ -106,14 +108,11 @@ class HomeProduct extends Component {
                     <a className="h6 text-decoration-none text-truncate" href>
                       {product.name}
                     </a>
-                    <a className="h6 text-decoration-none text-truncate" href>
-                      {product.createdDate}
-                    </a>
                     <div className="d-flex align-items-center justify-content-center mt-2">
                       <h5>${product.price}</h5>
-                      <h6 className="text-muted ml-2">
+                      {/* <h6 className="text-muted ml-2">
                         <del>${product.price}</del>
-                      </h6>
+                      </h6> */}
                     </div>
                   </div>
                 </div>
@@ -123,6 +122,7 @@ class HomeProduct extends Component {
         </div>
         {/* Products End */}
         {/* Offer Start */}
+        <PrescriptionBanner />
         <div className="container-fluid pt-5 pb-3">
           <div className="row px-xl-5">
             <div className="col-md-6">
