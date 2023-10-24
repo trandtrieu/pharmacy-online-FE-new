@@ -21,7 +21,7 @@ class ShopComponent extends Component {
       });
   }
   addWishListProduct(product_id) {
-    const accountId = 4; // Replace with the actual account ID
+    const accountId = 1; // Replace with the actual account ID
     WishListServices.addToWishlist(accountId, product_id)
       .then((response) => {
         console.log("Product added to wishlist:", response.data);
@@ -32,7 +32,7 @@ class ShopComponent extends Component {
       });
   }
   addProductToCart(product_id) {
-    const accountId = 4; // Replace with the actual account ID
+    const accountId = 1; // Replace with the actual account ID
     ProductServices.addToCart(accountId, product_id, 1)
       .then((response) => {
         console.log("Product added to cart:", response.data);

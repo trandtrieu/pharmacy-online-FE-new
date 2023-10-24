@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
 import PrescriptionServices from "../services/PrescriptionServices";
 import { toast } from "react-toastify";
-const accountId = 4;
+const accountId = 1;
 class PrescriptionComponent extends Component {
   constructor(props) {
     super(props);
@@ -15,7 +15,6 @@ class PrescriptionComponent extends Component {
       email: "",
       imageUrls: "",
       note: "",
-      errorMessage: "", // Thêm trạng thái lỗi
     };
     this.changeNameHandler = this.changeNameHandler.bind(this);
     this.changeEmailHandler = this.changeEmailHandler.bind(this);
@@ -41,26 +40,6 @@ class PrescriptionComponent extends Component {
   };
   sendPresciption = (e) => {
     e.preventDefault();
-
-    if (
-      this.state.name.trim() === "" ||
-      this.state.phone.trim() === "" ||
-      this.state.email.trim() === "" ||
-      this.state.imageUrls.trim() === ""
-    ) {
-      this.setState({ errorMessage: "Vui lòng điền đầy đủ thông tin." });
-
-      return;
-    }
-
-    if (!/^\d{10}$/.test(this.state.phone)) {
-      this.setState({
-        errorMessage: "Số điện thoại phải có đúng 10 chữ số.",
-      });
-
-      return;
-    }
-    this.setState({ errorMessage: "" });
 
     let prescription = {
       name: this.state.name,
@@ -105,11 +84,6 @@ class PrescriptionComponent extends Component {
                       value={this.state.imageUrls}
                       onChange={this.changeImageHandler}
                     />
-                    {this.state.errorMessage && (
-                      <div className="help-block text-danger">
-                        {this.state.errorMessage}
-                      </div>
-                    )}
                   </div>
 
                   <h4>
@@ -129,11 +103,6 @@ class PrescriptionComponent extends Component {
                       value={this.state.name}
                       onChange={this.changeNameHandler}
                     />
-                    {this.state.errorMessage && (
-                      <div className="help-block text-danger">
-                        {this.state.errorMessage}
-                      </div>
-                    )}
                   </div>
                   <div className="control-group">
                     <label>
@@ -148,7 +117,6 @@ class PrescriptionComponent extends Component {
                       value={this.state.phone}
                       onChange={this.changePhoneHandler}
                     />
-                    <p className="help-block text-danger" />
                   </div>
                   <div className="control-group">
                     <label>
@@ -163,7 +131,6 @@ class PrescriptionComponent extends Component {
                       value={this.state.email}
                       onChange={this.changeEmailHandler}
                     />
-                    <p className="help-block text-danger" />
                   </div>
                   <div className="control-group mb-3">
                     <label>Note</label>
@@ -195,7 +162,7 @@ class PrescriptionComponent extends Component {
                 <h4>Illustrated prescription</h4>
 
                 <img
-                  src="../assets/images/prescription-tips.png"
+                  src="../assets/images/prescription.svg"
                   alt=""
                   className="w-100"
                 />

@@ -3,7 +3,7 @@ import CarouselComponent from "../layouts/CarouselComponent";
 import CategoriesComponent from "../layouts/CategoriesComponent";
 import ProductServices from "../services/ProductServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faStar } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import WishListServices from "../services/WishListServices";
 import CartServices from "../services/CartServices";
@@ -28,7 +28,7 @@ class HomeProduct extends Component {
   }
 
   addWishListProduct(product_id) {
-    const accountId = 4; // Replace with the actual account ID
+    const accountId = 1; // Replace with the actual account ID
     WishListServices.addToWishlist(accountId, product_id)
       .then((response) => {
         console.log("Product added to wishlist:", response.data);
@@ -39,7 +39,7 @@ class HomeProduct extends Component {
       });
   }
   addProductToCart(product_id) {
-    const accountId = 4; // Replace with the actual account ID
+    const accountId = 1; // Replace with the actual account ID
     CartServices.addToCart(accountId, product_id, 1)
       .then((response) => {
         console.log("Product added to cart:", response.data);
@@ -67,16 +67,19 @@ class HomeProduct extends Component {
           </h2>
           <div className="row px-xl-5">
             {this.state.products.map((product) => (
-              <div className="col-lg-2 col-md-2 col-sm-6 pb-1">
-                <div
-                  className="product-item bg-light mb-4"
-                  key={product.product_id}
-                >
-                  <div className="product-img position-relative overflow-hidden">
+              <div
+                className="col-lg-2 col-md-2 col-sm-4 col-12 pb-1"
+                key={product.product_id}
+              >
+                <div className="product-item bg-light mb-4">
+                  <div
+                    className="product-img position-relative overflow-hidden"
+                    style={{ height: "230px" }}
+                  >
                     <img
-                      className="img-fluid w-100"
+                      className="img-fluid w-100 h-100"
                       src={`assets/images/${product.imageUrls[0]}`}
-                      alt={`Imagee 0`}
+                      alt={`Image3 0`}
                     />
                     <div className="product-action">
                       <a
@@ -100,19 +103,31 @@ class HomeProduct extends Component {
                         href
                         onClick={() => this.viewProduct(product.productId)}
                       >
-                        <FontAwesomeIcon icon={faCircleInfo} />{" "}
+                        <FontAwesomeIcon icon={faCircleInfo} />
                       </a>
                     </div>
                   </div>
                   <div className="text-center py-4">
-                    <a className="h6 text-decoration-none text-truncate" href>
+                    <a
+                      className="product-link h6 text-decoration-none text-truncate"
+                      href="/product-url"
+                      title={product.name}
+                    >
                       {product.name}
                     </a>
+                    <div className="product-star" style={{ color: "orange" }}>
+                      <FontAwesomeIcon icon={faStar} />
+                      <FontAwesomeIcon icon={faStar} />
+                      <FontAwesomeIcon icon={faStar} />
+                      <FontAwesomeIcon icon={faStar} />
+                      <FontAwesomeIcon icon={faStar} />
+                    </div>
+
                     <div className="d-flex align-items-center justify-content-center mt-2">
-                      <h5>${product.price}</h5>
-                      {/* <h6 className="text-muted ml-2">
-                        <del>${product.price}</del>
-                      </h6> */}
+                      <h5>
+                        ${product.price}
+                        <span> / box</span>
+                      </h5>
                     </div>
                   </div>
                 </div>
@@ -120,6 +135,7 @@ class HomeProduct extends Component {
             ))}
           </div>
         </div>
+
         {/* Products End */}
         {/* Offer Start */}
         <PrescriptionBanner />

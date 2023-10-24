@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import WishListServices from "../services/WishListServices";
 import CartServices from "../services/CartServices";
-const accountId = 4;
+const accountId = 1;
 class WishlistComponent extends Component {
   constructor(props) {
     super(props);
@@ -27,7 +27,7 @@ class WishlistComponent extends Component {
       });
   }
   addProductToCart(product_id) {
-    const accountId = 4; // Replace with the actual account ID
+    const accountId = 1; // Replace with the actual account ID
     CartServices.addToCart(accountId, product_id, 1)
       .then((response) => {
         console.log("Product added to cart:", response.data);

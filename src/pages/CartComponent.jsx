@@ -6,7 +6,7 @@ import { faCircleQuestion, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Modal from "react-modal";
 
-const accountId = 4;
+const accountId = 1;
 const customStyles = {
   content: {
     top: "35%",
@@ -177,7 +177,7 @@ class CartComponent extends Component {
                       role="progressbar"
                       style={{
                         width: `${(total / 300) * 100}%`,
-                        backgroundColor: total >= 300 ? "#00ADB5" : "#FFD333",
+                        backgroundColor: total >= 300 ? "#B8E8FC" : "#A2FF86",
                       }}
                       aria-valuemin="0"
                       aria-valuemax="100"
@@ -204,49 +204,55 @@ class CartComponent extends Component {
                   </tr>
                 </thead>
                 <tbody className="align-middle">
-                  {this.state.carts.map((cartItem) => (
-                    <tr key={cartItem.productId}>
-                      <td className="align-middle">
-                        <img
-                          src="img/product-1.jpg"
-                          alt=""
-                          style={{ width: "50px" }}
-                        />
-                        {cartItem.productDetail.name}
-                      </td>
-                      <td className="align-middle">
-                        $ {cartItem.productDetail.price}
-                      </td>
-                      <td className="align-middle">
-                        <div
-                          className="input-group quantity mx-auto"
-                          style={{ width: "100px" }}
-                        >
-                          <input
-                            min={0}
-                            type="number"
-                            className="form-control form-control-sm bg-secondary border-0 text-center"
-                            value={cartItem.quantity}
-                            onChange={(e) =>
-                              this.handleQuantityChange(
-                                cartItem.cartId,
-                                e.target.value
-                              )
-                            }
-                          />
-                        </div>
-                      </td>
-                      <td className="align-middle">
-                        ${cartItem.productDetail.price * cartItem.quantity}
-                      </td>
-                      <td
-                        className="align-middle"
-                        onClick={() => this.handleRemoveFromCart(cartItem)}
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </td>
+                  {this.state.carts.length === 0 ? (
+                    <tr>
+                      <td colSpan="5">Your cart is empty.</td>
                     </tr>
-                  ))}
+                  ) : (
+                    this.state.carts.map((cartItem) => (
+                      <tr key={cartItem.productId}>
+                        <td className="align-middle">
+                          <img
+                            src="img/product-1.jpg"
+                            alt=""
+                            style={{ width: "50px" }}
+                          />
+                          {cartItem.productDetail.name}
+                        </td>
+                        <td className="align-middle">
+                          $ {cartItem.productDetail.price}
+                        </td>
+                        <td className="align-middle">
+                          <div
+                            className="input-group quantity mx-auto"
+                            style={{ width: "100px" }}
+                          >
+                            <input
+                              min={0}
+                              type="number"
+                              className="form-control form-control-sm bg-secondary border-0 text-center"
+                              value={cartItem.quantity}
+                              onChange={(e) =>
+                                this.handleQuantityChange(
+                                  cartItem.cartId,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                        </td>
+                        <td className="align-middle">
+                          ${cartItem.productDetail.price * cartItem.quantity}
+                        </td>
+                        <td
+                          className="align-middle"
+                          onClick={() => this.handleRemoveFromCart(cartItem)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
               <button
@@ -281,7 +287,7 @@ class CartComponent extends Component {
                   </div>
                   <div className="d-flex justify-content-between mt-2">
                     <h6>Shipping Cost</h6>
-                    <h6>{isEligibleForFreeShipping ? "$ 0" : "$ 30"}</h6>
+                    <h6>{isEligibleForFreeShipping ? "Free" : "$ 30"}</h6>
                   </div>
 
                   <button className="btn btn-block btn-primary font-weight-bold my-3 py-3">

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import CategoryServices from "../services/CategoryServices";
 import CartServices from "../services/CartServices";
 import WishListServices from "../services/WishListServices";
-const accountId = 4;
+const accountId = 1;
 class HeaderComponent extends Component {
   constructor(props) {
     super(props);
@@ -60,7 +60,7 @@ class HeaderComponent extends Component {
     return (
       <>
         <div className="container-fluid">
-          <div className="row bg-secondary py-1 px-xl-5">
+          <div className="row py-1 px-xl-5">
             <div className="col-lg-6 d-none d-lg-block">
               <div className="d-inline-flex align-items-center h-100">
                 <a className="text-body mr-3" href>
@@ -120,18 +120,16 @@ class HeaderComponent extends Component {
             </div>
           </div>
           <div className="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
-            <div className="col-lg-4">
-              <a href className="text-decoration-none">
-                <span className="h1 text-uppercase text-primary bg-dark px-2">
-                  Pharmacy
-                </span>
-                <span className="h1 text-uppercase text-dark bg-primary px-2 ml-n1">
-                  Online
-                </span>
-              </a>
+            <div className="col-lg-4" style={{ borderRadius: "50%" }}>
+              <span className="h1 text-uppercase text-primary px-2 bg-dark">
+                DRUG
+              </span>
+              <span className="h1 text-uppercase text-dark bg-primary px-2 ml-n1">
+                MART
+              </span>
             </div>
             <div className="col-lg-4 col-6 text-left">
-              <form action>
+              {/* <form action>
                 <div className="input-group">
                   <input
                     type="text"
@@ -144,7 +142,7 @@ class HeaderComponent extends Component {
                     </span>
                   </div>
                 </div>
-              </form>
+              </form> */}
             </div>
             <div className="col-lg-4 col-6 text-right">
               <p className="m-0">Customer Service</p>
@@ -193,10 +191,10 @@ class HeaderComponent extends Component {
                   className="text-decoration-none d-block d-lg-none"
                 >
                   <span className="h1 text-uppercase text-dark bg-light px-2">
-                    Multi
+                    DRUG
                   </span>
                   <span className="h1 text-uppercase text-light bg-primary px-2 ml-n1">
-                    Shop
+                    MART
                   </span>
                 </Link>
                 <button
@@ -239,6 +237,9 @@ class HeaderComponent extends Component {
 
                     <Link to="/prescription" className="nav-item nav-link">
                       Prescription
+                    </Link>
+                    <Link to="/admin" className="nav-item nav-link">
+                      Admin
                     </Link>
                   </div>
                   <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
