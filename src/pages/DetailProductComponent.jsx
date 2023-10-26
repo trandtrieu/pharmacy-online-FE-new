@@ -3,7 +3,7 @@ import ProductServices from "../services/ProductServices";
 import CartServices from "../services/CartServices";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faStar } from "@fortawesome/free-solid-svg-icons";
 import WishListServices from "../services/WishListServices";
 
 class DetailProductComponent extends Component {
@@ -160,22 +160,24 @@ class DetailProductComponent extends Component {
                       </button>
                     </div>
                   </div>
-                  <button
-                    className="btn btn-primary px-3 mb-3"
-                    onClick={() =>
-                      this.addProductToCart(this.state.product.productId)
-                    }
-                  >
-                    <i className="fa fa-shopping-cart mr-1" /> Add To Cart
-                  </button>
-                  <button
-                    className="btn btn-primary px-3"
-                    onClick={() =>
-                      this.addWishListProduct(this.state.product.productId)
-                    }
-                  >
-                    <i className="fa fa-shopping-cart mr-1" /> Add To Wishlist
-                  </button>
+                  <div className="d-flex flex-column">
+                    <button
+                      className="btn btn-primary px-3 mb-3"
+                      onClick={() =>
+                        this.addProductToCart(this.state.product.productId)
+                      }
+                    >
+                      <i className="fa fa-shopping-cart mr-1" /> Add To Cart
+                    </button>
+                    <button
+                      className="btn btn-primary px-3"
+                      onClick={() =>
+                        this.addWishListProduct(this.state.product.productId)
+                      }
+                    >
+                      <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

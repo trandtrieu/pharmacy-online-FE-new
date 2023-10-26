@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import CarouselComponent from "../layouts/CarouselComponent";
 import CategoriesComponent from "../layouts/CategoriesComponent";
 import ProductServices from "../services/ProductServices";
@@ -7,28 +7,31 @@ import { faCircleInfo, faStar } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import WishListServices from "../services/WishListServices";
 import CartServices from "../services/CartServices";
-import PrescriptionBanner from "./PrescriptionBanner";
+import PrescriptionBanner from "../layouts/PrescriptionBanner";
+import Loading from "react-loading"; // Import the Loading component
 
 class HomeProduct extends Component {
   constructor(props) {
     super(props);
     this.state = {
       products: [],
+      loading: true,
     };
   }
 
   componentDidMount() {
     ProductServices.getProducts()
       .then((res) => {
-        this.setState({ products: res.data });
+        this.setState({ products: res.data, loading: false });
       })
       .catch((error) => {
         console.error("Lỗi khi tải sản phẩm:", error);
+        this.setState({ loading: false });
       });
   }
 
   addWishListProduct(product_id) {
-    const accountId = 1; // Replace with the actual account ID
+    const accountId = 1;
     WishListServices.addToWishlist(accountId, product_id)
       .then((response) => {
         console.log("Product added to wishlist:", response.data);
@@ -39,7 +42,7 @@ class HomeProduct extends Component {
       });
   }
   addProductToCart(product_id) {
-    const accountId = 1; // Replace with the actual account ID
+    const accountId = 1;
     CartServices.addToCart(accountId, product_id, 1)
       .then((response) => {
         console.log("Product added to cart:", response.data);
@@ -52,12 +55,13 @@ class HomeProduct extends Component {
 
   viewProduct(productId) {
     this.props.history.push(`/detail-product/${productId}`);
-    // window.scrollTo(0, 0);
   }
 
   render() {
+    const { products, loading } = this.state;
+
     return (
-      <>
+      <Fragment>
         <CarouselComponent />
         <CategoriesComponent />
         {/* Products Start */}
@@ -65,75 +69,92 @@ class HomeProduct extends Component {
           <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
             <span className="bg-secondary pr-3">Featured Products</span>
           </h2>
-          <div className="row px-xl-5">
-            {this.state.products.map((product) => (
-              <div
-                className="col-lg-2 col-md-2 col-sm-4 col-12 pb-1"
-                key={product.product_id}
-              >
-                <div className="product-item bg-light mb-4">
-                  <div
-                    className="product-img position-relative overflow-hidden"
-                    style={{ height: "230px" }}
-                  >
-                    <img
-                      className="img-fluid w-100 h-100"
-                      src={`assets/images/${product.imageUrls[0]}`}
-                      alt={`Image3 0`}
-                    />
-                    <div className="product-action">
-                      <a
-                        className="btn btn-outline-dark btn-square"
-                        href
-                        onClick={() => this.addProductToCart(product.productId)}
-                      >
-                        <i className="fa fa-shopping-cart" />
-                      </a>
-                      <a
-                        className="btn btn-outline-dark btn-square"
-                        href
-                        onClick={() =>
-                          this.addWishListProduct(product.productId)
-                        }
-                      >
-                        <i className="far fa-heart" />
-                      </a>
-                      <a
-                        className="btn btn-outline-dark btn-square"
-                        href
-                        onClick={() => this.viewProduct(product.productId)}
-                      >
-                        <FontAwesomeIcon icon={faCircleInfo} />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="text-center py-4">
-                    <a
-                      className="product-link h6 text-decoration-none text-truncate"
-                      href="/product-url"
-                      title={product.name}
-                    >
-                      {product.name}
-                    </a>
-                    <div className="product-star" style={{ color: "orange" }}>
-                      <FontAwesomeIcon icon={faStar} />
-                      <FontAwesomeIcon icon={faStar} />
-                      <FontAwesomeIcon icon={faStar} />
-                      <FontAwesomeIcon icon={faStar} />
-                      <FontAwesomeIcon icon={faStar} />
-                    </div>
 
-                    <div className="d-flex align-items-center justify-content-center mt-2">
-                      <h5>
-                        ${product.price}
-                        <span> / box</span>
-                      </h5>
+          {loading ? (
+            -(
+              <div className="d-flex justify-content-center">
+                <Loading
+                  type={"spin"}
+                  color={"#007bff"}
+                  height={50}
+                  width={50}
+                />
+                <h1>hello</h1>
+              </div>
+            )
+          ) : (
+            <div className="row px-xl-5">
+              {products.map((product) => (
+                <div
+                  className="col-lg-2 col-md-2 col-sm-4 col-12 pb-1"
+                  key={product.product_id}
+                >
+                  <div className="product-item bg-light mb-4">
+                    <div
+                      className="product-img position-relative overflow-hidden"
+                      // style={{ height: "230px" }}
+                    >
+                      <img
+                        className="img-fluid w-100 h-100"
+                        src={`assets/images/${product.imageUrls[0]}`}
+                        alt={`Image3 0`}
+                      />
+                      <div className="product-action">
+                        <a
+                          className="btn btn-outline-dark btn-square"
+                          href
+                          onClick={() =>
+                            this.addProductToCart(product.productId)
+                          }
+                        >
+                          <i className="fa fa-shopping-cart" />
+                        </a>
+                        <a
+                          className="btn btn-outline-dark btn-square"
+                          href
+                          onClick={() =>
+                            this.addWishListProduct(product.productId)
+                          }
+                        >
+                          <i className="far fa-heart" />
+                        </a>
+                        <a
+                          className="btn btn-outline-dark btn-square"
+                          href
+                          onClick={() => this.viewProduct(product.productId)}
+                        >
+                          <FontAwesomeIcon icon={faCircleInfo} />
+                        </a>
+                      </div>
+                    </div>
+                    <div className="text-center py-4">
+                      <a
+                        className="product-link h6 text-decoration-none text-truncate"
+                        href="/product-url"
+                        title={product.name}
+                      >
+                        {product.name}
+                      </a>
+                      <div className="product-star" style={{ color: "orange" }}>
+                        <FontAwesomeIcon icon={faStar} />
+                        <FontAwesomeIcon icon={faStar} />
+                        <FontAwesomeIcon icon={faStar} />
+                        <FontAwesomeIcon icon={faStar} />
+                        <FontAwesomeIcon icon={faStar} />
+                      </div>
+
+                      <div className="d-flex align-items-center justify-content-center mt-2">
+                        <h5>
+                          ${product.price}
+                          <span> / box</span>
+                        </h5>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Products End */}
@@ -176,7 +197,7 @@ class HomeProduct extends Component {
           </div>
         </div>
         {/* Offer End */}
-      </>
+      </Fragment>
     );
   }
 }

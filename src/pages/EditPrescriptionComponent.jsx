@@ -3,13 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
 import PrescriptionServices from "../services/PrescriptionServices";
 import { toast } from "react-toastify";
-const accountId = 1;
-class PrescriptionComponent extends Component {
+class EditPrescriptionComponent extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      // accountId: this.props.match.params.accountId,
+      id: this.props.match.params.id,
       name: "",
       phone: "",
       email: "",
@@ -21,7 +19,7 @@ class PrescriptionComponent extends Component {
     this.changePhoneHandler = this.changePhoneHandler.bind(this);
     this.changeImageHandler = this.changeImageHandler.bind(this);
     this.changeNoteHandler = this.changeNoteHandler.bind(this);
-    this.sendPresciption = this.sendPresciption.bind(this);
+    this.updatePrescription = this.updatePrescription.bind(this);
   }
   changeNoteHandler = (event) => {
     this.setState({ note: event.target.value });
@@ -33,14 +31,29 @@ class PrescriptionComponent extends Component {
     this.setState({ phone: event.target.value });
   };
   changeImageHandler = (event) => {
-    this.setState({ imageUrls: event.target.value });
+    const selectedFile = event.target.files[0]; // Access the selected file
+    this.setState({ imageFile: selectedFile }); // Save the selected file to your state
   };
+
   changeNameHandler = (event) => {
     this.setState({ name: event.target.value });
   };
-  sendPresciption = (e) => {
-    e.preventDefault();
 
+  componentDidMount() {
+    PrescriptionServices.getPrescriptionsDetail(this.state.id).then((res) => {
+      let prescription = res.data;
+      this.setState({
+        name: prescription.name,
+        phone: prescription.phone,
+        email: prescription.email,
+        note: prescription.note,
+        imageUrls: prescription.imageUrls,
+      });
+    });
+  }
+
+  updatePrescription = (e) => {
+    e.preventDefault();
     let prescription = {
       name: this.state.name,
       phone: this.state.phone,
@@ -48,12 +61,12 @@ class PrescriptionComponent extends Component {
       note: this.state.note,
       imageUrls: this.state.imageUrls,
     };
-    console.log("prescription => " + JSON.stringify(prescription));
-
-    PrescriptionServices.createPrescriptions(prescription, accountId).then(
+    console.log("presciption => " + JSON.stringify(prescription));
+    console.log("id => " + JSON.stringify(this.state.id));
+    PrescriptionServices.updatePrescription(prescription, this.state.id).then(
       (res) => {
-        this.props.history.push("/home");
-        toast.success("Send request presciption successfully");
+        this.props.history.push(`/profile/{this.state.id}`);
+        toast.success("Update presciption successfully");
       }
     );
   };
@@ -81,11 +94,9 @@ class PrescriptionComponent extends Component {
                     <input
                       className="form-control"
                       type="file"
-                      value={this.state.imageUrls}
                       onChange={this.changeImageHandler}
                     />
                   </div>
-
                   <h4>
                     <FontAwesomeIcon icon={fa2} className="icon1" /> Enter
                     contact information
@@ -99,7 +110,6 @@ class PrescriptionComponent extends Component {
                       className="form-control"
                       id="name"
                       placeholder="Enter name"
-                      required="required"
                       value={this.state.name}
                       onChange={this.changeNameHandler}
                     />
@@ -113,7 +123,6 @@ class PrescriptionComponent extends Component {
                       className="form-control"
                       id="phone"
                       placeholder="Enter phone number"
-                      required="required"
                       value={this.state.phone}
                       onChange={this.changePhoneHandler}
                     />
@@ -127,7 +136,6 @@ class PrescriptionComponent extends Component {
                       className="form-control"
                       id="phone"
                       placeholder="Enter email"
-                      required="required"
                       value={this.state.email}
                       onChange={this.changeEmailHandler}
                     />
@@ -139,7 +147,6 @@ class PrescriptionComponent extends Component {
                       className="form-control"
                       id="note"
                       placeholder="Enter note"
-                      required="required"
                       value={this.state.note}
                       onChange={this.changeNoteHandler}
                     />
@@ -149,9 +156,9 @@ class PrescriptionComponent extends Component {
                       className="btn btn-primary py-2 px-4"
                       type="submit"
                       id="sendMessageButton"
-                      onClick={this.sendPresciption}
+                      onClick={this.updatePrescription}
                     >
-                      Send Message
+                      Update Prescription
                     </button>
                   </div>
                 </form>
@@ -185,8 +192,6 @@ class PrescriptionComponent extends Component {
                   out of focus
                 </p>
               </div>
-
-              {/* <div className="bg-light p-30 mb-3"></div> */}
             </div>
           </div>
         </div>
@@ -195,4 +200,4 @@ class PrescriptionComponent extends Component {
   }
 }
 
-export default PrescriptionComponent;
+export default EditPrescriptionComponent;

@@ -9,10 +9,12 @@ import { ToastContainer } from "react-toastify";
 import ShopComponent from "./pages/ShopComponent";
 import CartComponent from "./pages/CartComponent";
 import WishlistComponent from "./pages/WishlistComponent";
-import PrescriptionComponent from "./pages/PrescriptionComponent";
 import DetailProductComponent from "./pages/DetailProductComponent";
 import CategoryProduct from "./pages/CategoryProduct";
 import AppWrapper from "./AppWrapper";
+import ProfileComponent from "./pages/ProfileComponent";
+import CreatePrescriptionComponent from "./pages/CreatePrescriptionComponent";
+import EditPrescriptionComponent from "./pages/EditPrescriptionComponent";
 function App() {
   return (
     <>
@@ -29,16 +31,23 @@ function App() {
               component={DetailProductComponent}
             />
             <Route path="/category/:category_id" component={CategoryProduct} />
-            <Route path="/prescription" component={PrescriptionComponent} />
+            <Route
+              path="/create-prescription"
+              component={CreatePrescriptionComponent}
+            />
             <Route path="/shop" component={ShopComponent} />
             <Route path="/cart" component={CartComponent} />
             <Route path="/wishlist" component={WishlistComponent} />
             <Route
-              path="/prescription/:accountId"
-              component={PrescriptionComponent}
+              path="/my-prescription/:accountId"
+              component={CreatePrescriptionComponent}
+            />
+            <Route path="/profile/:accountId" component={ProfileComponent} />
+            <Route
+              path="/edit-prescription/:id"
+              component={EditPrescriptionComponent}
             />
           </Switch>
-
           <FooterComponent />
         </AppWrapper>
       </Router>

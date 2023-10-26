@@ -3,7 +3,10 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import CategoryServices from "../services/CategoryServices";
 import CartServices from "../services/CartServices";
 import WishListServices from "../services/WishListServices";
+import { withRouter } from "react-router-dom";
+
 const accountId = 1;
+
 class HeaderComponent extends Component {
   constructor(props) {
     super(props);
@@ -53,7 +56,13 @@ class HeaderComponent extends Component {
     setInterval(this.updateCartItemCount, 100);
     setInterval(this.updateWishListItemCount, 100);
   }
+  viewProductByCategory(category_id) {
+    this.props.history.push(`/category/${category_id}`);
+  }
 
+  toAccount(accountId) {
+    this.props.history.push(`/profile/${1}`);
+  }
   render() {
     const { cartItemCount } = this.state;
     const { wishlistItemCount } = this.state;
@@ -88,6 +97,16 @@ class HeaderComponent extends Component {
                     My Account
                   </button>
                   <div className="dropdown-menu dropdown-menu-right">
+                    <button
+                      className="dropdown-item"
+                      type="button"
+                      onClick={() => {
+                        this.toAccount();
+                      }}
+                    >
+                      Profile
+                    </button>
+
                     <button className="dropdown-item" type="button">
                       Sign in
                     </button>
@@ -146,7 +165,7 @@ class HeaderComponent extends Component {
             </div>
             <div className="col-lg-4 col-6 text-right">
               <p className="m-0">Customer Service</p>
-              <h5 className="m-0">+012 345 6789</h5>
+              <h5 className="m-0">0789458707</h5>
             </div>
           </div>
         </div>
@@ -173,12 +192,14 @@ class HeaderComponent extends Component {
                 <div className="navbar-nav w-100">
                   {this.state.categories.map((category) => (
                     <li key={category.category_id}>
-                      <a
-                        href={`/category/${category.category_id}`}
-                        className="nav-item nav-link"
+                      <button
+                        className="btn"
+                        onClick={() =>
+                          this.viewProductByCategory(category.category_id)
+                        }
                       >
                         {category.category_name}
-                      </a>
+                      </button>
                     </li>
                   ))}
                 </div>
@@ -235,7 +256,10 @@ class HeaderComponent extends Component {
                       </div>
                     </div>
 
-                    <Link to="/prescription" className="nav-item nav-link">
+                    <Link
+                      to="/create-prescription"
+                      className="nav-item nav-link"
+                    >
                       Prescription
                     </Link>
                     <Link to="/admin" className="nav-item nav-link">
@@ -272,4 +296,4 @@ class HeaderComponent extends Component {
   }
 }
 
-export default HeaderComponent;
+export default withRouter(HeaderComponent);
