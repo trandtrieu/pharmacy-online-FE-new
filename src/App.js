@@ -31,18 +31,18 @@ function App() {
               component={DetailProductComponent}
             />
             <Route path="/category/:category_id" component={CategoryProduct} />
+            <Route path="/shop" component={ShopComponent} />
+            <Route path="/cart" component={CartComponent} />
+            <Route path="/wishlist" component={WishlistComponent} />
+            {/* <Route
+              path="/my-prescription/:accountId"
+              component={CreatePrescriptionComponent}
+            /> */}
+            <Route path="/profile/:accountId" component={ProfileComponent} />
             <Route
               path="/create-prescription"
               component={CreatePrescriptionComponent}
             />
-            <Route path="/shop" component={ShopComponent} />
-            <Route path="/cart" component={CartComponent} />
-            <Route path="/wishlist" component={WishlistComponent} />
-            <Route
-              path="/my-prescription/:accountId"
-              component={CreatePrescriptionComponent}
-            />
-            <Route path="/profile/:accountId" component={ProfileComponent} />
             <Route
               path="/edit-prescription/:id"
               component={EditPrescriptionComponent}

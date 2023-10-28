@@ -53,8 +53,8 @@ class HeaderComponent extends Component {
     this.updateCartItemCount();
     this.updateWishListItemCount();
 
-    setInterval(this.updateCartItemCount, 100);
-    setInterval(this.updateWishListItemCount, 100);
+    setInterval(this.updateCartItemCount, 100000);
+    setInterval(this.updateWishListItemCount, 100000);
   }
   viewProductByCategory(category_id) {
     this.props.history.push(`/category/${category_id}`);
@@ -72,16 +72,16 @@ class HeaderComponent extends Component {
           <div className="row py-1 px-xl-5">
             <div className="col-lg-6 d-none d-lg-block">
               <div className="d-inline-flex align-items-center h-100">
-                <a className="text-body mr-3" href>
+                <a className="text-body mr-3" href="/">
                   About
                 </a>
-                <a className="text-body mr-3" href>
+                <a className="text-body mr-3" href="/">
                   Contact
                 </a>
-                <a className="text-body mr-3" href>
+                <a className="text-body mr-3" href="/">
                   Help
                 </a>
-                <a className="text-body mr-3" href>
+                <a className="text-body mr-3" href="/">
                   FAQs
                 </a>
               </div>
@@ -117,7 +117,7 @@ class HeaderComponent extends Component {
                 </div>
               </div>
               <div className="d-inline-flex align-items-center d-block d-lg-none">
-                <a href className="btn px-0 ml-2">
+                <a href="/" className="btn px-0 ml-2">
                   <i className="fas fa-heart text-dark" />
                   <span
                     className="badge text-dark border border-dark rounded-circle"
@@ -126,7 +126,7 @@ class HeaderComponent extends Component {
                     0
                   </span>
                 </a>
-                <a href className="btn px-0 ml-2">
+                <a href="/" className="btn px-0 ml-2">
                   <i className="fas fa-shopping-cart text-dark" />
                   <span
                     className="badge text-dark border border-dark rounded-circle"

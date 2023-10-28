@@ -96,18 +96,7 @@ class FooterComponent extends Component {
                     Newsletter
                   </h5>
                   <p>Duo stet tempor ipsum sit amet magna ipsum tempor est</p>
-                  <form action>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Your Email Address"
-                      />
-                      <div className="input-group-append">
-                        <button className="btn btn-primary">Sign Up</button>
-                      </div>
-                    </div>
-                  </form>
+
                   <h6 className="text-secondary text-uppercase mt-4 mb-3">
                     Follow Us
                   </h6>
