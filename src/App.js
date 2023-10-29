@@ -15,6 +15,7 @@ import AppWrapper from "./AppWrapper";
 import ProfileComponent from "./pages/ProfileComponent";
 import CreatePrescriptionComponent from "./pages/CreatePrescriptionComponent";
 import EditPrescriptionComponent from "./pages/EditPrescriptionComponent";
+import SearchProduct from "./pages/SearchProduct";
 function App() {
   return (
     <>
@@ -35,6 +36,8 @@ function App() {
               path="/create-prescription"
               component={CreatePrescriptionComponent}
             />
+
+            <Route path="/shop/search" component={SearchProduct} />
             <Route path="/shop" component={ShopComponent} />
             <Route path="/cart" component={CartComponent} />
             <Route path="/wishlist" component={WishlistComponent} />

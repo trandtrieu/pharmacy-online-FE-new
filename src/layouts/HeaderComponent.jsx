@@ -1,299 +1,395 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom/cjs/react-router-dom";
-import CategoryServices from "../services/CategoryServices";
-import CartServices from "../services/CartServices";
-import WishListServices from "../services/WishListServices";
+import React, { Component, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
+import ProductServices from "../services/ProductServices";
+import SearchProduct from "../pages/SearchProduct";
 import { withRouter } from "react-router-dom";
+const HeaderComponent = () => {
+  const [keyword, setKeyword] = useState("");
+  const history = useHistory();
+  const [products, setProducts] = useState([]);
+  const location = useLocation();
+  const [priceFilter, setPriceFilter] = useState("price-all");
 
-const accountId = 1;
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      // Xử lý tìm kiếm ở đây
+      searchProductAndFilter();
+    }
+  };
 
-class HeaderComponent extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      categories: [],
-      cartItemCount: 0,
-      wishlistItemCount: 0,
-    };
-  }
-  updateCartItemCount = () => {
-    CartServices.getNumberProductInCart(accountId)
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    //localhost:8080/pharmacy-online/products/searchKeywordAndFilterPrice?keyword=co&priceFilter=price-5
+    http: history.push(`/shop/search?keyword=${keyword}&price=${priceFilter}`);
+    searchProductAndFilter(keyword, priceFilter);
+  };
+
+  const handlePriceFilterChange = (newPriceFilter) => {
+    setPriceFilter(newPriceFilter);
+    history.push(`/shop/search?keyword=${keyword}&price=${newPriceFilter}`);
+    searchProductAndFilter(keyword, newPriceFilter);
+  };
+
+  const searchProductAndFilter = (keyword, priceFilter) => {
+    console.log(
+      "Searching for keyword: " + keyword + " with price filter: " + priceFilter
+    );
+    ProductServices.searchProductAndFilter(keyword, priceFilter)
       .then((res) => {
-        this.setState({
-          cartItemCount: res.data,
-        });
+        console.log("Search result:", res.data);
+        // Update the state with the search results
+        setProducts(res.data);
       })
       .catch((error) => {
-        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
+        console.log("Error occurred while searching for products: " + error);
       });
   };
-  updateWishListItemCount = () => {
-    WishListServices.countProduct(accountId)
-      .then((res) => {
-        this.setState({
-          wishlistItemCount: res.data,
-        });
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
-      });
-  };
-  componentDidMount() {
-    CategoryServices.getCategoryType()
-      .then((res) => {
-        this.setState({
-          categories: res.data,
-        });
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      });
 
-    // Khởi tạo giá trị cartItemCount
-    this.updateCartItemCount();
-    this.updateWishListItemCount();
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   history.push(`/shop/search?keyword=${keyword}`);
+  //   searchProduct(keyword);
+  // };
 
-    setInterval(this.updateCartItemCount, 100);
-    setInterval(this.updateWishListItemCount, 100);
-  }
-  viewProductByCategory(category_id) {
-    this.props.history.push(`/category/${category_id}`);
-  }
+  // const searchProduct = (keyword) => {
+  //   console.log("Searching for keyword: " + keyword);
+  //   ProductServices.searchProduct(keyword)
+  //     .then((res) => {
+  //       console.log("Search result:", res.data);
+  //       setProducts(res.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log("Error occurred while searching for products: " + error);
+  //     });
+  // };
 
-  toAccount(accountId) {
-    this.props.history.push(`/profile/${1}`);
-  }
-  render() {
-    const { cartItemCount } = this.state;
-    const { wishlistItemCount } = this.state;
-    return (
-      <>
-        <div className="container-fluid">
-          <div className="row py-1 px-xl-5">
-            <div className="col-lg-6 d-none d-lg-block">
-              <div className="d-inline-flex align-items-center h-100">
-                <a className="text-body mr-3" href>
-                  About
-                </a>
-                <a className="text-body mr-3" href>
-                  Contact
-                </a>
-                <a className="text-body mr-3" href>
-                  Help
-                </a>
-                <a className="text-body mr-3" href>
-                  FAQs
-                </a>
-              </div>
-            </div>
-            <div className="col-lg-6 text-center text-lg-right">
-              <div className="d-inline-flex align-items-center">
-                <div className="btn-group">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-light dropdown-toggle"
-                    data-toggle="dropdown"
-                  >
-                    My Account
-                  </button>
-                  <div className="dropdown-menu dropdown-menu-right">
-                    <button
-                      className="dropdown-item"
-                      type="button"
-                      onClick={() => {
-                        this.toAccount();
-                      }}
-                    >
-                      Profile
-                    </button>
+  // useEffect(() => {
+  //   const searchParams = new URLSearchParams(location.search);
+  //   const initialKeyword = searchParams.get("keyword");
 
-                    <button className="dropdown-item" type="button">
-                      Sign in
-                    </button>
-                    <button className="dropdown-item" type="button">
-                      Sign up
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="d-inline-flex align-items-center d-block d-lg-none">
-                <a href className="btn px-0 ml-2">
-                  <i className="fas fa-heart text-dark" />
-                  <span
-                    className="badge text-dark border border-dark rounded-circle"
-                    style={{ paddingBottom: "2px" }}
-                  >
-                    0
-                  </span>
-                </a>
-                <a href className="btn px-0 ml-2">
-                  <i className="fas fa-shopping-cart text-dark" />
-                  <span
-                    className="badge text-dark border border-dark rounded-circle"
-                    style={{ paddingBottom: "2px" }}
-                  >
-                    0
-                  </span>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div className="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
-            <div className="col-lg-4" style={{ borderRadius: "50%" }}>
-              <span className="h1 text-uppercase text-primary px-2 bg-dark">
-                DRUG
-              </span>
-              <span className="h1 text-uppercase text-dark bg-primary px-2 ml-n1">
-                MART
-              </span>
-            </div>
-            <div className="col-lg-4 col-6 text-left">
-              {/* <form action>
-                <div className="input-group">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search for products"
-                  />
-                  <div className="input-group-append">
-                    <span className="input-group-text bg-transparent text-primary">
-                      <i className="fa fa-search" />
-                    </span>
-                  </div>
-                </div>
-              </form> */}
-            </div>
-            <div className="col-lg-4 col-6 text-right">
-              <p className="m-0">Customer Service</p>
-              <h5 className="m-0">0789458707</h5>
-            </div>
-          </div>
-        </div>
-        <div className="container-fluid bg-dark mb-30">
-          <div className="row px-xl-5">
-            <div className="col-lg-3 d-none d-lg-block">
-              <a
-                className="btn d-flex align-items-center justify-content-between bg-primary w-100"
-                data-toggle="collapse"
-                href="#navbar-vertical"
-                style={{ height: "65px", padding: "0 30px" }}
-              >
-                <h6 className="text-dark m-0">
-                  <i className="fa fa-bars mr-2" />
-                  Categories
-                </h6>
-                <i className="fa fa-angle-down text-dark" />
+  //   if (initialKeyword) {
+  //     setKeyword(initialKeyword);
+  //     searchProduct(initialKeyword);
+  //   } else {
+  //     searchProduct("");
+  //   }
+  // }, [location.search]);
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const initialKeyword = searchParams.get("keyword");
+    const initialPriceFilter = searchParams.get("price");
+
+    if (initialKeyword) {
+      setKeyword(initialKeyword);
+      searchProductAndFilter(initialKeyword, initialPriceFilter);
+    } else {
+      searchProductAndFilter("", initialPriceFilter);
+    }
+
+    if (initialPriceFilter) {
+      setPriceFilter(initialPriceFilter);
+    }
+  }, [location.search]);
+
+  // const updatePriceFilter = (newPriceFilter) => {
+  //   setPriceFilter(newPriceFilter);
+  //   // You can optionally update the URL when the price filter changes
+  //   history.push(`/shop/search?keyword=${keyword}&price=${newPriceFilter}`);
+  // };
+
+  return (
+    <>
+      <div className="container-fluid">
+        <div className="row bg-secondary py-1 px-xl-5">
+          <div className="col-lg-6 d-none d-lg-block">
+            <div className="d-inline-flex align-items-center h-100">
+              <a className="text-body mr-3" href>
+                About
               </a>
-              <nav
-                className="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
-                id="navbar-vertical"
-                style={{ width: "calc(100% - 30px)", zIndex: 999 }}
-              >
-                <div className="navbar-nav w-100">
-                  {this.state.categories.map((category) => (
-                    <li key={category.category_id}>
-                      <button
-                        className="btn"
-                        onClick={() =>
-                          this.viewProductByCategory(category.category_id)
-                        }
-                      >
-                        {category.category_name}
-                      </button>
-                    </li>
-                  ))}
-                </div>
-              </nav>
+              <a className="text-body mr-3" href>
+                Contact
+              </a>
+              <a className="text-body mr-3" href>
+                Help
+              </a>
+              <a className="text-body mr-3" href>
+                FAQs
+              </a>
             </div>
-            <div className="col-lg-9">
-              <nav className="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
-                <Link
-                  to="/home"
-                  className="text-decoration-none d-block d-lg-none"
-                >
-                  <span className="h1 text-uppercase text-dark bg-light px-2">
-                    DRUG
-                  </span>
-                  <span className="h1 text-uppercase text-light bg-primary px-2 ml-n1">
-                    MART
-                  </span>
-                </Link>
+          </div>
+          <div className="col-lg-6 text-center text-lg-right">
+            <div className="d-inline-flex align-items-center">
+              <div className="btn-group">
                 <button
                   type="button"
-                  className="navbar-toggler"
-                  data-toggle="collapse"
-                  data-target="#navbarCollapse"
+                  className="btn btn-sm btn-light dropdown-toggle"
+                  data-toggle="dropdown"
                 >
-                  <span className="navbar-toggler-icon" />
+                  My Account
                 </button>
-                <div
-                  className="collapse navbar-collapse justify-content-between"
-                  id="navbarCollapse"
-                >
-                  <div className="navbar-nav mr-auto py-0">
-                    <Link to="/home" className="nav-item nav-link">
-                      Home
-                    </Link>
-                    <Link to="/shop" className="nav-item nav-link">
-                      Shop
-                    </Link>
-
-                    <div className="nav-item dropdown">
-                      <a
-                        href="/"
-                        className="nav-link dropdown-toggle"
-                        data-toggle="dropdown"
-                      >
-                        Pages <i className="fa fa-angle-down mt-1" />
-                      </a>
-                      <div className="dropdown-menu bg-primary rounded-0 border-0 m-0">
-                        <a href="cart.html" className="dropdown-item">
-                          Shopping Cart
-                        </a>
-                        <a href="checkout.html" className="dropdown-item">
-                          Checkout
-                        </a>
-                      </div>
-                    </div>
-
-                    <Link
-                      to="/create-prescription"
-                      className="nav-item nav-link"
-                    >
-                      Prescription
-                    </Link>
-                    <Link to="/admin" className="nav-item nav-link">
-                      Admin
-                    </Link>
-                  </div>
-                  <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
-                    <Link to="/wishlist" className="btn px-0">
-                      <i className="fas fa-heart text-primary" />
-                      <span
-                        className="badge text-secondary border border-secondary rounded-circle"
-                        style={{ paddingBottom: "2px" }}
-                      >
-                        {wishlistItemCount}
-                      </span>
-                    </Link>
-                    <Link to="/cart" className="btn px-0 ml-3">
-                      <i className="fas fa-shopping-cart text-primary" />
-                      <span
-                        className="badge text-secondary border border-secondary rounded-circle"
-                        style={{ paddingBottom: "2px" }}
-                      >
-                        {cartItemCount}
-                      </span>
-                    </Link>
-                  </div>
+                <div className="dropdown-menu dropdown-menu-right">
+                  <button className="dropdown-item" type="button">
+                    Sign in
+                  </button>
+                  <button className="dropdown-item" type="button">
+                    Sign up
+                  </button>
                 </div>
-              </nav>
+              </div>
+              <div className="btn-group mx-2">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-light dropdown-toggle"
+                  data-toggle="dropdown"
+                >
+                  USD
+                </button>
+                <div className="dropdown-menu dropdown-menu-right">
+                  <button className="dropdown-item" type="button">
+                    EUR
+                  </button>
+                  <button className="dropdown-item" type="button">
+                    GBP
+                  </button>
+                  <button className="dropdown-item" type="button">
+                    CAD
+                  </button>
+                </div>
+              </div>
+              <div className="btn-group">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-light dropdown-toggle"
+                  data-toggle="dropdown"
+                >
+                  EN
+                </button>
+                <div className="dropdown-menu dropdown-menu-right">
+                  <button className="dropdown-item" type="button">
+                    FR
+                  </button>
+                  <button className="dropdown-item" type="button">
+                    AR
+                  </button>
+                  <button className="dropdown-item" type="button">
+                    RU
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="d-inline-flex align-items-center d-block d-lg-none">
+              <a href className="btn px-0 ml-2">
+                <i className="fas fa-heart text-dark" />
+                <span
+                  className="badge text-dark border border-dark rounded-circle"
+                  style={{ paddingBottom: "2px" }}
+                >
+                  0
+                </span>
+              </a>
+              <a href className="btn px-0 ml-2">
+                <i className="fas fa-shopping-cart text-dark" />
+                <span
+                  className="badge text-dark border border-dark rounded-circle"
+                  style={{ paddingBottom: "2px" }}
+                >
+                  0
+                </span>
+              </a>
             </div>
           </div>
         </div>
-      </>
-    );
-  }
-}
+        <div className="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
+          <div className="col-lg-4">
+            <a href className="text-decoration-none">
+              <span className="h1 text-uppercase text-primary bg-dark px-2">
+                Multi
+              </span>
+              <span className="h1 text-uppercase text-dark bg-primary px-2 ml-n1">
+                Shop
+              </span>
+            </a>
+          </div>
+          <div className="col-lg-4 col-6 text-left">
+            <form action="/shop/search" method="get" onSubmit={handleSearch}>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search for products"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                />
+                <div className="input-group-append">
+                  <span className="input-group-text bg-transparent text-primary">
+                    <i className="fa fa-search" />
+                  </span>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div className="col-lg-4 col-6 text-right">
+            <p className="m-0">Customer Service</p>
+            <h5 className="m-0">+012 345 6789</h5>
+          </div>
+        </div>
+      </div>
+      <div className="container-fluid bg-dark mb-30">
+        <div className="row px-xl-5">
+          <div className="col-lg-3 d-none d-lg-block">
+            <a
+              className="btn d-flex align-items-center justify-content-between bg-primary w-100"
+              data-toggle="collapse"
+              href="#navbar-vertical"
+              style={{ height: "65px", padding: "0 30px" }}
+            >
+              <h6 className="text-dark m-0">
+                <i className="fa fa-bars mr-2" />
+                Categories
+              </h6>
+              <i className="fa fa-angle-down text-dark" />
+            </a>
+            <nav
+              className="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
+              id="navbar-vertical"
+              style={{ width: "calc(100% - 30px)", zIndex: 999 }}
+            >
+              <div className="navbar-nav w-100">
+                <div className="nav-item dropdown dropright">
+                  <a
+                    href="/"
+                    className="nav-link dropdown-toggle"
+                    data-toggle="dropdown"
+                  >
+                    Dresses <i className="fa fa-angle-right float-right mt-1" />
+                  </a>
+                  <div className="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                    <a href className="dropdown-item">
+                      Men's Dresses
+                    </a>
+                    <a href className="dropdown-item">
+                      Women's Dresses
+                    </a>
+                    <a href className="dropdown-item">
+                      Baby's Dresses
+                    </a>
+                  </div>
+                </div>
+                <a href className="nav-item nav-link">
+                  Shirts
+                </a>
+                <a href className="nav-item nav-link">
+                  Jeans
+                </a>
+                <a href className="nav-item nav-link">
+                  Swimwear
+                </a>
+                <a href className="nav-item nav-link">
+                  Sleepwear
+                </a>
+                <a href className="nav-item nav-link">
+                  Sportswear
+                </a>
+                <a href className="nav-item nav-link">
+                  Jumpsuits
+                </a>
+                <a href className="nav-item nav-link">
+                  Blazers
+                </a>
+                <a href className="nav-item nav-link">
+                  Jackets
+                </a>
+                <a href className="nav-item nav-link">
+                  Shoes
+                </a>
+              </div>
+            </nav>
+          </div>
+          <div className="col-lg-9">
+            <nav className="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
+              <Link
+                to="/home"
+                className="text-decoration-none d-block d-lg-none"
+              >
+                <span className="h1 text-uppercase text-dark bg-light px-2">
+                  Multi
+                </span>
+                <span className="h1 text-uppercase text-light bg-primary px-2 ml-n1">
+                  Shop
+                </span>
+              </Link>
+              <button
+                type="button"
+                className="navbar-toggler"
+                data-toggle="collapse"
+                data-target="#navbarCollapse"
+              >
+                <span className="navbar-toggler-icon" />
+              </button>
+              <div
+                className="collapse navbar-collapse justify-content-between"
+                id="navbarCollapse"
+              >
+                <div className="navbar-nav mr-auto py-0">
+                  <Link to="/home" className="nav-item nav-link active">
+                    Home
+                  </Link>
+                  <Link to="/shop" className="nav-item nav-link">
+                    Shop
+                  </Link>
+                  <a href="detail.html" className="nav-item nav-link">
+                    Shop Detail
+                  </a>
+                  <div className="nav-item dropdown">
+                    <a
+                      href="/"
+                      className="nav-link dropdown-toggle"
+                      data-toggle="dropdown"
+                    >
+                      Pages <i className="fa fa-angle-down mt-1" />
+                    </a>
+                    <div className="dropdown-menu bg-primary rounded-0 border-0 m-0">
+                      <a href="cart.html" className="dropdown-item">
+                        Shopping Cart
+                      </a>
+                      <a href="checkout.html" className="dropdown-item">
+                        Checkout
+                      </a>
+                    </div>
+                  </div>
+                  <Link to="/contact" className="nav-item nav-link">
+                    Contact
+                  </Link>
+                </div>
+                <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
+                  <a href className="btn px-0">
+                    <i className="fas fa-heart text-primary" />
+                    <span
+                      className="badge text-secondary border border-secondary rounded-circle"
+                      style={{ paddingBottom: "2px" }}
+                    >
+                      0
+                    </span>
+                  </a>
+                  <a href className="btn px-0 ml-3">
+                    <i className="fas fa-shopping-cart text-primary" />
+                    <span
+                      className="badge text-secondary border border-secondary rounded-circle"
+                      style={{ paddingBottom: "2px" }}
+                    >
+                      0
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default withRouter(HeaderComponent);
