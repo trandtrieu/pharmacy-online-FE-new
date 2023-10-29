@@ -23,7 +23,6 @@ export const SearchProduct = () => {
   const updatePriceFilterCounts = () => {
     const counts = {};
 
-    // Lặp qua từng mức giá và tính toán tổng số sản phẩm tương ứng
     Object.keys(priceRanges).forEach((rangeId) => {
       const { min, max } = priceRanges[rangeId];
       const count = products.filter(
@@ -35,28 +34,22 @@ export const SearchProduct = () => {
     setProductCounts(counts);
   };
   const searchProductAndFilter = () => {
-    // Kiểm tra nếu keyword rỗng
     if (keyword.trim() === "") {
-      // Nếu keyword rỗng, tự động cập nhật lọc về "price-all"
       setSelectedPriceFilter("price-all");
       setPriceFilter("price-all");
 
-      // Cập nhật lại state productCounts để hiển thị tổng số sản phẩm
       const resetCounts = { ...productCounts };
       Object.keys(priceRanges).forEach((rangeId) => {
         resetCounts[rangeId] = priceAllCount;
       });
       setProductCounts(resetCounts);
     } else {
-      // Gọi hàm tìm kiếm sản phẩm và lọc theo từ khóa và mức giá
       ProductServices.searchProductAndFilter(keyword, priceFilter)
         .then((res) => {
           if (res.data) {
-            // Tính toán biến đếm trước khi cập nhật danh sách sản phẩm
             calculateProductCounts(res.data);
             setProducts(res.data);
           } else {
-            // No products found, so reset the counts to 0
             const resetCounts = { ...productCounts };
             Object.keys(priceRanges).forEach((rangeId) => {
               resetCounts[rangeId] = 0;
@@ -75,10 +68,8 @@ export const SearchProduct = () => {
     const counts = { ...productCounts };
 
     if (selectedPriceFilter === "price-all") {
-      // Đếm lại số lượng sản phẩm của "price-all"
       counts["price-all"] = productData.length;
 
-      // Đếm lại số lượng của các khoảng giá khác
       Object.keys(priceRanges).forEach((rangeId) => {
         if (rangeId !== "price-all") {
           const { min, max } = priceRanges[rangeId];
@@ -99,12 +90,10 @@ export const SearchProduct = () => {
   };
 
   useEffect(() => {
-    // Lấy thông tin từ URL nếu có
     const searchParams = new URLSearchParams(location.search);
     const initialKeyword = searchParams.get("keyword");
     const initialPriceFilter = searchParams.get("price");
 
-    // Cập nhật state từ thông tin URL
     if (initialKeyword) {
       setKeyword(initialKeyword);
     }
@@ -113,23 +102,18 @@ export const SearchProduct = () => {
       setPriceFilter(initialPriceFilter);
       setSelectedPriceFilter(initialPriceFilter);
     } else {
-      // Nếu không có giá trị "price" trong URL, gán mặc định là "price-all"
       setPriceFilter("price-all");
       setSelectedPriceFilter("price-all");
     }
   }, [location.search]);
 
   useEffect(() => {
-    // Gọi hàm cập nhật khi `keyword` hoặc `products` thay đổi
     if (keyword.trim() === "") {
-      // Nếu `keyword` rỗng, cập nhật lại `selectedPriceFilter`
       setSelectedPriceFilter("price-all");
       setPriceFilter("price-all");
 
-      // Cập nhật lại phần "Filter by price"
       updatePriceFilterCounts();
     } else {
-      // Gọi hàm tìm kiếm sản phẩm và lọc theo từ khóa và mức giá
       searchProductAndFilter();
     }
   }, [keyword, products]);

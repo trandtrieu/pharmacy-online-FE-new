@@ -13,7 +13,6 @@ const HeaderComponent = () => {
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
-      // Xử lý tìm kiếm ở đây
       searchProductAndFilter();
     }
   };
@@ -21,7 +20,6 @@ const HeaderComponent = () => {
   const handleSearch = (e) => {
     e.preventDefault();
 
-    //localhost:8080/pharmacy-online/products/searchKeywordAndFilterPrice?keyword=co&priceFilter=price-5
     http: history.push(`/shop/search?keyword=${keyword}&price=${priceFilter}`);
     searchProductAndFilter(keyword, priceFilter);
   };
@@ -39,7 +37,6 @@ const HeaderComponent = () => {
     ProductServices.searchProductAndFilter(keyword, priceFilter)
       .then((res) => {
         console.log("Search result:", res.data);
-        // Update the state with the search results
         setProducts(res.data);
       })
       .catch((error) => {
