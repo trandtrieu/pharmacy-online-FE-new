@@ -15,6 +15,8 @@ import AppWrapper from "./AppWrapper";
 import ProfileComponent from "./pages/ProfileComponent";
 import CreatePrescriptionComponent from "./pages/CreatePrescriptionComponent";
 import EditPrescriptionComponent from "./pages/EditPrescriptionComponent";
+import AboutComponent from "./pages/AboutComponent";
+import NewPrescription from "./pages/NewPrescription";
 function App() {
   return (
     <>
@@ -34,19 +36,17 @@ function App() {
             <Route path="/shop" component={ShopComponent} />
             <Route path="/cart" component={CartComponent} />
             <Route path="/wishlist" component={WishlistComponent} />
-            {/* <Route
-              path="/my-prescription/:accountId"
-              component={CreatePrescriptionComponent}
-            /> */}
             <Route path="/profile/:accountId" component={ProfileComponent} />
             <Route
               path="/create-prescription"
               component={CreatePrescriptionComponent}
             />
+            <Route path="/new-prescription" component={NewPrescription} />
             <Route
               path="/edit-prescription/:id"
               component={EditPrescriptionComponent}
             />
+            <Route path="/about" component={AboutComponent} />
           </Switch>
           <FooterComponent />
         </AppWrapper>

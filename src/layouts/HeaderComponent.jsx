@@ -262,9 +262,12 @@ class HeaderComponent extends Component {
                     >
                       Prescription
                     </Link>
-                    <Link to="/admin" className="nav-item nav-link">
+                    <a
+                      href="http://localhost:3006/"
+                      className="nav-item nav-link"
+                    >
                       Admin
-                    </Link>
+                    </a>
                   </div>
                   <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
                     <Link to="/wishlist" className="btn px-0">

@@ -4,12 +4,11 @@ import { faCamera, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PrescriptionServices from "../services/PrescriptionServices";
 import { toast } from "react-toastify";
-
-class EditPrescriptionComponent extends Component {
+const accountId = 1;
+class NewPrescription extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: this.props.match.params.id,
       name: "",
       phone: "",
       email: "",
@@ -26,6 +25,9 @@ class EditPrescriptionComponent extends Component {
   validateForm = () => {
     const errors = {};
 
+    if (!this.state.imageFile) {
+      errors.imageFile = "Please upload an image";
+    }
     if (!this.state.name) {
       errors.name = "Name is required";
     }
@@ -48,46 +50,29 @@ class EditPrescriptionComponent extends Component {
     this.setState({ imageFile: event.target.files[0] });
   };
 
-  updatePrescription = (e) => {
+  sendPrescription = (e) => {
     e.preventDefault();
 
     if (this.validateForm()) {
       const formData = new FormData();
+      formData.append("account_id", accountId);
+      formData.append("imageFile", this.state.imageFile);
       formData.append("name", this.state.name);
       formData.append("phone", this.state.phone);
       formData.append("email", this.state.email);
       formData.append("note", this.state.note);
 
-      // Add image to the FormData if a new image has been selected
-      if (this.state.imageFile) {
-        formData.append("imageFile", this.state.imageFile);
-      }
-
-      PrescriptionServices.updatePrescription(formData, this.state.id)
+      PrescriptionServices.createPrescriptions(formData)
         .then((res) => {
-          this.props.history.push(`/profile/${this.state.id}`);
-          toast.success("Update prescription successfully");
+          this.props.history.push(`/profile/${accountId}`);
+          toast.success("Send request prescription successfully");
         })
         .catch((error) => {
           console.error("Error:", error);
-          toast.error("Failed to update prescription");
+          toast.error("Failed to send request prescription");
         });
     }
   };
-
-  componentDidMount() {
-    // Fetch the existing prescription data and populate the state
-    PrescriptionServices.getPrescriptionsDetail(this.state.id).then((res) => {
-      let prescription = res.data;
-      this.setState({
-        name: prescription.name,
-        phone: prescription.phone,
-        email: prescription.email,
-        note: prescription.note,
-        imageFile: prescription.imageFile || null,
-      });
-    });
-  }
 
   render() {
     const { errors } = this.state;
@@ -103,7 +88,7 @@ class EditPrescriptionComponent extends Component {
               </h4>
               <p>
                 The prescription must be valid: complete and clear information,
-                intact and valid (within 5 days).
+                intact and valid (within 5 days).{" "}
                 <span className="label-require">*</span>
               </p>
               <div className="mb-3">
@@ -193,13 +178,13 @@ class EditPrescriptionComponent extends Component {
                   className="btn btn-primary py-2 px-4"
                   type="submit"
                   id="sendMessageButton"
-                  onClick={this.updatePrescription}
+                  onClick={this.sendPrescription}
                 >
-                  Update Prescription
+                  Send Message
                 </button>
               </div>
             </div>
-          </div>
+          </div>{" "}
           <div className="col-lg-4 mb-5">
             <div className="bg-light p-30 mb-30">
               <h4>Illustrated prescription</h4>
@@ -235,4 +220,4 @@ class EditPrescriptionComponent extends Component {
   }
 }
 
-export default EditPrescriptionComponent;
+export default NewPrescription;
