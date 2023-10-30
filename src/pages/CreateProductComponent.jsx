@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import ProductServices from '../services/ProductServices';
 import CategoryServices from '../services/CategoryServices';
-// import EmployeeService from '../services/EmployeeService';
 
 class CreateProductComponent extends Component {
     constructor(props) {
@@ -22,9 +21,9 @@ class CreateProductComponent extends Component {
             preservation: '',
             store: '',
             vitue: '',
-            imageUrls: '',
+            imageUrls: [],
             categories: [],
-            category_id: ''
+            category_id: '',
 
         }
         this.changeName = this.changeName.bind(this);
@@ -102,7 +101,7 @@ class CreateProductComponent extends Component {
             store: this.state.store,
             vitue: this.state.vitue,
             imageUrls: this.state.imageUrls,
-            categories: this.state.categories
+            categories: this.state.categories,
 
         };
         console.log('product => ' + JSON.stringify(product));
@@ -182,7 +181,6 @@ class CreateProductComponent extends Component {
         this.setState({ imageUrls: imageUrls });
     }
 
-
     cancel() {
         this.props.history.push('/viewproduct');
     }
@@ -209,6 +207,14 @@ class CreateProductComponent extends Component {
                                     <label className="form-label" for="customFile">Upload Product Image:</label>
                                     <input type="file" className="form-control" id="customFile" multiple style={{ height: '38px' }}
                                         name='imageUrls' onChange={this.changeImg} />
+                                    {/* <div className="existing-images">
+                                        <label>Existing Images:</label>
+                                        <ul>
+                                            {this.state.imageUrls.map((url, index) => (
+                                                <li key={index}>{url}</li>
+                                            ))}
+                                        </ul>
+                                    </div> */}
                                     <div className='row'>
                                         <div className="form-group col-md-6">
                                             <label for="a"> Product Name: </label>

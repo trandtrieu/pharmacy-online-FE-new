@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react'
+import React, { Component } from 'react'
 import ProductServices from '../services/ProductServices';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -90,9 +90,9 @@ class ListProductComponent extends Component {
                                             onChange={this.setSearch}
                                         />
                                         <div className="input-group-append">
-                                            <button className="input-group-text bg-transparent text-primary">
+                                            <span className="input-group-text bg-transparent text-primary">
                                                 <i className="fa fa-search" />
-                                            </button>
+                                            </span>
                                         </div>
                                     </div>
                                 </form>
@@ -139,41 +139,44 @@ class ListProductComponent extends Component {
                                     product =>
                                         <div class="container">
                                             <div key={product.productId} class="modal fade modal-lg " style={{
-                                                maxWidth: '1000px',
+                                                maxWidth: '10000px',
                                                 width: '100p0x',
                                                 margin: '0 auto',
-                                                marginTop: '5%',
+                                                marginTop: '',
                                                 paddingRight: '0'
                                             }} id={`myModal${product.productId}`} role="dialog">
                                                 <div style={{ maxWidth: '700px' }} class="modal-dialog">
 
                                                     {/* <!-- Modal content--> */}
                                                     <div class="modal-content">
-                                                        <div class="modal-header">
+                                                        <div style={{ backgroundColor: '#FFD333' }} class="modal-header">
+                                                            <h4 class="modal-title">Detail: <b>{product.name}</b></h4>
                                                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                            <h4 class="modal-title"></h4>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <table>
+                                                            <table class="table table-striped table-bordered table-hover">
                                                                 <tr>
-                                                                    <th>Name</th>
+                                                                    <th>Image</th>
                                                                     <th>Brand</th>
                                                                     <th>Price</th>
                                                                     <th>Component</th>
                                                                     <th>Guide</th>
-                                                                    <th>Instruction</th>
-                                                                    <th>Made in</th>
+                                                                    {/* <th>Instruction</th>
+                                                                    <th>Made in</th> */}
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>{product.name}</td>
+                                                                    <td><img style={{ width: '100%' }} src={`/assets/images/${product.imageUrls[0]}`} alt=""
+                                                                        srcSet="" /></td>
                                                                     <td>{product.brand}</td>
                                                                     <td>{product.price}</td>
                                                                     <td>{product.component}</td>
                                                                     <td>{product.guide}</td>
-                                                                    <td>{product.instruction}</td>
-                                                                    <td>{product.madeIn}</td>
+                                                                    {/* <td>{product.instruction}</td>
+                                                                    <td>{product.madeIn}</td> */}
                                                                 </tr>
                                                             </table>
+                                                            <p><strong>Instruction: </strong>{product.instruction}</p>
+                                                            <p><strong>madeIn: </strong>{product.madeIn}</p>
                                                             <p><strong>Object: </strong>{product.object}</p>
                                                             <p><strong>Preservation: </strong>{product.preservation}</p>
                                                             <p><strong>Store: </strong>{product.store}</p>
