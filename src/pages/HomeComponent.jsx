@@ -17,6 +17,7 @@ class HomeProduct extends Component {
       products: [],
       loading: true,
     };
+    this.viewProduct = this.viewProduct.bind(this);
   }
 
   componentDidMount() {
@@ -53,9 +54,9 @@ class HomeProduct extends Component {
       });
   }
 
-  viewProduct(productId) {
+  viewProduct = (productId) => {
     this.props.history.push(`/detail-product/${productId}`);
-  }
+  };
 
   render() {
     const { products, loading } = this.state;
@@ -119,8 +120,8 @@ class HomeProduct extends Component {
                           <i className="far fa-heart" />
                         </a>
                         <a
-                          className="btn btn-outline-dark btn-square"
                           href
+                          className="btn btn-outline-dark btn-square"
                           onClick={() => this.viewProduct(product.productId)}
                         >
                           <FontAwesomeIcon icon={faCircleInfo} />
@@ -172,7 +173,7 @@ class HomeProduct extends Component {
                 <div className="offer-text">
                   <h6 className="text-white text-uppercase">Save 20%</h6>
                   <h3 className="text-white mb-3">Special Offer</h3>
-                  <a href className="btn btn-primary">
+                  <a href="/" className="btn btn-primary">
                     Shop Now
                   </a>
                 </div>
@@ -188,7 +189,7 @@ class HomeProduct extends Component {
                 <div className="offer-text">
                   <h6 className="text-white text-uppercase">Save 20%</h6>
                   <h3 className="text-white mb-3">Special Offer</h3>
-                  <a href className="btn btn-primary">
+                  <a href="/" className="btn btn-primary">
                     Shop Now
                   </a>
                 </div>

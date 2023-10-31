@@ -31,10 +31,11 @@ const dropzoneStyles = {
 const dropzoneActive = {
   borderColor: "green",
 };
-class CreatePrescriptionComponent extends Component {
+class UpdatePrescriptionComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: this.props.match.params.id,
       name: "",
       phone: "",
       email: "",
@@ -81,7 +82,7 @@ class CreatePrescriptionComponent extends Component {
   changeImageHandler = (event) => {
     this.setState({ imageFile: event.target.files[0] });
   };
-  sendPrescription = (e) => {
+  updatePrescription = (e) => {
     e.preventDefault();
     if (this.validateForm()) {
       this.openModal();
@@ -97,19 +98,28 @@ class CreatePrescriptionComponent extends Component {
     formData.append("email", this.state.email);
     formData.append("note", this.state.note);
 
-    PrescriptionServices.createPrescriptions(formData)
+    PrescriptionServices.updatePrescription(formData, this.state.id)
       .then((res) => {
         toast.success("Update prescription successfully");
-        this.closeModal();
         window.location.href = `/profile/${accountId}`;
-        // this.props.history.push(`/profile/${accountId}`);
       })
       .catch((error) => {
         console.error("Error:", error);
         toast.error("Failed to update prescription");
       });
   };
-
+  componentDidMount() {
+    PrescriptionServices.getPrescriptionsDetail(this.state.id).then((res) => {
+      let prescription = res.data;
+      this.setState({
+        name: prescription.name,
+        phone: prescription.phone,
+        email: prescription.email,
+        note: prescription.note,
+        imageFile: prescription.imageFile || null,
+      });
+    });
+  }
   openModal = () => {
     this.setState({ showModal: true });
   };
@@ -122,7 +132,7 @@ class CreatePrescriptionComponent extends Component {
     if (acceptedFiles.length > 0) {
       this.setState({
         imageFile: acceptedFiles[0],
-        droppedImage: URL.createObjectURL(acceptedFiles[0]), // Set the droppedImage
+        droppedImage: URL.createObjectURL(acceptedFiles[0]),
       });
     }
   };
@@ -272,7 +282,7 @@ class CreatePrescriptionComponent extends Component {
                     className="btn btn-primary py-2 px-4"
                     type="submit"
                     id="sendMessageButton"
-                    onClick={this.sendPrescription}
+                    onClick={this.updatePrescription}
                   >
                     Send Message
                   </button>
@@ -315,4 +325,4 @@ class CreatePrescriptionComponent extends Component {
   }
 }
 
-export default CreatePrescriptionComponent;
+export default UpdatePrescriptionComponent;

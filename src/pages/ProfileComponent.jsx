@@ -101,7 +101,7 @@ class ProfileComponent extends Component {
   };
 
   editEmployee(id) {
-    this.props.history.push(`/edit-prescription/${id}`);
+    this.props.history.push(`/update-prescription/${id}`);
   }
   render() {
     return (
@@ -208,18 +208,18 @@ class ProfileComponent extends Component {
                     <div className="card-body pb-2">
                       <div className="form-group">
                         <label className="form-label">Current password</label>
-                        <input type="password" className="form-control" />
+                        {/* <input type="password" className="form-control" /> */}
                       </div>
                       <div className="form-group">
                         <label className="form-label">New password</label>
-                        <input type="password" className="form-control" />
+                        {/* <input type="password" className="form-control" /> */}
                       </div>
                       <div className="form-group">
                         <label className="form-label">
                           Repeat new password
                         </label>
-                        <input type="password" className="form-control" />
-                      </div>
+                      </div>{" "}
+                      {/* <input type="password" className="form-control" /> */}
                     </div>
                   </div>
                   <div
@@ -256,7 +256,7 @@ class ProfileComponent extends Component {
                     ) : (
                       this.state.presciptions.map((presciptionItem) => (
                         <div className="card mb-2" key={presciptionItem.id}>
-                          <div class="card-header bg-light">
+                          <div className="card-header bg-light">
                             <h6 className="card-title m-0 p-0">
                               Code: <span>#{presciptionItem.id}</span>
                               <FontAwesomeIcon
@@ -300,7 +300,7 @@ class ProfileComponent extends Component {
                               </p>
                             </div>
                           </div>
-                          <div class="card-footer bg-light p-0 m-0 pl-2">
+                          <div className="card-footer bg-light p-0 m-0 pl-2">
                             <button
                               data-toggle="modal"
                               data-target={`#myModal${presciptionItem.id}`}
@@ -350,23 +350,23 @@ class ProfileComponent extends Component {
               }}
               key={presciptionItem.id}
             >
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
+              <div className="modal-dialog" role="document">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title" id="exampleModalLabel">
                       Prescription detail
                       <FontAwesomeIcon icon={faCircleInfo} />
                     </h5>
                     <button
                       type="button"
-                      class="close"
+                      className="close"
                       data-dismiss="modal"
                       aria-label="Close"
                     >
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
-                  <div class="modal-body">
+                  <div className="modal-body">
                     <p>
                       Code:
                       <span className="text-dark">
@@ -420,10 +420,10 @@ class ProfileComponent extends Component {
                       Contact: {presciptionItem.email} - {presciptionItem.phone}
                     </p>
                   </div>
-                  <div class="modal-footer">
+                  <div className="modal-footer">
                     <button
                       type="button"
-                      class="btn btn-secondary"
+                      className="btn btn-secondary"
                       data-dismiss="modal"
                     >
                       Close

@@ -17,6 +17,8 @@ import CreatePrescriptionComponent from "./pages/CreatePrescriptionComponent";
 import EditPrescriptionComponent from "./pages/EditPrescriptionComponent";
 import AboutComponent from "./pages/AboutComponent";
 import NewPrescription from "./pages/NewPrescription";
+import UpdatePrescriptionComponent from "./pages/UpdatePrescriptionComponent";
+import SearchProduct from "./pages/SearchProduct";
 function App() {
   return (
     <>
@@ -33,6 +35,8 @@ function App() {
               component={DetailProductComponent}
             />
             <Route path="/category/:category_id" component={CategoryProduct} />
+            <Route path="/shop/search" component={SearchProduct} />
+
             <Route path="/shop" component={ShopComponent} />
             <Route path="/cart" component={CartComponent} />
             <Route path="/wishlist" component={WishlistComponent} />
@@ -41,10 +45,13 @@ function App() {
               path="/create-prescription"
               component={CreatePrescriptionComponent}
             />
-            <Route path="/new-prescription" component={NewPrescription} />
             <Route
               path="/edit-prescription/:id"
               component={EditPrescriptionComponent}
+            />
+            <Route
+              path="/update-prescription/:id"
+              component={UpdatePrescriptionComponent}
             />
             <Route path="/about" component={AboutComponent} />
           </Switch>
