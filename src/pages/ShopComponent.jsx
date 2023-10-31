@@ -456,6 +456,7 @@ function ShopComponent() {
                   </div>
                 </div>
               ))}
+
               <div className="col-12">
                 <nav>
                   <ul className="pagination justify-content-center">
