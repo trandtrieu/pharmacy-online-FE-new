@@ -9,6 +9,7 @@ import WishListServices from "../services/WishListServices";
 import CartServices from "../services/CartServices";
 import PrescriptionBanner from "../layouts/PrescriptionBanner";
 import Loading from "react-loading"; // Import the Loading component
+import { Bubble } from "@typebot.io/react";
 
 class HomeProduct extends Component {
   constructor(props) {
@@ -63,6 +64,10 @@ class HomeProduct extends Component {
 
     return (
       <Fragment>
+        <Bubble
+          typebot="customer-support-e4ekwgb"
+          theme={{ button: { backgroundColor: "#598E71" } }}
+        />
         <CarouselComponent />
         <CategoriesComponent />
         {/* Products Start */}

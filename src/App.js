@@ -16,9 +16,10 @@ import ProfileComponent from "./pages/ProfileComponent";
 import CreatePrescriptionComponent from "./pages/CreatePrescriptionComponent";
 import EditPrescriptionComponent from "./pages/EditPrescriptionComponent";
 import AboutComponent from "./pages/AboutComponent";
-import NewPrescription from "./pages/NewPrescription";
 import UpdatePrescriptionComponent from "./pages/UpdatePrescriptionComponent";
 import SearchProduct from "./pages/SearchProduct";
+import { Bubble } from "@typebot.io/react";
+
 function App() {
   return (
     <>
@@ -26,7 +27,10 @@ function App() {
         <AppWrapper>
           <HeaderComponent />
           <ToastContainer />
-
+          <Bubble
+            typebot="customer-support-e4ekwgb"
+            theme={{ button: { backgroundColor: "#598E71" } }}
+          />
           <Switch>
             <Route path="/" exact component={HomeComponent} />
             <Route path="/home" component={HomeComponent} />
