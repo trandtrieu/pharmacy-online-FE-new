@@ -28,7 +28,9 @@ class DetailProductComponent extends Component {
       feedbackTwoStar: '',
       feedbackThreeStar: '',
       feedbackFourStar: '',
-      feedbackFiveStar: ''
+      feedbackFiveStar: '',
+      replyByFeedback: '',
+      totalFeedback: ''
 
     };
     this.openReply = this.openReply.bind(this);
@@ -37,6 +39,8 @@ class DetailProductComponent extends Component {
     this.deleteFeedback = this.deleteFeedback.bind(this);
     this.handleRatingChange = this.handleRatingChange.bind(this)
     this.changeOpinion = this.changeOpinion.bind(this);
+    this.changeReply = this.changeReply.bind(this);
+    this.postReply = this.postReply.bind(this)
   }
 
   componentDidMount() {
@@ -50,9 +54,23 @@ class DetailProductComponent extends Component {
       this.setState({ average: res.data })
     });
 
-    // FeedbackServices.getTotalFeedbackbyRating(this.state.productId, 1).then((res) => {
-    //   this.setState({ feedbackOneStar: res.data })
-    // });
+    FeedbackServices.getTotalFeedbackbyRating(this.state.productId, 1).then((res) => {
+      this.setState({
+        feedbackOneStar: res.data,
+      });
+    });
+    FeedbackServices.getTotalFeedbackbyRating(this.state.productId, 2).then((res) => {
+      this.setState({ feedbackTwoStar: res.data });
+    });
+    FeedbackServices.getTotalFeedbackbyRating(this.state.productId, 3).then((res) => {
+      this.setState({ feedbackThreeStar: res.data });
+    });
+    FeedbackServices.getTotalFeedbackbyRating(this.state.productId, 4).then((res) => {
+      this.setState({ feedbackFourStar: res.data });
+    });
+    FeedbackServices.getTotalFeedbackbyRating(this.state.productId, 5).then((res) => {
+      this.setState({ feedbackFiveStar: res.data });
+    });
 
 
     FeedbackServices.getFeedbackByProductId(this.state.productId).then((res) => {
@@ -80,6 +98,42 @@ class DetailProductComponent extends Component {
     FeedbackServices.deleteFeedback(id).then((res) => {
       this.setState({ feedbacks: this.state.feedbacks.filter(feedback => feedback.feedback_id !== id) });
     });
+  }
+
+
+  calculateStarRatingPercentage(starRating) {
+    const { feedbackOneStar, feedbackTwoStar, feedbackThreeStar, feedbackFourStar, feedbackFiveStar } = this.state;
+
+    // Tính tổng số lượng feedback
+    const totalFeedback = feedbackOneStar + feedbackTwoStar + feedbackThreeStar + feedbackFourStar + feedbackFiveStar;
+
+    if (totalFeedback === 0) {
+      return 0;
+    }
+
+    let ratingCount;
+    switch (starRating) {
+      case 1:
+        ratingCount = feedbackOneStar;
+        break;
+      case 2:
+        ratingCount = feedbackTwoStar;
+        break;
+      case 3:
+        ratingCount = feedbackThreeStar;
+        break;
+      case 4:
+        ratingCount = feedbackFourStar;
+        break;
+      case 5:
+        ratingCount = feedbackFiveStar;
+        break;
+      default:
+        ratingCount = 0;
+    }
+
+    const ratingPercentage = (ratingCount / totalFeedback) * 100;
+    return ratingPercentage;
   }
 
 
@@ -114,6 +168,10 @@ class DetailProductComponent extends Component {
     this.setState({ opinion: e.target.value });
     console.log(e.target.value)
   }
+  changeReply = (e) => {
+    this.setState({ replyByFeedback: e.target.value });
+    console.log(e.target.value)
+  }
   postFeedback = (e) => {
     e.preventDefault();
 
@@ -126,13 +184,32 @@ class DetailProductComponent extends Component {
         comment: this.state.opinion,
         rating: this.state.rating,
       };
-      FeedbackServices.addFeedback(this.state.productId, 4, feedback).then(res => {
+      FeedbackServices.addFeedback(this.state.productId, 3, feedback).then(res => {
         toast.success('Feedback submitted successfully');
       });
 
       setTimeout(() => {
         window.location.reload();
       }, 1500);
+    }
+  }
+
+  postReply = (feedbackId) => {
+    // e.preventDefault();
+
+    if (this.state.replyByFeedback.trim() === '') {
+      toast.error('Reply cannot be empty');
+    } else {
+      let reply = {
+        reply_feedback: this.state.replyByFeedback,
+      };
+      ReplyServices.addReplyByFeedback(feedbackId, 4, reply).then(res => {
+        toast.success('Reply submitted successfully');
+      });
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   }
 
@@ -149,13 +226,20 @@ class DetailProductComponent extends Component {
         console.error("Error adding product to cart:", error);
       });
   }
-  openReply = () => {
-    const replyDiv = document.getElementById('replyDiv');
-    replyDiv.style.display = 'block';
+
+  openReply = (feedbackId) => {
+    const replyDiv = document.getElementById(`replyDiv${feedbackId}`);
+    if (replyDiv) {
+      replyDiv.style.display = 'block';
+    }
+    console.log(replyDiv)
   }
-  hiddenReply = () => {
-    const replyDiv = document.getElementById('replyDiv');
-    replyDiv.style.display = 'none';
+
+  hiddenReply = (feedbackId) => {
+    const replyDiv = document.getElementById(`replyDiv${feedbackId}`);
+    if (replyDiv) {
+      replyDiv.style.display = 'none';
+    }
   }
   starRating = (rating) => {
     const stars = [];
@@ -651,7 +735,7 @@ class DetailProductComponent extends Component {
                                 <div
                                   className="progress-bar bg-warning "
                                   role="progressbar"
-                                  style={{ width: "75%" }}
+                                  style={{ width: `${this.calculateStarRatingPercentage(5)}%` }}
                                   aria-valuenow={75}
                                   aria-valuemin={0}
                                   aria-valuemax={100}
@@ -661,7 +745,7 @@ class DetailProductComponent extends Component {
                                 <div
                                   className="progress-bar bg-warning"
                                   role="progressbar"
-                                  style={{ width: "75%" }}
+                                  style={{ width: `${this.calculateStarRatingPercentage(4)}%` }}
                                   aria-valuenow={75}
                                   aria-valuemin={0}
                                   aria-valuemax={100}
@@ -671,7 +755,7 @@ class DetailProductComponent extends Component {
                                 <div
                                   className="progress-bar bg-warning"
                                   role="progressbar"
-                                  style={{ width: "75%" }}
+                                  style={{ width: `${this.calculateStarRatingPercentage(3)}%` }}
                                   aria-valuenow={75}
                                   aria-valuemin={0}
                                   aria-valuemax={100}
@@ -681,7 +765,7 @@ class DetailProductComponent extends Component {
                                 <div
                                   className="progress-bar bg-warning"
                                   role="progressbar"
-                                  style={{ width: "75%" }}
+                                  style={{ width: `${this.calculateStarRatingPercentage(2)}%` }}
                                   aria-valuenow={75}
                                   aria-valuemin={0}
                                   aria-valuemax={100}
@@ -691,19 +775,21 @@ class DetailProductComponent extends Component {
                                 <div
                                   className="progress-bar bg-warning"
                                   role="progressbar"
-                                  style={{ width: "75%" }}
+                                  // style={{ width: "75%" }}
+                                  style={{ width: `${this.calculateStarRatingPercentage(1)}%` }}
+
                                   aria-valuenow={75}
                                   aria-valuemin={0}
                                   aria-valuemax={100}
                                 />
                               </div>
                             </div>
-                            <div className="col-md-2 col-1 col-sm-1 col-lg-1">
+                            <div className="col-md-2 col-1 col-sm-1 col-lg-1 text-center">
+                              <span>{this.state.feedbackFiveStar}</span> <br />
+                              <span>{this.state.feedbackFourStar}</span> <br />
+                              <span>{this.state.feedbackThreeStar}</span> <br />
+                              <span>{this.state.feedbackTwoStar}</span> <br />
                               <span>{this.state.feedbackOneStar}</span> <br />
-                              <span>1</span> <br />
-                              <span>1</span> <br />
-                              <span>1</span> <br />
-                              <span>1</span> <br />
                             </div>
                           </div>
                         </div>
@@ -746,14 +832,20 @@ class DetailProductComponent extends Component {
                                     </div>
                                     <div className="col-4">
                                       <div className="pull-right reply">
-                                        <button className="btn  btn-sm shadow-none" onClick={this.openReply} style={{ color: '#003973' }} href="">
-                                          <span className="m-1">
+                                        <button className="btn  btn-sm shadow-none" style={{ color: '#003973' }} href="">
+                                          <span onClick={() => this.openReply(feedback.feedback_id)} className="m-1">
                                             <FontAwesomeIcon icon={faReply} /> Reply
                                           </span>
+                                          {feedback.user_id === 3 && (
+                                            <span className="m-1" onClick={() => this.deleteFeedback(feedback.feedback_id)}>
+                                              <FontAwesomeIcon style={{ color: "#dc3545" }} icon={faTrash} /> Delete
+                                            </span>
+                                          )}
+                                          {/* 
                                           <span className="m-1" onClick={() => this.deleteFeedback(feedback.feedback_id)}>
                                             <FontAwesomeIcon style={{ color: "#dc3545" }} icon={faTrash} /> Delete
 
-                                          </span>
+                                          </span> */}
                                         </button>
                                       </div>
                                     </div>
@@ -764,27 +856,29 @@ class DetailProductComponent extends Component {
 
                                   {/* reply form */}
                                   <div className="wrap">
-                                    <div id="replyDiv" style={{ display: 'none' }} className="media mt-4" >
+                                    <div key={feedback.feedback_id} id={`replyDiv${feedback.feedback_id}`} style={{ display: 'none' }} className="media mt-4" >
                                       <form style={{ width: '80%' }} action="">
 
                                         <div className="bg-light p-2">
                                           <div className="d-flex flex-row align-items-start">
                                             <img
                                               className="rounded-circle mr-3 "
-                                              src="https://i.imgur.com/RpzrMR2.jpg"
+                                              src="https://scontent.xx.fbcdn.net/v/t1.15752-9/396643098_1499022063974040_6274169702054090360_n.jpg?stp=dst-jpg_s206x206&_nc_cat=101&ccb=1-7&_nc_sid=510075&_nc_ohc=D5IR0pjWX8AAX-3e1p1&_nc_oc=AQlze1JL0dPlVA6q8X__lZrwqW59WXORB-6wWvS0WqGuxjMbhD7nsErQPomniGxzUx1-JAAejyWqyGjT-0tgYGHl&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdTxfLI6tXHQ4Wl3HDm0xqqn_gMq5ee9SqlKuKEeukBhXg&oe=6567E054"
                                             />
                                             <textarea
-                                              className="form-control ml-1 shadow-none textarea"
+                                              className="form-control ml-1 shadow-none textarea rounded"
                                               defaultValue={""}
-
+                                              onChange={this.changeReply}
                                             />
                                           </div>
                                           <div className="mt-2 text-right">
-                                            <button onClick={() => this.openReply()}
-                                              className="btn btn-success btn-sm shadow-none rounded" type="button">
-                                              Reply comment
+                                            <button
+                                              className="btn btn-info btn-sm shadow-none rounded" type="button"
+                                              onClick={() => this.postReply(feedback.feedback_id)}
+                                            >
+                                              Reply
                                             </button>
-                                            <button onClick={this.hiddenReply}
+                                            <button onClick={() => this.hiddenReply(feedback.feedback_id)}
                                               className="btn btn-danger btn-sm ml-1 shadow-none rounded"
                                               type="button"
                                             >
@@ -880,12 +974,9 @@ class DetailProductComponent extends Component {
                                         </div>
                                       </form>
 
-                                      {/* </div> */}
+
 
                                     </div>
-                                    {/* <div class="modal-footer">
-                                      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                    </div> */}
                                   </div>
 
                                 </div>

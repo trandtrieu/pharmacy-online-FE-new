@@ -7,6 +7,10 @@ class ReplyServices {
     getReplyByFeedbackId(feedbackId) {
         return axios.get(REPLY_API_BASE_URL + "byFeedbackId/" + feedbackId);
     }
+
+    addReplyByFeedback(feedbackId, userId, reply) {
+        return axios.post(REPLY_API_BASE_URL + "feedback/" + feedbackId + "/reply/" + userId + "/add", reply)
+    }
 }
 
 export default new ReplyServices();

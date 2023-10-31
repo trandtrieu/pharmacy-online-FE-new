@@ -23,7 +23,7 @@ class FeedbackServices {
     }
 
     getTotalFeedbackbyRating(productId, rating) {
-        axios.get(FEEDBACK_API_BASE_URL1 + "product/" + productId + "/" + rating)
+        return axios.get(FEEDBACK_API_BASE_URL1 + "product/" + productId + "/" + rating)
     }
 }
 
