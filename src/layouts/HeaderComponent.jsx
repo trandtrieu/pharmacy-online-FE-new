@@ -135,8 +135,8 @@ const HeaderComponent = (props) => {
     updateCartItemCount();
     updateWishListItemCount();
 
-    const cartInterval = setInterval(updateCartItemCount, 100000);
-    const wishlistInterval = setInterval(updateWishListItemCount, 100000);
+    const cartInterval = setInterval(updateCartItemCount, 1000);
+    const wishlistInterval = setInterval(updateWishListItemCount, 1000);
 
     return () => {
       clearInterval(cartInterval);

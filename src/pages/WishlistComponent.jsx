@@ -14,6 +14,8 @@ class WishlistComponent extends Component {
     super(props);
     this.state = {
       wishlists: [],
+      isDeleteConfirmationOpen: false,
+      cartItemToDelete: null,
     };
   }
 
@@ -37,22 +39,58 @@ class WishlistComponent extends Component {
         console.error("Error adding product to cart:", error);
       });
   }
-  deleteWishListProduct(accountId, productId) {
-    return function (event) {
-      event.preventDefault();
-      WishListServices.deleteWishlistProduct(accountId, productId)
-        .then((response) => {
-          toast.success("Delete product succesfully");
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error(error);
+  // deleteWishListProduct(accountId, productId) {
+  //   return function (event) {
+  //     event.preventDefault();
+  //     WishListServices.deleteWishlistProduct(accountId, productId)
+  //       .then((response) => {
+  //         toast.success("Delete product succesfully");
+  //         console.log(response.data);
+  //       })
+  //       .catch((error) => {
+  //         console.error(error);
+  //       });
+  //   };
+  // }
+  handleDeleteConfirmed = (wishlistItem) => {
+    // Perform the deletion here
+    WishListServices.deleteWishlistProduct(accountId, wishlistItem.cartId)
+      .then(() => {
+        const updatedCarts = this.state.carts.filter(
+          (cart) => cart.cartId !== wishlistItem.cartId
+        );
+        this.setState({
+          wishlists: updatedCarts,
+          isDeleteConfirmationOpen: false,
+          cartItemToDelete: null,
         });
-    };
-  }
+        toast.success("Delete product cart successfully!");
+      })
+      .catch((error) => {
+        console.error("Lỗi xóa sản phẩm khỏi giỏ hàng:", error);
+        this.closeDeleteConfirmation();
+      });
+  };
 
+  handleRemoveFromCart = (wishlistItem) => {
+    this.openDeleteConfirmation(wishlistItem);
+  };
+
+  openDeleteConfirmation = (wishlistItem) => {
+    this.setState({
+      isDeleteConfirmationOpen: true,
+      cartItemToDelete: wishlistItem,
+    });
+  };
+
+  closeDeleteConfirmation = () => {
+    this.setState({
+      isDeleteConfirmationOpen: false,
+      cartItemToDelete: null,
+    });
+  };
   viewProduct(productId) {
-    this.props.history.push(`/single-product/${productId}`);
+    this.props.history.push(`/detail-product/${productId}`);
   }
 
   render() {
@@ -139,7 +177,7 @@ class WishlistComponent extends Component {
                                 <button
                                   className="btn btn-outline-primary btn-sm mt-2"
                                   type="button"
-                                  onClick={this.deleteWishListProduct(
+                                  onClick={this.handleRemoveFromCart(
                                     accountId,
                                     wishlistItem.productId
                                   )}

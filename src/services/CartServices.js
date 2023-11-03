@@ -10,12 +10,15 @@ class CartServices {
         "&productId=" +
         productId +
         "&quantity=" +
-        quantity
+        quantity +
+        "&cart_type=0"
     );
-  }
+  } //http://localhost:8080/pharmacy-online/cart/add-cart?accountId=1&productId=16&quantity=1&cart_type=0
 
   getListCartByAccountId(accountId) {
-    return axios.get(CART_API_BASE_URL + "/get-cart?accountId=" + accountId);
+    return axios.get(
+      CART_API_BASE_URL + "/get-cart?accountId=" + accountId + "&cart_type=0"
+    );
   } //http://localhost:8080/pharmacy-online/cart/get-cart?accountId=5
 
   removeFromCart(cartId) {

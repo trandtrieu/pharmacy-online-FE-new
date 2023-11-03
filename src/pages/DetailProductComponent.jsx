@@ -297,7 +297,9 @@ class DetailProductComponent extends Component {
         console.error("Error adding product to wishlist:", error);
       });
   }
-
+  viewProduct = (productId) => {
+    this.props.history.push(`/detail-product/${productId}`);
+  };
   render() {
     return (
       <>
@@ -544,9 +546,14 @@ class DetailProductComponent extends Component {
                             style={{ minWidth: "96px", height: "96px" }}
                           />
                         </a>
-                        <div className="info ml-3">
-                          <p>{this.state.product.name}</p>
-                          <strong className="text-dark"> $38.90</strong>
+                        <div
+                          className="info ml-3"
+                          onClick={() => this.viewProduct(product.productId)}
+                        >
+                          <p>{product.name}</p>
+                          <strong className="text-dark">
+                            $ {product.price}
+                          </strong>
                         </div>
                       </div>
                     ))}

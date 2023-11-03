@@ -5,8 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleQuestion, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Modal from "react-modal";
-
-const accountId = 2;
+// const FREE_SHIPPING_THRESHOLD = 100;
+const SHIPPING_COST = 30;
+const accountId = 1;
 const customStyles = {
   content: {
     top: "35%",
@@ -28,7 +29,7 @@ class CartComponent extends Component {
     };
   }
   componentDidMount() {
-    Modal.setAppElement("#root"); // Assuming "#root" is your root element ID
+    Modal.setAppElement("#root");
     CartServices.getListCartByAccountId(accountId)
       .then((res) => {
         this.setState({ carts: res.data });
@@ -43,20 +44,20 @@ class CartComponent extends Component {
 
   calculateTotalPrice() {
     const { carts } = this.state;
-    let total = 0;
+    let subTotal = 0;
     for (const cartItem of carts) {
-      total += cartItem.productDetail.price * cartItem.quantity;
+      subTotal += cartItem.productDetail.price * cartItem.quantity;
     }
 
     // Check if the total is greater than or equal to $300
-    if (total >= 300) {
+    if (subTotal >= 100) {
       return {
-        total: total,
+        subTotal: subTotal,
         isEligibleForFreeShipping: true,
       };
     } else {
       return {
-        total: total,
+        subTotal: subTotal,
         isEligibleForFreeShipping: false,
       };
     }
@@ -133,9 +134,14 @@ class CartComponent extends Component {
   toHome() {
     this.props.history.push(`/home`);
   }
+  checkout() {
+    this.props.history.push(`/check-out`);
+  }
   render() {
-    const { total, isEligibleForFreeShipping } = this.calculateTotalPrice();
-
+    const { carts } = this.state;
+    const { subTotal, isEligibleForFreeShipping } = this.calculateTotalPrice();
+    const totalCost =
+      subTotal + (isEligibleForFreeShipping ? 0 : SHIPPING_COST);
     return (
       <>
         <ReactTooltip id="my-tooltip" type="error" place="top" />
@@ -164,7 +170,7 @@ class CartComponent extends Component {
           </button>
         </Modal>
         {/* Cart Start */}
-        {this.state.carts.length === 0 ? (
+        {carts.length === 0 ? (
           <div className="container-fluid">
             <div className="row">
               <div className="col-md-12 d-flex flex-column align-items-center">
@@ -206,8 +212,9 @@ class CartComponent extends Component {
                         className="progress-bar"
                         role="progressbar"
                         style={{
-                          width: `${(total / 300) * 100}%`,
-                          backgroundColor: total >= 300 ? "#B8E8FC" : "#A2FF86",
+                          width: `${(subTotal / 100) * 100}%`,
+                          backgroundColor:
+                            subTotal >= 100 ? "#B8E8FC" : "#A2FF86",
                         }}
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -234,9 +241,9 @@ class CartComponent extends Component {
                     </tr>
                   </thead>
                   <tbody className="align-middle">
-                    {this.state.carts.map((cartItem) => (
+                    {carts.map((cartItem) => (
                       <tr key={cartItem.productId}>
-                        <td className="align-middle">
+                        <td className="align-middle product-link">
                           <img
                             src="img/product-1.jpg"
                             alt=""
@@ -287,34 +294,30 @@ class CartComponent extends Component {
                 </button>
               </div>
               <div className="col-lg-4">
-                <form className="mb-30" action>
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      className="form-control border-0 p-4"
-                      placeholder="Coupon Code"
-                    />
-                    <div className="input-group-append">
-                      <button className="btn btn-primary">Apply Coupon</button>
-                    </div>
-                  </div>
-                </form>
-
                 <h5 className="section-title position-relative text-uppercase mb-3">
                   <span className="bg-secondary pr-3">Cart Summary</span>
                 </h5>
                 <div className="bg-light p-30 mb-5">
                   <div className="pt-2">
                     <div className="d-flex justify-content-between mt-2">
-                      <h5>Cart Total</h5>
-                      <h5>$ {total}</h5>
+                      <h6> Sub Total</h6>
+                      <h5>$ {subTotal}</h5>
                     </div>
                     <div className="d-flex justify-content-between mt-2">
                       <h6>Shipping Cost</h6>
-                      <h6>{isEligibleForFreeShipping ? "Free" : "$ 30"}</h6>
+                      <h5>{isEligibleForFreeShipping ? "Free" : "$ 30"}</h5>
+                    </div>
+                    <div className="d-flex justify-content-between mt-2">
+                      <h6>Total Cost</h6>
+                      <h5>{totalCost}</h5>
                     </div>
 
-                    <button className="btn btn-block btn-primary font-weight-bold my-3 py-3">
+                    <button
+                      className="btn btn-block btn-primary font-weight-bold my-3 py-3"
+                      onClick={() => {
+                        this.checkout();
+                      }}
+                    >
                       Proceed To Checkout
                     </button>
                   </div>
