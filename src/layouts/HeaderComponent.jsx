@@ -246,7 +246,7 @@ const HeaderComponent = (props) => {
                   onChange={(e) => setKeyword(e.target.value)}
                 />
                 <div className="input-group-append">
-                  <button type="submit" className="btn-primary">
+                  <button type="submit" className="btn btn-primary">
                     <i className="fa fa-search" />
                   </button>
                 </div>

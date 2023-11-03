@@ -10,6 +10,7 @@ import CartServices from "../services/CartServices";
 import PrescriptionBanner from "../layouts/PrescriptionBanner";
 import Loading from "react-loading"; // Import the Loading component
 import { Bubble } from "@typebot.io/react";
+import FeedbackServices from "../services/FeedbackServices";
 
 class HomeProduct extends Component {
   constructor(props) {
@@ -17,6 +18,7 @@ class HomeProduct extends Component {
     this.state = {
       products: [],
       loading: true,
+      average: ''
     };
     this.viewProduct = this.viewProduct.bind(this);
   }
@@ -30,7 +32,9 @@ class HomeProduct extends Component {
         console.error("Lỗi khi tải sản phẩm:", error);
         this.setState({ loading: false });
       });
+
   }
+
 
   addWishListProduct(product_id) {
     const accountId = 1;
@@ -98,7 +102,7 @@ class HomeProduct extends Component {
                   <div className="product-item bg-light mb-4">
                     <div
                       className="product-img position-relative overflow-hidden"
-                      // style={{ height: "230px" }}
+                    // style={{ height: "230px" }}
                     >
                       <img
                         className="img-fluid w-100 h-100"
