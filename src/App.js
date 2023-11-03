@@ -19,7 +19,8 @@ import AboutComponent from "./pages/AboutComponent";
 import UpdatePrescriptionComponent from "./pages/UpdatePrescriptionComponent";
 import SearchProduct from "./pages/SearchProduct";
 import { Bubble } from "@typebot.io/react";
-
+import LoginComponent from "./pages/LoginComponent";
+import ForgotPassword from "./pages/ForgotPassword";
 function App() {
   return (
     <>
@@ -34,6 +35,8 @@ function App() {
           <Switch>
             <Route path="/" exact component={HomeComponent} />
             <Route path="/home" component={HomeComponent} />
+            <Route path="/login" component={LoginComponent} />
+            <Route path="/forgotpass" component={ForgotPassword} />
             <Route
               path="/detail-product/:productId"
               component={DetailProductComponent}

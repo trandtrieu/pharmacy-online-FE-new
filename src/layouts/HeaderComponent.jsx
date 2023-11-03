@@ -194,10 +194,7 @@ const HeaderComponent = (props) => {
                     Profile
                   </button>
                   <button className="dropdown-item" type="button">
-                    Sign in
-                  </button>
-                  <button className="dropdown-item" type="button">
-                    Sign up
+                    <Link to="/login" style={{ TextDecoder: "none" }}>Sign in/Sign Up</Link>
                   </button>
                 </div>
               </div>
