@@ -9,6 +9,8 @@ import {
   faTruckFast,
 } from "@fortawesome/free-solid-svg-icons";
 import ReactModal from "react-modal";
+import { calculateTotalPrice } from "../utils/cartutils";
+
 const accountId = 1;
 const SHIPPING_COST = 30;
 const customStyles = {
@@ -85,7 +87,9 @@ class CheckoutComponent extends Component {
     this.props.history.push(`/cart`);
   }
   render() {
-    const { subTotal, isEligibleForFreeShipping } = this.calculateTotalPrice();
+    const { carts } = this.state;
+
+    const { subTotal, isEligibleForFreeShipping } = calculateTotalPrice(carts);
     const totalCost =
       subTotal + (isEligibleForFreeShipping ? 0 : SHIPPING_COST);
     return (

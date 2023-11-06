@@ -145,7 +145,7 @@ export const SearchProduct = () => {
   };
 
   const viewProduct = (product_id) => {
-    history.push(`/single-product/${product_id}`);
+    history.push(`/detail-product/${product_id}`);
   };
 
   return (

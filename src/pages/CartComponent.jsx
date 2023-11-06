@@ -2,10 +2,15 @@ import React, { Component } from "react";
 import CartServices from "../services/CartServices";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleQuestion, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronLeft,
+  faCircleQuestion,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Modal from "react-modal";
-// const FREE_SHIPPING_THRESHOLD = 100;
+import { calculateTotalPrice } from "../utils/cartutils";
+
 const SHIPPING_COST = 30;
 const accountId = 1;
 const customStyles = {
@@ -33,34 +38,14 @@ class CartComponent extends Component {
     CartServices.getListCartByAccountId(accountId)
       .then((res) => {
         this.setState({ carts: res.data });
+        console.log(res.data);
       })
       .catch((error) => {
         console.error("Lỗi khi tải giỏ hàng:", error);
       });
   }
   viewProduct(productId) {
-    this.props.history.push(`/single-product/${productId}`);
-  }
-
-  calculateTotalPrice() {
-    const { carts } = this.state;
-    let subTotal = 0;
-    for (const cartItem of carts) {
-      subTotal += cartItem.productDetail.price * cartItem.quantity;
-    }
-
-    // Check if the total is greater than or equal to $300
-    if (subTotal >= 100) {
-      return {
-        subTotal: subTotal,
-        isEligibleForFreeShipping: true,
-      };
-    } else {
-      return {
-        subTotal: subTotal,
-        isEligibleForFreeShipping: false,
-      };
-    }
+    this.props.history.push(`/detail-product/${productId}`);
   }
 
   handleDeleteConfirmed = (cartItem) => {
@@ -131,20 +116,15 @@ class CartComponent extends Component {
       });
   };
 
-  toHome() {
-    this.props.history.push(`/home`);
-  }
-  checkout() {
-    this.props.history.push(`/check-out`);
-  }
+  toHome = () => this.props.history.push(`/home`);
+  checkout = () => this.props.history.push(`/check-out`);
   render() {
     const { carts } = this.state;
-    const { subTotal, isEligibleForFreeShipping } = this.calculateTotalPrice();
+    const { subTotal, isEligibleForFreeShipping } = calculateTotalPrice(carts);
     const totalCost =
       subTotal + (isEligibleForFreeShipping ? 0 : SHIPPING_COST);
     return (
       <>
-        <ReactTooltip id="my-tooltip" type="error" place="top" />
         <Modal
           isOpen={this.state.isDeleteConfirmationOpen}
           onRequestClose={this.closeDeleteConfirmation}
@@ -201,6 +181,27 @@ class CartComponent extends Component {
             <div className="row px-xl-5">
               <div className="col-lg-8 table-responsive mb-5">
                 <div className="row">
+                  <div className="col-md-8 cart-header">
+                    <h3
+                      className=""
+                      onClick={() => {
+                        this.toHome();
+                      }}
+                    >
+                      <button className="btn">
+                        <FontAwesomeIcon
+                          icon={faChevronLeft}
+                          className="h4 mb-0"
+                        />
+                      </button>
+                      Cart
+                    </h3>
+                  </div>
+                  <div className="col-md-4 d-flex align-items-center justify-content-end">
+                    <h6 className="mb-0">Xóa tất cả</h6>
+                  </div>
+                </div>
+                <div className="row">
                   <div className="col-md-10">
                     <div
                       className="progress mb-2"
@@ -224,12 +225,13 @@ class CartComponent extends Component {
                   <div className="col-md-2">
                     <h6
                       data-tooltip-id="my-tooltip"
-                      data-tooltip-content="Pharmacity provides free delivery for orders with a value of 30$ or higher."
+                      data-tooltip-content="Pharmacity provides free delivery for orders with a value of 100$ or higher."
                     >
                       Policy <FontAwesomeIcon icon={faCircleQuestion} />
                     </h6>
                   </div>
                 </div>
+
                 <table className="table table-light table-borderless table-hover text-center mb-0">
                   <thead className="thead-dark">
                     <tr>
@@ -237,18 +239,18 @@ class CartComponent extends Component {
                       <th>Price</th>
                       <th>Quantity</th>
                       <th>Total</th>
-                      <th>Remove</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody className="align-middle">
                     {carts.map((cartItem) => (
                       <tr key={cartItem.productId}>
-                        <td className="align-middle product-link">
-                          <img
-                            src="img/product-1.jpg"
-                            alt=""
-                            style={{ width: "50px" }}
-                          />
+                        <td
+                          className="align-middle product-link"
+                          onClick={() => {
+                            this.viewProduct(cartItem.productDetail.productId);
+                          }}
+                        >
                           {cartItem.productDetail.name}
                         </td>
                         <td className="align-middle">
@@ -326,6 +328,7 @@ class CartComponent extends Component {
             </div>
           </div>
         )}
+        <ReactTooltip id="my-tooltip" type="error" place="top" />
 
         {/* Cart End */}
       </>

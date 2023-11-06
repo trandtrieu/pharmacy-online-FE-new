@@ -388,3 +388,20 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   cursor: pointer;
   text-decoration: none;
 }
+
+/* modal.css */
+/* modal.css */
+.custom-modal {
+  top: 35%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  width: 30%;
+  transform: translate(-40%, -10%);
+  /* Thêm các kiểu CSS tùy chỉnh khác cho modal tại đây */
+}
+
+.cart-header h3 {
+  letter-spacing: 3px;
+}

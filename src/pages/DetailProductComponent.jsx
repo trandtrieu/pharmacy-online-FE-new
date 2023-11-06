@@ -226,7 +226,6 @@ class DetailProductComponent extends Component {
           toast.success("Feedback submitted successfully");
         }
       );
-
       setTimeout(() => {
         window.location.reload();
       }, 1500);
@@ -242,7 +241,7 @@ class DetailProductComponent extends Component {
       let reply = {
         reply_feedback: this.state.replyByFeedback,
       };
-      ReplyServices.addReplyByFeedback(feedbackId, 2, reply).then((res) => {
+      ReplyServices.addReplyByFeedback(feedbackId, 1, reply).then((res) => {
         toast.success("Reply submitted successfully");
       });
 
@@ -297,9 +296,7 @@ class DetailProductComponent extends Component {
         console.error("Error adding product to wishlist:", error);
       });
   }
-  viewProduct = (productId) => {
-    this.props.history.push(`/detail-product/${productId}`);
-  };
+
   render() {
     return (
       <>
@@ -357,30 +354,30 @@ class DetailProductComponent extends Component {
                     <FontAwesomeIcon icon={faStar} />
                   </div>
                   <span className="text-muted">
-                    <i className="fas fa-shopping-basket fa-sm mx-1" />
+                    <i className="fas fa-shopping-basket fa-sm mx-1 " />
                     {this.state.product.quantity}
                   </span>
-                  <span className="text-success ms-2"> In stock</span>
+                  <span className="text-success ms-2 ml-1"> In stock</span>
                 </div>
                 <div className="mb-3">
                   <span className="h2">${this.state.product.price}</span>
                   <span className="text-muted">/per box</span>
                 </div>
-                <p>
+                {/* <p>
                   Modern look and quality demo item is a streetwear-inspired
                   collection that continues to break away from the conventions
                   of mainstream fashion. Made in Italy, these black and brown
                   clothing low-top shirts for men.
-                </p>
+                </p> */}
                 <div className="row">
-                  <dt className="col-3">Category:</dt>
+                  <dt className="col-3">Category</dt>
                   <dd className="col-9">{this.state.product.category_name}</dd>
                   <dt className="col-3">Made In</dt>
                   <dd className="col-9">{this.state.product.madeIn}</dd>
                   <dt className="col-3">Ingredients</dt>
                   <dd className="col-9">{this.state.product.ingredients}</dd>
                   <dt className="col-3">Brand</dt>
-                  <dd className="col-9">Reebook</dd>
+                  <dd className="col-9">{this.state.product.brand}</dd>
                 </div>
                 <hr />
                 <div className="d-flex flex-column align-items-start mb-4 pt-2">
@@ -447,82 +444,49 @@ class DetailProductComponent extends Component {
                 </div>
                 <div className="tab-content">
                   <div className="tab-pane fade show active" id="tab-pane-1">
-                    <h4 className="mb-3">Product Description</h4>
+                    <h4 className="mb-3">Product Guidelines</h4>
                     <p>
-                      Eos no lorem eirmod diam diam, eos elitr et gubergren diam
-                      sea. Consetetur vero aliquyam invidunt duo dolores et duo
-                      sit. Vero diam ea vero et dolore rebum, dolor rebum eirmod
-                      consetetur invidunt sed sed et, lorem duo et eos elitr,
-                      sadipscing kasd ipsum rebum diam. Dolore diam stet rebum
-                      sed tempor kasd eirmod. Takimata kasd ipsum accusam
-                      sadipscing, eos dolores sit no ut diam consetetur duo
-                      justo est, sit sanctus diam tempor aliquyam eirmod nonumy
-                      rebum dolor accusam, ipsum kasd eos consetetur at sit
-                      rebum, diam kasd invidunt tempor lorem, ipsum lorem elitr
-                      sanctus eirmod takimata dolor ea invidunt.
+                      <b>Precautions: </b>{" "}
+                      <span>{this.state.product.precautions} </span>
                     </p>
                     <p>
-                      Dolore magna est eirmod sanctus dolor, amet diam et eirmod
-                      et ipsum. Amet dolore tempor consetetur sed lorem dolor
-                      sit lorem tempor. Gubergren amet amet labore sadipscing
-                      clita clita diam clita. Sea amet et sed ipsum lorem elitr
-                      et, amet et labore voluptua sit rebum. Ea erat sed et diam
-                      takimata sed justo. Magna takimata justo et amet magna et.
+                      <b>Storage: </b>{" "}
+                      <span>{this.state.product.storage} </span>
+                    </p>
+                    <p>
+                      <b>Contraindications: </b>{" "}
+                      <span>{this.state.product.contraindications} </span>
+                    </p>
+                    <p>
+                      <b>Dosage and usage: </b>{" "}
+                      <span>{this.state.product.dosageAndUsage} </span>
                     </p>
                   </div>
                   <div className="tab-pane fade" id="tab-pane-2">
                     <h4 className="mb-3">Additional Information</h4>
-                    <p>
-                      Eos no lorem eirmod diam diam, eos elitr et gubergren diam
-                      sea. Consetetur vero aliquyam invidunt duo dolores et duo
-                      sit. Vero diam ea vero et dolore rebum, dolor rebum eirmod
-                      consetetur invidunt sed sed et, lorem duo et eos elitr,
-                      sadipscing kasd ipsum rebum diam. Dolore diam stet rebum
-                      sed tempor kasd eirmod. Takimata kasd ipsum accusam
-                      sadipscing, eos dolores sit no ut diam consetetur duo
-                      justo est, sit sanctus diam tempor aliquyam eirmod nonumy
-                      rebum dolor accusam, ipsum kasd eos consetetur at sit
-                      rebum, diam kasd invidunt tempor lorem, ipsum lorem elitr
-                      sanctus eirmod takimata dolor ea invidunt.
-                    </p>
+
                     <div className="row">
                       <div className="col-md-6">
                         <ul className="list-group list-group-flush">
                           <li className="list-group-item px-0">
-                            Sit erat duo lorem duo ea consetetur, et eirmod
-                            takimata.
+                            <b>Drug interactions:</b>{" "}
+                            <span>{this.state.product.drugInteractions} </span>
                           </li>
                           <li className="list-group-item px-0">
-                            Amet kasd gubergren sit sanctus et lorem eos
-                            sadipscing at.
-                          </li>
-                          <li className="list-group-item px-0">
-                            Duo amet accusam eirmod nonumy stet et et stet
-                            eirmod.
-                          </li>
-                          <li className="list-group-item px-0">
-                            Takimata ea clita labore amet ipsum erat justo
-                            voluptua. Nonumy.
+                            <b>Packaging: </b>{" "}
+                            <span>{this.state.product.packaging} </span>
                           </li>
                         </ul>
                       </div>
                       <div className="col-md-6">
                         <ul className="list-group list-group-flush">
                           <li className="list-group-item px-0">
-                            Sit erat duo lorem duo ea consetetur, et eirmod
-                            takimata.
+                            <b>Indications: </b>{" "}
+                            <span>{this.state.product.indications} </span>
                           </li>
                           <li className="list-group-item px-0">
-                            Amet kasd gubergren sit sanctus et lorem eos
-                            sadipscing at.
-                          </li>
-                          <li className="list-group-item px-0">
-                            Duo amet accusam eirmod nonumy stet et et stet
-                            eirmod.
-                          </li>
-                          <li className="list-group-item px-0">
-                            Takimata ea clita labore amet ipsum erat justo
-                            voluptua. Nonumy.
+                            <b>Side effects: </b>{" "}
+                            <span>{this.state.product.sideEffects} </span>
                           </li>
                         </ul>
                       </div>
@@ -546,14 +510,9 @@ class DetailProductComponent extends Component {
                             style={{ minWidth: "96px", height: "96px" }}
                           />
                         </a>
-                        <div
-                          className="info ml-3"
-                          onClick={() => this.viewProduct(product.productId)}
-                        >
-                          <p>{product.name}</p>
-                          <strong className="text-dark">
-                            $ {product.price}
-                          </strong>
+                        <div className="info ml-3">
+                          <p>{this.state.product.name}</p>
+                          <strong className="text-dark"> $38.90</strong>
                         </div>
                       </div>
                     ))}
@@ -909,6 +868,7 @@ class DetailProductComponent extends Component {
                                       style={{
                                         height: "30px",
                                         marginBottom: "0.5rem",
+                                        fontSize: "1.3rem",
                                       }}
                                       className="rating mt-3 mb-3"
                                     >
