@@ -405,3 +405,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 .cart-header h3 {
   letter-spacing: 3px;
 }
+
+.remove-btn:hover p {
+  color: #4c8bf580;
+}

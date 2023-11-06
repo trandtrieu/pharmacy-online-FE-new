@@ -31,6 +31,7 @@ class CartComponent extends Component {
       carts: [],
       isDeleteConfirmationOpen: false,
       cartItemToDelete: null,
+      isRemoveAllConfirmationOpen: false,
     };
   }
   componentDidMount() {
@@ -115,6 +116,29 @@ class CartComponent extends Component {
         console.error("Error updating cart:", error);
       });
   };
+  handleRemoveAllCart = () => {
+    CartServices.removeAllCart(accountId)
+      .then(() => {
+        this.setState({
+          carts: [],
+        });
+        toast.success("Remove all cart items successfully");
+      })
+      .catch((error) => {
+        console.error("Error removing all items from the cart:", error);
+      });
+  };
+
+  openRemoveAllConfirmation = () => {
+    this.setState({
+      isRemoveAllConfirmationOpen: true,
+    });
+  };
+  closeRemoveAllConfirmation = () => {
+    this.setState({
+      isRemoveAllConfirmationOpen: false,
+    });
+  };
 
   toHome = () => this.props.history.push(`/home`);
   checkout = () => this.props.history.push(`/check-out`);
@@ -149,6 +173,32 @@ class CartComponent extends Component {
             Cancel
           </button>
         </Modal>
+        <Modal
+          isOpen={this.state.isRemoveAllConfirmationOpen}
+          onRequestClose={this.closeRemoveAllConfirmation}
+          contentLabel="Remove All Confirmation"
+          style={customStyles}
+        >
+          <h4>Confirm Remove All</h4>
+          <p>Are you sure you want to remove all items from your cart?</p>
+          <button
+            onClick={() => {
+              this.handleRemoveAllCart();
+              this.closeRemoveAllConfirmation();
+            }}
+            className="btn btn-danger"
+          >
+            Remove All
+          </button>
+          &nbsp;
+          <button
+            onClick={this.closeRemoveAllConfirmation}
+            className="btn btn-info"
+          >
+            Cancel
+          </button>
+        </Modal>
+
         {/* Cart Start */}
         {carts.length === 0 ? (
           <div className="container-fluid">
@@ -197,8 +247,11 @@ class CartComponent extends Component {
                       Cart
                     </h3>
                   </div>
-                  <div className="col-md-4 d-flex align-items-center justify-content-end">
-                    <h6 className="mb-0">Xóa tất cả</h6>
+                  <div
+                    className="col-md-4 d-flex align-items-center justify-content-end remove-btn"
+                    onClick={this.openRemoveAllConfirmation}
+                  >
+                    <p className="mb-0 btn">Remove all cart items</p>
                   </div>
                 </div>
                 <div className="row">

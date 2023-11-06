@@ -27,9 +27,11 @@ class CartServices {
     );
   } //http://localhost:8080/pharmacy-online/cart/remove-from-cart?cartId=8
 
-  // removeAllCart(cartItem) {
-  //   return axios.delete(CART_API_BASE_URL, cartItem);
-  // }
+  removeAllCart(accountId) {
+    return axios.delete(
+      CART_API_BASE_URL + "/clear-cart?accountId=" + accountId + "&cartType=0"
+    );
+  } //http://localhost:8080/pharmacy-online/cart/clear-cart?accountId=1&cartType=0
 
   updateCart(updatedCartData) {
     return axios.put(CART_API_BASE_URL + "/update-cart", updatedCartData);
