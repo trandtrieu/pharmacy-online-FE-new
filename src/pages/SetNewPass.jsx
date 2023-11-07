@@ -20,6 +20,12 @@ class SetNewPass extends Component {
     }));
   };
 
+  togglePasswordVisibilitys = () => {
+    this.setState((prevState) => ({
+      showPassword: !prevState.showPassword,
+    }));
+  };
+
   handleMailChange = (event) => {
     this.setState({ mail: event.target.value });
   };
@@ -39,6 +45,17 @@ class SetNewPass extends Component {
       toast.error("Password and confirm password do not match");
       return;
     }
+    if (
+      this.state.newPassword.length < 8 ||
+      this.state.newPassword.length > 16
+    ) {
+      toast.error("Password must be between 8 and 16 characters");
+    } else if (!/[A-Z]/.test(this.state.newPassword)) {
+      toast.error("Password must contain at least one uppercase letter");
+    } else if (!/[!@#$%^&*]/.test(this.state.newPassword)) {
+      toast.error("Password must contain at least one special character");
+    }
+
     const apiUrl =
       "http://localhost:8080/auth/set-password?mail=" + this.state.mail;
     const { mail, newPassword } = this.state.mail;
@@ -48,7 +65,7 @@ class SetNewPass extends Component {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        newPassword: newPassword,
+        newPassword: this.state.newPassword,
       },
       body: JSON.stringify({
         mail: this.state.mail,
@@ -58,6 +75,7 @@ class SetNewPass extends Component {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
+          console.log("change password successfully");
           toast.success("Password was successfully changed");
           this.setState({ success: true });
         } else {
@@ -91,43 +109,53 @@ class SetNewPass extends Component {
       <div className="container-setpass">
         <form onSubmit={this.handleSubmitConfirmPass} className="form-setpass">
           <h2>Reset Password</h2>
-          <FontAwesomeIcon
-            icon={this.state.showPassword ? faEyeSlash : faEye}
-            className="password-toggle"
-            onClick={this.togglePasswordVisibility}
-          />
           <input
-            type="email"
+            type={this.state.mail}
             value={this.state.mail}
             onChange={this.handleEmailChange}
             required
             placeholder="Email"
             className="input-setpass"
-            name="mail"
           />
+          <div className="password-input">
+            <input
+              type={this.state.showPassword ? "text" : "password"}
+              value={this.state.newPassword}
+              onChange={this.handlePasswordChange}
+              required
+              placeholder="New Password"
+              className="input-setpass"
+            />
+            <button
+              type="button"
+              onClick={this.togglePasswordVisibility}
+              className="password-toggle"
+            >
+              <FontAwesomeIcon
+                icon={this.state.showPassword ? faEyeSlash : faEye}
+              />
+            </button>
+          </div>
+          <div className="password-input">
+            <input
+              type={this.state.showPassword ? "text" : "password"}
+              value={this.state.confirmPassword}
+              onChange={this.handleConfirmPasswordChange}
+              required
+              placeholder="Confirm Password"
+              className="input-setpass"
+            />
+            <button
+              type="button"
+              onClick={this.togglePasswordVisibilitys}
+              className="password-toggle"
+            >
+              <FontAwesomeIcon
+                icon={this.state.showPassword ? faEyeSlash : faEye}
+              />
+            </button>
+          </div>
 
-          <input
-            type={this.state.showPassword ? "text" : "password"}
-            value={this.state.newPassword}
-            onChange={this.handlePasswordChange}
-            required
-            placeholder="New Password"
-            className="input-setpass"
-          />
-
-          <input
-            type={this.state.showPassword ? "text" : "password"}
-            value={this.state.confirmPassword}
-            onChange={this.handleConfirmPasswordChange}
-            required
-            placeholder="Confirm Password"
-            className="input-setpass"
-          />
-          <FontAwesomeIcon
-            icon={this.state.showPassword ? faEyeSlash : faEye}
-            className="password-toggle"
-            onClick={this.togglePasswordVisibility}
-          />
           <button type="submit" className="btn-setpass">
             Reset Password
           </button>

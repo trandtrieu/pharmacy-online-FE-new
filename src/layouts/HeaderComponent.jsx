@@ -18,7 +18,18 @@ const HeaderComponent = (props) => {
   const [categories, setCategories] = useState([]);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [wishlistItemCount, setWishlistItemCount] = useState(0);
+  const [username, setUsername] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isToken, setToken] = useState("");
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setUsername(null);
+
+    history.push("/");
+  };
+  //////////////////////////////////////////////////////////////
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       searchProductAndFilter();
@@ -81,6 +92,43 @@ const HeaderComponent = (props) => {
   //     searchProduct("");
   //   }
   // }, [location.search]);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+
+  //   if (token) {
+  //     fetchUserInfo(token);
+  //   }
+  // }, []);
+
+  // const fetchUserInfo = (token) => {
+  //   fetch("/auth/username", {
+  //     method: "GET",
+  //     headers: {
+  //       Authorization: "Bearer " + token,
+  //     },
+  //   })
+  //     .then((response) => {
+  //       if (response.ok) {
+  //         return response.json();
+  //       }
+  //       throw new Error("Network response was not ok!!!");
+  //     })
+  //     .then((data) => {
+  //       setUsername(data.username);
+  //       setIsLoggedIn(true);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error unable to get user information:", error);
+  //     });
+  // };
+
+  useEffect(() => {
+    // Kiểm tra sự tồn tại của token trong localStorage
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(true);
+  }, []);
+
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const initialKeyword = searchParams.get("keyword");
@@ -193,10 +241,18 @@ const HeaderComponent = (props) => {
                   >
                     Profile
                   </button>
-                  <button className="dropdown-item" type="button">
-                    <Link to="/login" style={{ TextDecoder: "none" }}>Sign in/Sign Up</Link>
-                  </button>
+
+                  {isLoggedIn ? (
+                    <button onClick={handleLogout} className="dropdown-item">
+                      Logout
+                    </button>
+                  ) : (
+                    <Link to="/login" className="dropdown-item">
+                      Login
+                    </Link>
+                  )}
                 </div>
+                <div className="col-lg-2 col-6 text-left"></div>
               </div>
             </div>
             <div className="d-inline-flex align-items-center d-block d-lg-none">

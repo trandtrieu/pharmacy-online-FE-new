@@ -1,9 +1,21 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
 import "../style/ForgotPassword.css";
+import "../style/ModalStyle.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
-import { Modal } from "bootstrap";
+import Modal from "react-modal";
+const customStyles = {
+  content: {
+    top: "35%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    width: "30%",
+    transform: "translate(-40%, -10%)",
+  },
+};
 class ForgotPassword extends Component {
   constructor(props) {
     super(props);
@@ -11,22 +23,30 @@ class ForgotPassword extends Component {
       mail: "",
       message: "",
       emailValid: true,
-      showModal: false,
+      isModalOpen: false,
       emailSent: false,
+      emailNotExists: false,
     };
   }
 
-  handleModalOpen = () => {
-    this.setState({ showModal: true });
+  openModal = () => {
+    this.setState({ isModalOpen: true });
   };
-
-  handleModalClose = () => {
-    this.setState({ showModal: false });
+  closeModal = () => {
+    if (this.state.emailNotExists) {
+      this.setState({ emailNotExists: false });
+    } else {
+      this.setState({ isModalOpen: false });
+    }
   };
 
   validateEmail = (mail) => {
     const mailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
     return mailPattern.test(mail);
+  };
+
+  handleEmailChange = (e) => {
+    this.setState({ mail: e.target.value });
   };
 
   handleSubmit = async (e) => {
@@ -37,30 +57,27 @@ class ForgotPassword extends Component {
       return;
     }
 
-    try {
-      const response = await fetch(
-        "http://localhost:8080/auth/forgot-password?mail=" + this.state.mail,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ mail: this.state.mail }),
-        }
-      );
+    const email = this.state.mail;
+    const url = `http://localhost:8080/auth/forgot-password?mail=${email}`;
 
-      if (response.status === 200) {
-        this.setState({ emailSent: true });
-        const data = await response.json();
-        this.setState({ message: data });
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        this.openModal();
+      } else if (response.status === 403) {
+        this.setState({ emailNotExists: true });
+      } else {
+        console.error("API request failed with status:", response.status);
       }
     } catch (error) {
-      // this.setState({ message: "Có lỗi xảy ra, vui lòng thử lại sau." });
+      console.error("Error calling forgotPassword API:", error);
     }
-  };
-
-  handleEmailChange = (e) => {
-    this.setState({ mail: e.target.value });
   };
 
   render() {
@@ -83,20 +100,31 @@ class ForgotPassword extends Component {
             Send
           </button>
         </form>
+
         <Modal
-          isOpen={this.state.showModal}
-          onRequestClose={this.handleModalClose}
-          contentLabel="Email Popup"
+          isOpen={this.state.isModalOpen || this.state.emailNotExists}
+          onRequestClose={this.closeModal}
+          contentLabel="Email Sent Modal"
+          style={customStyles}
         >
-          <h2>Email Exists!</h2>
-          <p>Email exists in the database.</p>
-          <button onClick={this.handleModalClose}>Close</button>
+          {this.state.emailNotExists ? (
+            <div className="ModalContent">
+              <h2>Email Not Found</h2>
+              <p className="content">The provided email does not exist.</p>
+              <button onClick={this.closeModal} className="ModalCloseButton">
+                Close
+              </button>
+            </div>
+          ) : (
+            <div className="ModalContent">
+              <h2>Email Sent!</h2>
+              <p className="content">Please check your email.</p>
+              <button onClick={this.closeModal} className="ModalCloseButton">
+                Close
+              </button>
+            </div>
+          )}
         </Modal>
-        {this.state.emailSent && (
-          <div className="email-sent-message">
-            <p>Please check your email.</p>
-          </div>
-        )}
       </div>
     );
   }
