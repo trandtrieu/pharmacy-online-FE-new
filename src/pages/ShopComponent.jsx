@@ -49,7 +49,7 @@ class ShopComponent extends Component {
   render() {
     return (
       <>
-        <div className="container-fluid">
+        <div className="container -fluid">
           <div className="row px-xl-5">
             {/* Shop Sidebar Start */}
             <div className="col-lg-3 col-md-4">

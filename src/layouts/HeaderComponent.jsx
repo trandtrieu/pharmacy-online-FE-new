@@ -50,8 +50,8 @@ class HeaderComponent extends Component {
     this.updateCartItemCount();
     this.updateWishListItemCount();
 
-    setInterval(this.updateCartItemCount, 100);
-    setInterval(this.updateWishListItemCount, 100);
+    setInterval(this.updateCartItemCount, 100000);
+    setInterval(this.updateWishListItemCount, 100000);
   }
 
   render() {
@@ -234,6 +234,28 @@ class HeaderComponent extends Component {
                         </a>
                       </div>
                     </div>
+
+                    <div className="nav-item dropdown">
+                      <a
+                        href="/"
+                        className="nav-link dropdown-toggle"
+                        data-toggle="dropdown"
+                      >
+                        Blog <i className="fa fa-angle-down mt-1" />
+                      </a>
+                      <div className="dropdown-menu bg-primary rounded-0 border-0 m-0">
+                        
+                        <a href="/blog" className="dropdown-item">
+                          List Blog
+                        </a>
+
+                        <a href="/add-blog" className="dropdown-item">
+                          Add Blog
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* <Link to="/blog" className="nav-item nav-link">Blog</Link> */}
 
                     <Link to="/prescription" className="nav-item nav-link">
                       Prescription

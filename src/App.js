@@ -13,6 +13,10 @@ import PrescriptionComponent from "./pages/PrescriptionComponent";
 import DetailProductComponent from "./pages/DetailProductComponent";
 import CategoryProduct from "./pages/CategoryProduct";
 import AppWrapper from "./AppWrapper";
+import BlogComponent from "./pages/BlogComponent";
+import BlogDetailComponent from "./pages/BlogDetailComponent";
+import AddBlogComponent from "./pages/AddBlogComponent";
+import UpdateBlogComponent from "./pages/UpdateBlogComponent";
 function App() {
   return (
     <>
@@ -37,6 +41,10 @@ function App() {
               path="/prescription/:accountId"
               component={PrescriptionComponent}
             />
+            <Route path="/blog" component={BlogComponent}/>
+            <Route path="/blog-detail/:blog_id" component={BlogDetailComponent}/>
+            <Route path="/add-blog" component={AddBlogComponent}/>
+            <Route path="/update-blog/:blog_id" component={UpdateBlogComponent}/>
           </Switch>
 
           <FooterComponent />
