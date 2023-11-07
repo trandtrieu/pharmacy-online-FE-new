@@ -10,11 +10,11 @@ class ReplyServices {
   addReplyByFeedback(feedbackId, userId, reply) {
     return axios.post(
       REPLY_API_BASE_URL +
-        "feedback/" +
-        feedbackId +
-        "/reply/" +
-        userId +
-        "/add",
+      "feedback/" +
+      feedbackId +
+      "/reply/" +
+      userId +
+      "/add",
       reply
     );
   }
