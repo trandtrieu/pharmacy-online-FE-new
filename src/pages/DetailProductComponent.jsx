@@ -4,6 +4,7 @@ import CartServices from "../services/CartServices";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faFileInvoice,
   faHeart,
   faReply,
   faStar,
@@ -36,6 +37,7 @@ class DetailProductComponent extends Component {
       feedbackFiveStar: "",
       replyByFeedback: "",
       totalFeedback: "",
+      quantity: 1, // Số lượng mặc định là 1
     };
     this.openReply = this.openReply.bind(this);
     this.hiddenReply = this.hiddenReply.bind(this);
@@ -50,6 +52,7 @@ class DetailProductComponent extends Component {
   componentDidMount() {
     ProductServices.getProductById(this.state.productId).then((res) => {
       const productData = res.data;
+      console.log(res.data);
       const imageUrls = productData.imageUrls || []; // Replace 'imageUrls' with the correct field from your API data
       this.setState({ product: productData, imageUrls });
     });
@@ -57,6 +60,7 @@ class DetailProductComponent extends Component {
     ProductServices.get5ProductsRandom()
       .then((res) => {
         this.setState({ products: res.data });
+        console.log(res.data);
       })
       .catch((error) => {
         console.error("Lỗi khi tải sản phẩm:", error);
@@ -274,9 +278,16 @@ class DetailProductComponent extends Component {
     }
     return stars;
   };
-  addProductToCart(product_id) {
+  handleQuantityChange = (change) => {
+    // Hàm này cập nhật số lượng dựa trên sự thay đổi (+1 hoặc -1)
+    this.setState((prevState) => {
+      const newQuantity = prevState.quantity + change;
+      return { quantity: newQuantity };
+    });
+  };
+  addProductToCart(product_id, quantity) {
     const accountId = 1; // Replace with the actual account ID
-    CartServices.addToCart(accountId, product_id, 1)
+    CartServices.addToCart(accountId, product_id, quantity)
       .then((response) => {
         console.log("Product added to cart:", response.data);
         toast.success("Product added to cart successfully!");
@@ -297,6 +308,9 @@ class DetailProductComponent extends Component {
       });
   }
 
+  createPrescription = () => {
+    this.props.history.push(`/create-prescription`);
+  };
   render() {
     return (
       <>
@@ -347,11 +361,7 @@ class DetailProductComponent extends Component {
                 <h4 className="title text-dark">{this.state.product.name}</h4>
                 <div className="d-flex flex-row my-3">
                   <div className="text-warning mb-1 me-2">
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
+                    {this.starRating(`${this.state.average}`)}
                   </div>
                   <span className="text-muted">
                     <i className="fas fa-shopping-basket fa-sm mx-1 " />
@@ -380,46 +390,76 @@ class DetailProductComponent extends Component {
                   <dd className="col-9">{this.state.product.brand}</dd>
                 </div>
                 <hr />
-                <div className="d-flex flex-column align-items-start mb-4 pt-2">
-                  <div
-                    className="input-group quantity mb-3"
-                    style={{ width: "130px" }}
-                  >
-                    <div className="input-group-btn">
-                      <button className="btn btn-primary btn-minus">
-                        <i className="fa fa-minus" />
-                      </button>
+                {this.state.product.type === 0 ? (
+                  <div className="d-flex flex-column align-items-start mb-4 pt-2">
+                    <div
+                      className="input-group quantity mb-3"
+                      style={{ width: "130px" }}
+                    >
+                      <div className="input-group-btn">
+                        <button
+                          className="btn btn-primary btn-minus"
+                          onClick={() => this.handleQuantityChange(-1)}
+                        >
+                          <i className="fa fa-minus" />
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        className="form-control bg-secondary border-0 text-center"
+                        value={this.state.quantity}
+                      />
+                      <div className="input-group-btn">
+                        <button
+                          className="btn btn-primary btn-plus"
+                          onClick={() => this.handleQuantityChange(1)}
+                        >
+                          <i className="fa fa-plus" />
+                        </button>
+                      </div>
                     </div>
-                    <input
-                      type="text"
-                      className="form-control bg-secondary border-0 text-center"
-                      defaultValue={1}
-                    />
-                    <div className="input-group-btn">
-                      <button className="btn btn-primary btn-plus">
-                        <i className="fa fa-plus" />
+                    <div className="d-flex flex-column">
+                      <button
+                        className="btn btn-primary px-3 mb-3"
+                        onClick={() =>
+                          this.addProductToCart(
+                            this.state.product.productId,
+                            this.state.quantity
+                          )
+                        }
+                      >
+                        <i className="fa fa-shopping-cart mr-1" /> Add To Cart
+                      </button>
+                      <button
+                        className="btn btn-primary px-3"
+                        onClick={() =>
+                          this.addWishListProduct(this.state.product.productId)
+                        }
+                      >
+                        <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
                       </button>
                     </div>
                   </div>
-                  <div className="d-flex flex-column">
+                ) : (
+                  <div className="d-flex flex-column align-items-start">
+                    <p className="note-block-addcart">
+                      <span>Note:</span> This product is only sold when
+                      prescribed by a doctor, all information on the Website and
+                      App is for reference only. Please confirm that you are a
+                      pharmacist, doctor, or medical staff member who wants to
+                      learn about this product
+                    </p>
                     <button
-                      className="btn btn-primary px-3 mb-3"
-                      onClick={() =>
-                        this.addProductToCart(this.state.product.productId)
-                      }
+                      className="btn btn-primary px-3 mr-3"
+                      onClick={() => {
+                        this.createPrescription();
+                      }}
                     >
-                      <i className="fa fa-shopping-cart mr-1" /> Add To Cart
-                    </button>
-                    <button
-                      className="btn btn-primary px-3"
-                      onClick={() =>
-                        this.addWishListProduct(this.state.product.productId)
-                      }
-                    >
-                      <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
+                      <FontAwesomeIcon icon={faFileInvoice} /> Buy with
+                      prescription
                     </button>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -520,6 +560,7 @@ class DetailProductComponent extends Component {
                 </div>
               </div>
             </div>
+
             <div className="container-fluid mb-5 mt-5">
               <h4 style={{ color: "#3D464D" }} className="mb-5 mt-5">
                 Reviews <span>(3 reviews)</span>

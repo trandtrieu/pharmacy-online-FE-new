@@ -101,24 +101,29 @@ class HomeProduct extends Component {
                         alt={`Image3 0`}
                       />
                       <div className="product-action">
-                        <a
-                          className="btn btn-outline-dark btn-square"
-                          href
-                          onClick={() =>
-                            this.addProductToCart(product.productId)
-                          }
-                        >
-                          <i className="fa fa-shopping-cart" />
-                        </a>
-                        <a
-                          className="btn btn-outline-dark btn-square"
-                          href
-                          onClick={() =>
-                            this.addWishListProduct(product.productId)
-                          }
-                        >
-                          <i className="far fa-heart" />
-                        </a>
+                        {product.type === 0 ? ( // Kiểm tra giá trị type
+                          <>
+                            <a
+                              className="btn btn-outline-dark btn-square"
+                              href
+                              onClick={() =>
+                                this.addProductToCart(product.productId)
+                              }
+                            >
+                              <i className="fa fa-shopping-cart" />
+                            </a>
+                            <a
+                              className="btn btn-outline-dark btn-square"
+                              href
+                              onClick={() =>
+                                this.addWishListProduct(product.productId)
+                              }
+                            >
+                              <i className="far fa-heart" />
+                            </a>
+                          </>
+                        ) : null}
+
                         <a
                           href
                           className="btn btn-outline-dark btn-square"

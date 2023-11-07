@@ -330,25 +330,9 @@ const HeaderComponent = (props) => {
                   <Link to="/create-prescription" className="nav-item nav-link">
                     Prescription
                   </Link>
-                  <div className="nav-item dropdown">
-                    <a
-                      href="/"
-                      className="nav-link dropdown-toggle"
-                      data-toggle="dropdown"
-                    >
-                      Pages <i className="fa fa-angle-down mt-1" />
-                    </a>
-                    <div className="dropdown-menu bg-primary rounded-0 border-0 m-0">
-                      <a href="cart.html" className="dropdown-item">
-                        Shopping Cart
-                      </a>
-                      <a href="checkout.html" className="dropdown-item">
-                        Checkout
-                      </a>
-                    </div>
-                  </div>
-                  <Link to="/contact" className="nav-item nav-link">
-                    Contact
+
+                  <Link to="/blog" className="nav-item nav-link">
+                    Blog
                   </Link>
                 </div>
                 <div className="navbar-nav ml-auto py-0 d-none d-lg-block">

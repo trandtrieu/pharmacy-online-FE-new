@@ -409,3 +409,13 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 .remove-btn:hover p {
   color: #4c8bf580;
 }
+
+.note-block-addcart {
+  margin-top: 0;
+  font-size: .875rem;
+  line-height: 22px;
+  color: #112950;
+  background-color: #f2f4f5;
+  padding: 16px 24px;
+  border-radius: 0.75rem;
+}

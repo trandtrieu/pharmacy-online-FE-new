@@ -257,7 +257,7 @@ class CartComponent extends Component {
                 <div className="row">
                   <div className="col-md-10">
                     <div
-                      className="progress mb-2"
+                      className="progress"
                       role="progressbar"
                       aria-valuemin="0"
                       aria-valuemax="100"
@@ -269,6 +269,7 @@ class CartComponent extends Component {
                           width: `${(subTotal / 100) * 100}%`,
                           backgroundColor:
                             subTotal >= 100 ? "#B8E8FC" : "#A2FF86",
+                          height: "0.5 rem",
                         }}
                         aria-valuemin="0"
                         aria-valuemax="100"
