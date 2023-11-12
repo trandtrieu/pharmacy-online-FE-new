@@ -12,6 +12,7 @@ import ReactModal from "react-modal";
 import { useAuth } from "../AuthContext";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import CheckoutServices from "../services/CheckoutServices";
+import { toast } from "react-toastify";
 
 const customStyles = {
   content: {
@@ -27,15 +28,21 @@ const customStyles = {
 
 const CheckoutComponent = () => {
   const history = useHistory();
-  const [totalCost, setTotalCost] = useState(0);
+  const [subTotalCost, setSubTotalCost] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
+  const [totalCostAfterDiscount, setTotalCostAfterDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
 
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponCode, setCouponCode] = useState("");
   const [carts, setCarts] = useState([]);
   const [selectedOption, setSelectedOption] = useState("delivery");
   const [isChecked, setIsChecked] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [note, setNote] = useState("");
   const { accountId, token } = useAuth();
+
   useEffect(() => {
     CartServices.getListCartByAccountId(accountId, token)
       .then((res) => {
@@ -47,15 +54,16 @@ const CheckoutComponent = () => {
   }, [accountId, token]);
 
   useEffect(() => {
-    loadTotalCost();
+    loadSubTotalCost();
     loadShippingCost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId, token]);
 
-  const loadTotalCost = () => {
-    CheckoutServices.getTotalCart(accountId, 0, token)
+  const loadSubTotalCost = () => {
+    CheckoutServices.getSubTotalCart(accountId, 0, token)
       .then((res) => {
-        setTotalCost(res.data);
+        setSubTotalCost(res.data);
+        setTotalCostAfterDiscount(res.data);
         console.log("subtotal: " + res.data);
       })
       .catch((error) => {
@@ -72,6 +80,34 @@ const CheckoutComponent = () => {
       .catch((error) => {
         console.error("Error fetching total cost:", error);
       });
+  };
+
+  const applyCoupon = () => {
+    // Chuyển nút Apply thành trạng thái Checking
+    setCheckingCoupon(true);
+
+    setTimeout(() => {
+      CheckoutServices.applyCode(accountId, 0, couponCode, token)
+        .then((res) => {
+          if (res && res.discountAmount !== undefined) {
+            setCouponDiscount(res.discountAmount);
+            setTotalCostAfterDiscount(res.totalCostAfterDiscount);
+            setAppliedCoupon(couponCode);
+            toast.success("Apply coupon successfully");
+          } else {
+            console.error("Invalid response format for applying coupon:", res);
+            toast.error("Apply coupon failed");
+          }
+        })
+        .catch((error) => {
+          console.error("Error applying the coupon:", error);
+          toast.error("Apply coupon failed");
+        })
+        .finally(() => {
+          // Chuyển nút Checking thành trạng thái Apply
+          setCheckingCoupon(false);
+        });
+    }, 3000); // Thời gian chờ 3 giây
   };
 
   const handleRadioChange = (event) => {
@@ -270,40 +306,59 @@ const CheckoutComponent = () => {
             )}
           </div>
           <div className="col-lg-4">
-            <form className="mb-30" action>
+            <div className="form-group mb-1">
               <div className="input-group">
                 <input
                   type="text"
-                  className="form-control border-0 p-4"
-                  placeholder="Coupon Code"
+                  className="form-control border-0 p-1"
+                  placeholder=" Coupon Code"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
                 />
-                <div className="input-group-append">
-                  <button className="btn btn-primary">Apply Coupon</button>
-                </div>
+                <button
+                  className="btn btn-primary p-1"
+                  onClick={applyCoupon}
+                  disabled={checkingCoupon}
+                >
+                  {checkingCoupon ? "Checking..." : "Apply Coupon"}
+                </button>
               </div>
-            </form>
-            <h5 className="section-title position-relative text-uppercase mb-3">
+            </div>{" "}
+            {appliedCoupon && (
+              <p className="text-success ml-1" style={{ fontSize: "15px" }}>
+                Applied coupon: {appliedCoupon}
+              </p>
+            )}
+            <h5 className="section-title position-relative text-uppercase mb-3 mt-4">
               <span className="bg-secondary pr-3">Order Total</span>
             </h5>
-            <div className="bg-light p-30 mb-5">
+            <div className="bg-light p-20 mb-5">
               <div className="border-bottom pb-2">
                 <div className="d-flex justify-content-between ">
                   <h6>Subtotal</h6>
-                  <h6>${totalCost}</h6>
+                  <h6>${subTotalCost}</h6>
                 </div>
                 <div className="d-flex justify-content-between">
                   <h6 className="font-weight-medium">Shipping</h6>
-                  <h6 className="font-weight-medium"> + ${shippingCost} </h6>
+                  <h6 className="font-weight-medium">
+                    {" "}
+                    {shippingCost === 0 ? "Free" : `+ $ ${shippingCost}`}
+                  </h6>
                 </div>
-                <div className="d-flex justify-content-between">
-                  <h6 className="font-weight-medium">Discount coupon</h6>
-                  <h6 className="font-weight-medium"> - $10 </h6>
-                </div>
+                {couponDiscount !== 0 && (
+                  <div className="d-flex justify-content-between">
+                    <h6 className="font-weight-medium">Discount coupon</h6>
+                    <h6 className="font-weight-medium">
+                      {" "}
+                      - ${couponDiscount}{" "}
+                    </h6>
+                  </div>
+                )}
               </div>
               <div className="pt-2">
                 <div className="d-flex justify-content-between mt-2">
                   <h6>Total</h6>
-                  <h6>${totalCost}</h6>
+                  <h6>${totalCostAfterDiscount}</h6>
                 </div>
               </div>
             </div>

@@ -82,25 +82,25 @@ const HeaderComponent = (props) => {
     }
   }, [location.search]);
 
-  // const updateCartItemCount = () => {
-  //   CartServices.getNumberProductInCart(accountId, token)
-  //     .then((res) => {
-  //       setCartItemCount(res.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
-  //     });
-  // };
+  const updateCartItemCount = () => {
+    CartServices.getNumberProductInCart(accountId, token)
+      .then((res) => {
+        setCartItemCount(res.data);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
+      });
+  };
 
-  // const updateWishListItemCount = () => {
-  //   WishListServices.countProduct(accountId, token)
-  //     .then((res) => {
-  //       setWishlistItemCount(res.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
-  //     });
-  // };
+  const updateWishListItemCount = () => {
+    WishListServices.countProduct(accountId, token)
+      .then((res) => {
+        setWishlistItemCount(res.data);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
+      });
+  };
 
   useEffect(() => {
     CategoryServices.getCategoryType()
@@ -111,17 +111,17 @@ const HeaderComponent = (props) => {
         console.error("Lỗi khi tải sản phẩm:", error);
       });
 
-    // updateCartItemCount();
-    // updateWishListItemCount();
+    updateCartItemCount();
+    updateWishListItemCount();
 
-    // const cartInterval = setInterval(updateCartItemCount, 1000);
-    // const wishlistInterval = setInterval(updateWishListItemCount, 1000);
+    const cartInterval = setInterval(updateCartItemCount, 1000);
+    const wishlistInterval = setInterval(updateWishListItemCount, 1000);
 
-    // return () => {
-    //   clearInterval(cartInterval);
-    //   clearInterval(wishlistInterval);
-    // };
-  }, []);
+    return () => {
+      clearInterval(cartInterval);
+      clearInterval(wishlistInterval);
+    };
+  }, [updateCartItemCount, updateWishListItemCount]);
 
   const viewProductByCategory = (category_id) => {
     props.history.push(`/category/${category_id}`);
