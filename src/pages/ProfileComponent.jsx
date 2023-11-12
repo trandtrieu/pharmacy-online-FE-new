@@ -1,67 +1,43 @@
-import {
-  faCircleInfo,
-  faCopy,
-  faEye,
-  faFile,
-  faLocationDot,
-  faPen,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import PrescriptionServices from "../services/PrescriptionServices";
 import NavbarProfile from "../account/NavbarProfile";
 import { toast } from "react-toastify";
-import Modal from "react-modal";
-import DeliveryAddress from "../services/DeliveryAddressServices";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
+import PrescriptionAccount from "../account/PrescriptionAccount";
+import DeliveryAddressAccount from "../account/DeliveryAddressAccount";
+import { useAuth } from "../AuthContext";
+import { useHistory } from "react-router-dom";
 
-const accountId = 1;
+const ProfileComponent = () => {
+  const [prescriptions, setPrescriptions] = useState([]);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+    useState(false);
+  const [prescriptionItemToDelete, setPrescriptionItemToDelete] =
+    useState(null);
+  const history = useHistory();
+  const [deliveryAddress, setDeliveryAddress] = useState([]);
+  const [fullNameRecipient, setFullNameRecipient] = useState("");
+  const [phoneRecipient, setPhoneRecipient] = useState("");
+  const [specificAddressRecipient, setSpecificAddressRecipient] = useState("");
+  const [province, setProvince] = useState("");
+  const [district, setDistrict] = useState("");
+  const [ward, setWard] = useState("");
 
-const customStyles = {
-  content: {
-    top: "35%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    width: "30%",
-    transform: "translate(-40%, -10%)",
-  },
-};
-
-class ProfileComponent extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      presciptions: [],
-      isDeleteConfirmationOpen: false,
-      presciptionItemToDelete: null,
-      isModalOpen: false,
-      deliveryAddress: [],
-      fullNameRecipient: "",
-      phoneRecipient: "",
-      specificAddressRecipient: "",
-      province: "",
-      district: "",
-      ward: "",
-    };
-  }
-
-  componentDidMount() {
-    PrescriptionServices.getPrescriptionsByAccountId(accountId)
+  const { accountId, token } = useAuth();
+  useEffect(() => {
+    PrescriptionServices.getPrescriptionsByAccountId(accountId, token)
       .then((res) => {
-        this.setState({ presciptions: res.data });
+        console.log(accountId + "+ " + token);
+        setPrescriptions(res.data);
         console.log("Prescriptions loaded successfully:", res.data);
       })
       .catch((error) => {
         console.error("Error loading prescriptions:", error);
       });
 
-    DeliveryAddress.getDeliveryAddressByUserid(accountId)
+    DeliveryAddressServices.getDeliveryAddressByUserid(accountId, token)
       .then((res) => {
-        this.setState({ deliveryAddress: res.data });
+        setDeliveryAddress(res.data);
         console.log("DeliveryAddress loaded successfully:", res.data);
       })
       .catch((error) => {
@@ -72,23 +48,28 @@ class ProfileComponent extends Component {
       .then((response) => response.json())
       .then((data) => {
         let provinces = data.results;
-        provinces.map(
-          (value) =>
-            (document.getElementById(
-              "provinces"
-            ).innerHTML += `<option value='${value.province_id}'>${value.province_name}</option>`)
-        );
+        provinces.forEach((value) => {
+          document.getElementById(
+            "provinces"
+          ).innerHTML += `<option value='${value.province_id}'>${value.province_name}</option>`;
+        });
       })
       .catch((error) => {
         console.error("Lỗi khi gọi API:", error);
       });
     const cityDropdown = document.getElementById("provinces");
-    cityDropdown.addEventListener("change", this.getProvinces);
+    cityDropdown.addEventListener("change", getProvinces);
     const districtDropdown = document.getElementById("districts");
-    districtDropdown.addEventListener("change", this.getDistricts);
-  }
+    districtDropdown.addEventListener("change", getDistricts);
 
-  fetchDistricts(provincesID) {
+    return () => {
+      cityDropdown.removeEventListener("change", getProvinces);
+      districtDropdown.removeEventListener("change", getDistricts);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountId, token]);
+
+  const fetchDistricts = (provincesID) => {
     fetch(`https://vapi.vnappmob.com/api/province/district/${provincesID}`)
       .then((response) => response.json())
       .then((data) => {
@@ -108,9 +89,9 @@ class ProfileComponent extends Component {
       .catch((error) => {
         console.error("Lỗi khi gọi API:", error);
       });
-  }
+  };
 
-  fetchWards(districtsID) {
+  const fetchWards = (districtsID) => {
     fetch(`https://vapi.vnappmob.com/api/province/ward/${districtsID}`)
       .then((response) => response.json())
       .then((data) => {
@@ -130,131 +111,121 @@ class ProfileComponent extends Component {
       .catch((error) => {
         console.error("Lỗi khi gọi API:", error);
       });
-  }
+  };
 
-  getProvinces = (event) => {
+  const getProvinces = (event) => {
     const selectedProvince = event.target.value;
     const selectedProvinceName =
       event.target.options[event.target.selectedIndex].text;
-    console.log("Selected Province:", selectedProvinceName);
-    this.setState({ province: selectedProvinceName });
+    setProvince(selectedProvinceName);
 
     // Tiếp tục với các thay đổi khác nếu cần
-    this.fetchDistricts(selectedProvince);
+    fetchDistricts(selectedProvince);
     document.getElementById(
       "wards"
     ).innerHTML = `<option value=''>Select Ward</option>`;
   };
 
-  getDistricts = (event) => {
+  const getDistricts = (event) => {
     // const selectedDistrict = event.target.value;
     const selectedDistrictName =
       event.target.options[event.target.selectedIndex].text;
-    console.log("Selected District:", selectedDistrictName);
-    this.setState({ district: selectedDistrictName });
-    this.fetchWards(event.target.value);
+    setDistrict(selectedDistrictName);
+    fetchWards(event.target.value);
   };
 
-  getWards = (event) => {
+  const getWards = (event) => {
     const selectedWardName =
       event.target.options[event.target.selectedIndex].text;
-    console.log("Selected Wards:", selectedWardName);
-    this.setState({ ward: selectedWardName });
+    setWard(selectedWardName);
   };
 
-  changeFullNameRecipient = (event) => {
-    console.log(event.target.value);
-    this.setState({ fullNameRecipient: event.target.value });
+  const changeFullNameRecipient = (event) => {
+    setFullNameRecipient(event.target.value);
   };
-  changePhoneRecipient = (event) => {
-    console.log(event.target.value);
-    this.setState({ phoneRecipient: event.target.value });
+  const changePhoneRecipient = (event) => {
+    setPhoneRecipient(event.target.value);
   };
-  changeSpecificAddressRecipient = (event) => {
-    console.log(event.target.value);
-    this.setState({ specificAddressRecipient: event.target.value });
+  const changeSpecificAddressRecipient = (event) => {
+    setSpecificAddressRecipient(event.target.value);
+  };
+  const createNewDeliveryAddress = (e) => {
+    e.preventDefault();
+    setTimeout(() => {
+      let deliveryAddressData = {
+        recipient_full_name: fullNameRecipient,
+        recipient_phone_number: phoneRecipient,
+        specific_address: `${specificAddressRecipient}, ${ward}, ${district}, ${province}.`,
+      };
+      console.log("deliveryAddress => " + JSON.stringify(deliveryAddress));
+
+      DeliveryAddressServices.addDeliveryAddress(
+        accountId,
+        deliveryAddressData,
+        token
+      ).then((res) => {
+        // window.location.reload();
+      }, 100000);
+      toast.success("good");
+    }).catch((error) => {
+      toast.error("fail");
+      console.error("Error creating delivery address:", error);
+    });
   };
 
-  createNewDeliveryAddress = (accountId) => {
-    // e.preventDefault();
-
-    let deliveryAddress = {
-      recipient_full_name: this.state.fullNameRecipient,
-      recipient_phone_number: this.state.phoneRecipient,
-      specific_address:
-        this.state.specificAddressRecipient +
-        ", " +
-        this.state.ward +
-        ", " +
-        this.state.district +
-        ", " +
-        this.state.province +
-        ".",
-    };
-    console.log("deliveryAddress => " + JSON.stringify(deliveryAddress));
-    DeliveryAddressServices.addDeliveryAddress(accountId, deliveryAddress).then(
-      (res) => {
-        setTimeout(() => {
-          window.location.reload();
-        }, 100000);
-      }
-    );
-    toast.success("New Delivery Address Created successfully");
-  };
-  deleteDelivery_Address(user_id, address_id) {
-    DeliveryAddress.deleteDeliveryAddress(user_id, address_id).then((res) => {
-      this.setState({
-        deliveryAddress: this.state.deliveryAddress.filter(
-          (delivery) => delivery.address_id !== address_id
-        ),
-      });
+  const deleteDeliveryAddress = (user_id, address_id) => {
+    console.log("token" + token);
+    DeliveryAddressServices.deleteDeliveryAddress(
+      user_id,
+      address_id,
+      token
+    ).then((res) => {
+      setDeliveryAddress(
+        deliveryAddress.filter((delivery) => delivery.address_id !== address_id)
+      );
     });
     toast.success("Delete Address successfully!");
     // .catch((error) => {
     //   console.error("Error deleting Address:", error);
     // });
-  }
+  };
 
-  handleDeleteConfirmed = (presciptionItem) => {
-    PrescriptionServices.removePrescription(presciptionItem.id)
+  const handleRemoveFromCart = (prescriptionItem) => {
+    openDeleteConfirmation(prescriptionItem);
+  };
+
+  const handleDeleteConfirmed = (prescriptionItem) => {
+    PrescriptionServices.removePrescription(prescriptionItem.id)
       .then(() => {
-        const updatedPrescriptions = this.state.presciptions.filter(
-          (prescription) => prescription.id !== presciptionItem.id
+        const updatedPrescriptions = prescriptions.filter(
+          (prescription) => prescription.id !== prescriptionItem.id
         );
-        this.setState({
-          presciptions: updatedPrescriptions,
-          isDeleteConfirmationOpen: false,
-          presciptionItemToDelete: null,
-        });
+        setPrescriptions(updatedPrescriptions);
+        setIsDeleteConfirmationOpen(false);
+        setPrescriptionItemToDelete(null);
         toast.success("Delete prescription successfully!");
       })
       .catch((error) => {
         console.error("Error deleting prescription:", error);
-        this.closeDeleteConfirmation();
+        closeDeleteConfirmation();
       });
   };
 
-  handleRemoveFromCart = (presciptionItem) => {
-    this.openDeleteConfirmation(presciptionItem);
+  const openDeleteConfirmation = (prescriptionItem) => {
+    setIsDeleteConfirmationOpen(true);
+    setPrescriptionItemToDelete(prescriptionItem);
   };
 
-  openDeleteConfirmation = (presciptionItem) => {
-    this.setState({
-      isDeleteConfirmationOpen: true,
-      presciptionItemToDelete: presciptionItem,
-    });
+  const closeDeleteConfirmation = () => {
+    setIsDeleteConfirmationOpen(false);
+    setPrescriptionItemToDelete(null);
   };
 
-  closeDeleteConfirmation = () => {
-    this.setState({
-      isDeleteConfirmationOpen: false,
-      presciptionItemToDelete: null,
-    });
+  const toPrescription = () => {
+    history.push(`/create-prescription`);
   };
-  toPrescription() {
-    this.props.history.push(`/create-prescription`);
-  }
-  copyToClipboard = (presciptionItem) => {
+
+  const copyToClipboard = (presciptionItem) => {
     const idToCopy = presciptionItem.id;
     const tempInput = document.createElement("input");
     tempInput.value = idToCopy;
@@ -265,558 +236,136 @@ class ProfileComponent extends Component {
     toast.success("Copy prescription successfully");
   };
 
-  editEmployee(id) {
-    this.props.history.push(`/update-prescription/${id}`);
-  }
-  render() {
-    return (
-      <>
-        <Modal
-          isOpen={this.state.isDeleteConfirmationOpen}
-          onRequestClose={this.closeDeleteConfirmation}
-          contentLabel="Delete Confirmation"
-          style={customStyles}
-        >
-          <h4>Confirm Deletion</h4>
-          <p>Are you sure you want to delete this item from your cart?</p>
-          <button
-            onClick={() =>
-              this.handleDeleteConfirmed(this.state.presciptionItemToDelete)
-            }
-            className="btn btn-danger"
-          >
-            Delete
-          </button>
-          &nbsp;
-          <button
-            onClick={this.closeDeleteConfirmation}
-            className="btn btn-info"
-          >
-            Cancel
-          </button>
-        </Modal>
-        <div className="container light-style flex-grow-1 container-p-y">
-          <div className="card overflow-hidden">
-            <div className="row no-gutters row-bordered row-border-light">
-              <NavbarProfile />
-              <div className="col-md-9">
-                <div className="tab-content">
-                  <div className="tab-pane fade " id="account-general">
-                    <div className="card-body media align-items-center">
-                      <img
-                        src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                        alt=""
-                        className="d-block ui-w-80"
-                      />
-                      <div className="media-body ml-4">
-                        <label className="btn btn-outline-primary">
-                          Upload new photo
-                          <input
-                            type="file"
-                            className="account-settings-fileinput"
-                          />
-                        </label>
-                        &nbsp;
-                        <button
-                          type="button"
-                          className="btn btn-default md-btn-flat"
-                        >
-                          Reset
-                        </button>
-                        <div className="text-light small mt-1">
-                          Allowed JPG, GIF or PNG. Max size of 800K
-                        </div>
-                      </div>
-                    </div>
-                    <hr className="border-light m-0" />
-                    <div className="card-body">
-                      <div className="form-group">
-                        <label className="form-label">Username</label>
-                        <input
-                          type="text"
-                          className="form-control mb-1"
-                          defaultValue="nmaxwell"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Name</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          defaultValue="Nelle Maxwell"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">E-mail</label>
-                        <input
-                          type="text"
-                          className="form-control mb-1"
-                          defaultValue="nmaxwell@mail.com"
-                        />
-                        <div className="alert alert-warning mt-3">
-                          Your email is not confirmed. Please check your inbox.
-                          <br />
-                          <a href="/">Resend confirmation</a>
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Company</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          defaultValue="Company Ltd."
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="tab-pane fade" id="account-change-password">
-                    <div className="card-body pb-2">
-                      <div className="form-group">
-                        <label className="form-label">Current password</label>
-                        {/* <input type="password" className="form-control" /> */}
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">New password</label>
-                        {/* <input type="password" className="form-control" /> */}
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">
-                          Repeat new password
-                        </label>
-                      </div>{" "}
-                      {/* <input type="password" className="form-control" /> */}
-                    </div>
-                  </div>
-                  <div
-                    className="tab-pane fade active show m-3"
-                    id="account-prescripitons"
-                  >
-                    {this.state.presciptions.length === 0 ? (
-                      <div className="container-fluid">
-                        <div className="row">
-                          <div className="col-md-12 d-flex flex-column align-items-center">
-                            <div
-                              className="empty-img mt-4"
-                              style={{ width: "150px", height: "100px" }}
-                            >
-                              <img
-                                src="../assets/images/empty-image.png"
-                                alt=""
-                                className="w-100 h-100"
-                              />
-                            </div>
-                            <h6 className="mb-2">
-                              I'm sorry! DrugMart couldn't find any products in
-                              your cart.
-                            </h6>
-                            <button
-                              className="btn btn-primary mb-4"
-                              onClick={() => this.toPrescription()}
-                            >
-                              Create a prescription
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      this.state.presciptions.map((presciptionItem) => (
-                        <div className="card mb-2" key={presciptionItem.id}>
-                          <div className="card-header bg-light">
-                            <h6 className="card-title m-0 p-0">
-                              Code: <span>#{presciptionItem.id}</span>
-                              <FontAwesomeIcon
-                                icon={faCopy}
-                                onClick={() =>
-                                  this.copyToClipboard(presciptionItem)
-                                }
-                                className="pl-2"
-                              />
-                            </h6>
-                          </div>
-                          <div
-                            className="card-prescription d-flex"
-                            style={{ height: "100px" }}
-                          >
-                            <div className="pres-img">
-                              <img
-                                src={`../assets/images/${presciptionItem.imageUrls}`}
-                                className="w-100 h-100 "
-                                alt="..."
-                              />
-                            </div>
-                            <div className="card-body ">
-                              <p className="card-title">
-                                Create date: {presciptionItem.createdTime}
-                                &nbsp;
-                                {presciptionItem.createdDate}
-                              </p>
-                              <p
-                                className={
-                                  presciptionItem.status === 1
-                                    ? "text-success"
-                                    : "text-warning"
-                                }
-                              >
-                                {presciptionItem.status === 0
-                                  ? "Waiting for advice"
-                                  : presciptionItem.status === 1
-                                  ? "Confirmed"
-                                  : presciptionItem.status}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="card-footer bg-light p-0 m-0 pl-2">
-                            <button
-                              data-toggle="modal"
-                              data-target={`#myModal${presciptionItem.id}`}
-                              className="btn"
-                            >
-                              <span>
-                                <FontAwesomeIcon icon={faEye} />
-                              </span>
-                            </button>
-                            <button
-                              className="btn"
-                              onClick={() =>
-                                this.handleRemoveFromCart(presciptionItem)
-                              }
-                            >
-                              <FontAwesomeIcon icon={faTrash} />
-                            </button>
-                            <button
-                              className="btn"
-                              onClick={() =>
-                                this.editEmployee(presciptionItem.id)
-                              }
-                            >
-                              <FontAwesomeIcon icon={faPen} />
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                  <div className="tab-pane fade" id="account-delivery-address">
-                    <div className="card-body pb-2">
-                      <div className="form-group d-flex align-items-center justify-content-between">
-                        <div>Manage Delivery Address</div>
-                        <div>
-                          <button
-                            data-toggle="modal"
-                            data-target={`#myModal`}
-                            className="btn btn-primary rounded "
-                          >
-                            Add New Delivery Address
-                          </button>
-                        </div>
-                      </div>
-                      {/* <div className="form-group">
-                        <label className="form-label"></label>
-                      </div> */}
-                      <div className="form-group mt-4">
-                        <div>
-                          {this.state.deliveryAddress.length === 0 ? (
-                            <div className="container-fluid">
-                              <div className="row">
-                                <div className="col-md-12 d-flex flex-column align-items-center">
-                                  <div
-                                    className="empty-img mt-4"
-                                    style={{ width: "150px", height: "100px" }}
-                                  >
-                                    <img
-                                      src="../assets/images/empty-image.png"
-                                      alt=""
-                                      className="w-100 h-100"
-                                    />
-                                  </div>
-                                  <h6 className="mb-2">
-                                    I'm sorry! DrugMart couldn't find any
-                                    delivery addresses in your cart.
-                                  </h6>
-                                  {/* <button
-                                    className="btn btn-primary mb-4"
-                                    onClick={() => this.toPrescription()}
-                                  >
-                                    Create a prescription
-                                  </button> */}
-                                </div>
-                              </div>
-                            </div>
-                          ) : (
-                            this.state.deliveryAddress.map((delivery) => (
-                              <div
-                                style={{
-                                  border: "1px solid #ccc",
-                                  backgroundColor: "#f2f6fe",
-                                }}
-                                className="row mt-3 mb-3 rounded p-3"
-                              >
-                                <div className="col-md-1">
-                                  <div
-                                    className="text-center  pt-1 pb-1"
-                                    style={{
-                                      width: "100%",
-                                      backgroundColor: "#d7ffcb",
-                                      borderRadius: "50%",
-                                    }}
-                                  >
-                                    <FontAwesomeIcon
-                                      style={{ color: "" }}
-                                      icon={faLocationDot}
-                                    />
-                                  </div>
-                                </div>
-                                <div className="col-md-10">
-                                  <p>
-                                    <strong>
-                                      {delivery.recipient_full_name}
-                                    </strong>{" "}
-                                    <span className="ml-2 mr-2"> | </span>{" "}
-                                    <span>
-                                      {delivery.recipient_phone_number}
-                                    </span>
-                                  </p>
-                                  <p>{delivery.specific_address}</p>
-                                </div>
-                                <div className="col-md-1">
-                                  <button
-                                    onClick={() =>
-                                      this.deleteDelivery_Address(
-                                        accountId,
-                                        delivery.address_id
-                                      )
-                                    }
-                                    className="btn "
-                                  >
-                                    <FontAwesomeIcon icon={faTrash} />
-                                  </button>
-                                </div>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>{" "}
-                      {/* <input type="password" className="form-control" /> */}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {this.state.presciptions.map((presciptionItem) => (
-          <div className="container">
-            <div
-              className="modal fade modal-lg"
-              id={`myModal${presciptionItem.id}`}
-              role="dialog"
-              style={{
-                top: "70%",
-                left: "50%",
-                right: "auto",
-                transform: "translate(-50%, -50%)",
-              }}
-              key={presciptionItem.id}
-            >
-              <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title" id="exampleModalLabel">
-                      Prescription detail
-                      <FontAwesomeIcon icon={faCircleInfo} />
-                    </h5>
-                    <button
-                      type="button"
-                      className="close"
-                      data-dismiss="modal"
-                      aria-label="Close"
-                    >
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div className="modal-body">
-                    <p>
-                      Code:
-                      <span className="text-dark">
-                        {" "}
-                        #{presciptionItem.id}{" "}
-                        <FontAwesomeIcon
-                          icon={faCopy}
-                          onClick={() => this.copyToClipboard(presciptionItem)}
-                        />
-                      </span>
-                    </p>
-                    <p>
-                      Status:
-                      <span
-                        className={
-                          presciptionItem.status === 1
-                            ? "text-success"
-                            : "text-warning"
-                        }
-                      >
-                        {presciptionItem.status === 0
-                          ? " Waiting for advice"
-                          : presciptionItem.status === 1
-                          ? " Confirmed"
-                          : presciptionItem.status}
-                      </span>
-                    </p>
-                    <p>
-                      {presciptionItem.updatedDate &&
-                      presciptionItem.updatedTime ? (
-                        <>
-                          Update date:
-                          <span className="text-dark">
-                            {" "}
-                            {presciptionItem.updatedDate} &nbsp;
-                            {presciptionItem.updatedTime}
-                          </span>
-                        </>
-                      ) : null}
-                    </p>
+  const editEmployee = (id) => {
+    history.push(`/update-prescription/${id}`);
+  };
 
-                    <p>
-                      Ghi chú:
-                      <span className="text-dark"> {presciptionItem.note}</span>
-                    </p>
-                    <p>
-                      Image: {presciptionItem.imageUrls}
-                      <FontAwesomeIcon icon={faFile} />
-                    </p>
-                    <p>
-                      Contact: {presciptionItem.email} - {presciptionItem.phone}
-                    </p>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      data-dismiss="modal"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-        {/* model add delivery address */}
-        <div class="container">
-          <div
-            class="modal fade modal-lg rounded "
-            style={{
-              maxWidth: "10000px",
-              margin: "0 auto",
-              marginTop: "",
-              paddingRight: "0",
-            }}
-            id={`myModal`}
-            role="dialog"
-          >
-            <div
-              style={{
-                maxWidth: "700px",
-                overflowY: "scroll",
-                maxHeight: "86%",
-              }}
-              class="modal-dialog rounded "
-            >
-              {/* <!-- Modal content--> */}
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 style={{ textAlign: "center" }} class="modal-title">
-                    Create New Delivery Address <b></b>
-                  </h4>
-                  <button type="button" class="close" data-dismiss="modal">
-                    &times;
-                  </button>
-                </div>
-                <div className=" container row mt-3">
-                  <div className=" modal-body col-md-12  ">
-                    <p style={{ fontSize: "1.2rem" }}>Recipient Information </p>
-                    <div class="form-group">
-                      <input
-                        onChange={this.changeFullNameRecipient}
-                        className="form-control rounded"
-                        type="text"
-                        placeholder="Full Name"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <input
-                        onChange={this.changePhoneRecipient}
-                        className="form-control rounded"
-                        type="text"
-                        placeholder="Phone Number"
-                      />
-                    </div>
-                  </div>
-                  <div className=" modal-body col-md-12  ">
-                    <p style={{ fontSize: "1.2rem" }}>Shipping Address</p>
-                    <div class="form-group">
-                      <select
-                        style={{ color: "757575", opacity: "1" }}
-                        className="form-control rounded"
-                        id="provinces"
-                        onchange={this.getProvinces}
-                      >
-                        <option value="">Select Province/City</option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <select
-                        style={{ color: "757575", opacity: "1" }}
-                        className="form-control rounded"
-                        id="districts"
-                        onchange={this.getDistricts}
-                      >
-                        <option value="">Select District</option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <select
-                        style={{ color: "757575", opacity: "1" }}
-                        className="form-control rounded"
-                        id="wards"
-                        onChange={this.getWards}
-                      >
-                        <option value="">Select Ward</option>
-                      </select>
-                    </div>
-
-                    <textarea
-                      onChange={this.changeSpecificAddressRecipient}
-                      name="opinion"
-                      cols="30"
-                      rows="5"
-                      placeholder="Enter a specific address"
-                      required
-                    ></textarea>
-                  </div>
-                </div>
-                <div class="modal-body">
-                  <form action="">
-                    <div className="btn btn-info rounded">
+  return (
+    <>
+      <div className="container light-style flex-grow-1 container-p-y">
+        <div className="card overflow-hidden">
+          <div className="row no-gutters row-bordered row-border-light">
+            <NavbarProfile />
+            <div className="col-md-9">
+              <div className="tab-content">
+                <div className="tab-pane fade " id="account-general">
+                  <div className="card-body media align-items-center">
+                    <img
+                      src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                      alt=""
+                      className="d-block ui-w-80"
+                    />
+                    <div className="media-body ml-4">
+                      <label className="btn btn-outline-primary">
+                        Upload new photo
+                        <input
+                          type="file"
+                          className="account-settings-fileinput"
+                        />
+                      </label>
+                      &nbsp;
                       <button
-                        onClick={() => this.createNewDeliveryAddress(accountId)}
-                        style={{ color: "#fff" }}
-                        type="submit"
-                        className="btn submit"
+                        type="button"
+                        className="btn btn-default md-btn-flat"
                       >
-                        Create
+                        Reset
                       </button>
+                      <div className="text-light small mt-1">
+                        Allowed JPG, GIF or PNG. Max size of 800K
+                      </div>
                     </div>
-                  </form>
+                  </div>
+                  <hr className="border-light m-0" />
+                  <div className="card-body">
+                    <div className="form-group">
+                      <label className="form-label">Username</label>
+                      <input
+                        type="text"
+                        className="form-control mb-1"
+                        defaultValue="nmaxwell"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        defaultValue="Nelle Maxwell"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">E-mail</label>
+                      <input
+                        type="text"
+                        className="form-control mb-1"
+                        defaultValue="nmaxwell@mail.com"
+                      />
+                      <div className="alert alert-warning mt-3">
+                        Your email is not confirmed. Please check your inbox.
+                        <br />
+                        <a href="/">Resend confirmation</a>
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Company</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        defaultValue="Company Ltd."
+                      />
+                    </div>
+                  </div>
                 </div>
+                <div className="tab-pane fade" id="account-change-password">
+                  <div className="card-body pb-2">
+                    <div className="form-group">
+                      <label className="form-label">Current password</label>
+                      {/* <input type="password" className="form-control" /> */}
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">New password</label>
+                      {/* <input type="password" className="form-control" /> */}
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Repeat new password</label>
+                    </div>{" "}
+                    {/* <input type="password" className="form-control" /> */}
+                  </div>
+                </div>
+
+                <PrescriptionAccount
+                  prescriptions={prescriptions}
+                  handleDeleteConfirmed={handleDeleteConfirmed}
+                  copyToClipboard={copyToClipboard}
+                  handleRemoveFromCart={handleRemoveFromCart}
+                  editEmployee={editEmployee}
+                  toPrescription={toPrescription}
+                  isDeleteConfirmationOpen={isDeleteConfirmationOpen}
+                  closeDeleteConfirmation={closeDeleteConfirmation}
+                  prescriptionItemToDelete={prescriptionItemToDelete}
+                  openDeleteConfirmation={openDeleteConfirmation}
+                />
+
+                <DeliveryAddressAccount
+                  deliveryAddress={deliveryAddress}
+                  deleteDeliveryAddress={deleteDeliveryAddress}
+                  changeFullNameRecipient={changeFullNameRecipient}
+                  changePhoneRecipient={changePhoneRecipient}
+                  getProvinces={getProvinces}
+                  getDistricts={getDistricts}
+                  getWards={getWards}
+                  changeSpecificAddressRecipient={
+                    changeSpecificAddressRecipient
+                  }
+                  createNewDeliveryAddress={createNewDeliveryAddress}
+                />
               </div>
             </div>
           </div>
         </div>
-      </>
-    );
-  }
-}
+      </div>
+    </>
+  );
+};
 
 export default ProfileComponent;

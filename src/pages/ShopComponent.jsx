@@ -1,15 +1,18 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from "react";
-import WishListServices from "../services/WishListServices";
 import ProductServices from "../services/ProductServices";
-import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
+import CartServices from "../services/CartServices";
+import WishListServices from "../services/WishListServices";
+import { toast } from "react-toastify";
+import { useAuth } from "../AuthContext";
 
 function ShopComponent() {
   const [products, setProducts] = useState([]);
   const history = useHistory();
   const [productCounts, setProductCounts] = useState({});
   const [selectedPriceRange, setSelectedPriceRange] = useState("price-all"); // Default selected price range
+  const { accountId, token } = useAuth(); // Sử dụng AuthContext để truy cập giá trị accountId và token
 
   useEffect(() => {
     ProductServices.getProducts()
@@ -22,30 +25,29 @@ function ShopComponent() {
       });
   }, []);
 
-  // const addWishListProduct = (product_id) => {
-  //   const accountId = 4; // Replace with the actual account ID
-  //   WishListServices.addToWishlist(accountId, product_id)
-  //     .then((response) => {
-  //       console.log("Product added to wishlist:", response.data);
-  //       toast.success("Product added to wishlist successfully!");
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error adding product to wishlist:", error);
-  //     });
-  // };
-  // const addProductToCart = (product_id) => {
-  //   const accountId = 4; // Replace with the actual account ID
-  //   ProductServices.addToCart(accountId, product_id, 1)
-  //     .then((response) => {
-  //       console.log("Product added to cart:", response.data);
-  //       toast.error("Product added to cart successfully!");
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error adding product to cart:", error);
-  //     });
-  // };
   const viewProduct = (productId) => {
     history.push(`/detail-product/${productId}`);
+  };
+  const addProductToCart = (product_id) => {
+    CartServices.addToCart(accountId, product_id, 1, token)
+      .then((response) => {
+        console.log("Product added to cart:", response.data);
+        toast.success("Product added to cart successfully!");
+      })
+      .catch((error) => {
+        toast.error("Product added to cart fail!: " + token);
+        console.error("Error adding product to cart:", error);
+      });
+  };
+  const addWishListProduct = (product_id) => {
+    WishListServices.addToWishlist(accountId, product_id, token)
+      .then((response) => {
+        console.log("Product added to wishlist:", response.data);
+        toast.success("Product added to wishlist successfully!");
+      })
+      .catch((error) => {
+        console.error("Error adding product to wishlist:", error);
+      });
   };
   const searchProductsLatest = () => {
     ProductServices.searchProductsLatest()
@@ -398,10 +400,18 @@ function ShopComponent() {
                         />
                       )}
                       <div className="product-action">
-                        <a className="btn btn-outline-dark btn-square" href>
+                        <a
+                          className="btn btn-outline-dark btn-square"
+                          href
+                          onClick={() => addProductToCart(product.productId)}
+                        >
                           <i className="fa fa-shopping-cart" />
                         </a>
-                        <a className="btn btn-outline-dark btn-square" href>
+                        <a
+                          className="btn btn-outline-dark btn-square"
+                          href
+                          onClick={() => addWishListProduct(product.productId)}
+                        >
                           <i className="far fa-heart" />
                         </a>
                       </div>

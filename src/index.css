@@ -419,3 +419,27 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   padding: 16px 24px;
   border-radius: 0.75rem;
 }
+
+/* Custom Modal Styles */
+.custom-modal {
+  top: 35%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  width: 30%;
+  transform: translate(-40%, -10%);
+}
+
+/* Dropzone Styles */
+.dropzone {
+  border: 2px dashed #cccccc;
+  border-radius: 4px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.dropzone.active {
+  border-color: green;
+}

@@ -1,24 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 * {
-    /* margin: 0;
-    padding: 0; */
     box-sizing: border-box;
 }
 
-/* 
-body {
-  /* background: url("../Assest/—Pngtree—wallpaper\ of\ a\ scenic\ mountain_3137681.jpg")
-    top center / cover no-repeat; */
-/* display: flex; */
-/* justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  font-family: "Poppins", sans-serif;
-  overflow: hidden;
-  height: 100vh;
-} */
-*/ h1 {
+
+.title-login {
     font-weight: 700;
     letter-spacing: -1.5px;
     margin: 0;
@@ -32,7 +19,7 @@ h1.title {
     text-shadow: 0 0 10px rgba(16, 64, 74, 0.5);
 }
 
-p {
+.content-login {
     font-size: 14px;
     font-weight: 100;
     line-height: 20px;
@@ -41,12 +28,12 @@ p {
     text-shadow: 0 0 10px rgba(16, 64, 74, 0.5);
 }
 
-span {
+/* span {
     font-size: 14px;
     margin-top: 20px;
-}
+} */
 
-a {
+.social {
     color: #333;
     font-size: 14px;
     text-decoration: none;
@@ -160,6 +147,7 @@ form {
     text-align: center;
 }
 
+
 input {
     background-color: #fff;
     outline: none;
@@ -170,7 +158,7 @@ input {
     width: 100%;
 }
 
-.container {
+.container-auth {
     border-radius: 25px;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 0px 10px rgba(0, 0, 0, 0.22);
     position: relative;
@@ -178,6 +166,8 @@ input {
     width: 768px;
     max-width: 100%;
     min-height: 500px;
+    display: flex;
+    margin: 0 auto;
 }
 
 .form-container {
@@ -274,7 +264,7 @@ input {
     z-index: 2;
 }
 
-.container.right-panel-active .login-container {
+.container-auth.right-panel-active .login-container {
     transform: translateX(100%);
 }
 
@@ -286,7 +276,7 @@ input {
     z-index: 1;
 }
 
-.container.right-panel-active .register-container {
+.container-auth.right-panel-active .register-container {
     transform: translateX(100%);
     opacity: 1;
     z-index: 5;
@@ -319,7 +309,7 @@ input {
     z-index: 100;
 }
 
-.container.right-panel-active .overlay-container {
+.container-auth.right-panel-active .overlay-container {
     transform: translate(-100%);
 }
 
@@ -349,7 +339,7 @@ input {
             rgba(46, 94, 109, 0));
 }
 
-.container.right-panel-active .overlay {
+.container-auth.right-panel-active .overlay {
     transform: translateX(50%);
 }
 
@@ -372,7 +362,7 @@ input {
     transform: translateX(-20%);
 }
 
-.container.right-panel-active .overlay-left {
+.container-auth.right-panel-active .overlay-left {
     transform: translateX(0);
 }
 
@@ -381,7 +371,7 @@ input {
     transform: translateX(0);
 }
 
-.container.right-panel-active .overlay-right {
+.container-auth.right-panel-active .overlay-right {
     transform: translateX(20%);
 }
 

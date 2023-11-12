@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-// import "../style/Login.css";
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faSquareFacebook } from "@fortawesome/free-brands-svg-icons";
@@ -11,38 +11,45 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-
-import { BrowserRouter, Route, Link, useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { AuthContext } from "../AuthContext"; // Import AuthContext
 
 export function LoginComponent() {
   const history = useHistory();
+  const { setAccountId, setToken } = useContext(AuthContext);
 
   const [loginFormData, setLoginFormData] = useState({
     username: "",
     password: "",
-    redirectToHome: false,
+    rememberMe: false, // Added rememberMe state
   });
+
   const [signupFormData, setSignupFormData] = useState({
     username: "",
-    mail: "",
+    email: "",
     password: "",
   });
+
   const [errors, setErrors] = useState({
-    mail: "",
+    email: "",
     password: "",
     username: "",
   });
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [token, setToken] = useState("");
-  const [userName, setUserName] = useState("");
-  const [data1, setData1] = useState("");
+  // const [data, setData] = useState("");
+
+  // Removed token and userName states as they are not used
+
+  // Use the react-cookie hook to access and set cookies
   const [cookies, setCookie, removeCookie] = useCookies([
     "username",
     "password",
   ]);
 
   useEffect(() => {
+    // Load saved username and password from cookies on component mount
     const savedUsername = cookies.username;
     const savedPassword = cookies.password;
 
@@ -53,8 +60,10 @@ export function LoginComponent() {
         password: savedPassword,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Function to handle the "Remember Me" checkbox change
   const handleRememberMeChange = (e) => {
     const { name, checked } = e.target;
     setLoginFormData({
@@ -63,23 +72,26 @@ export function LoginComponent() {
     });
   };
 
+  // Function to toggle password visibility
   const togglePasswordVisibility = (e) => {
     e.preventDefault();
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
+  // Function to check if an active session is stored in the browser's sessionStorage
   const checkActiveSession = () => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       const userData = JSON.parse(storedUser);
       setLoginFormData({
-        usernmae: userData.username,
+        username: userData.username, // Fixed typo (usernmae to username)
         password: userData.password,
       });
       setIsLoggedIn(true);
     }
   };
 
+  // Function to handle changes in the login form input fields
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
     setLoginFormData({
@@ -93,7 +105,7 @@ export function LoginComponent() {
 
       setErrors({
         ...errors,
-        mail: isValidEmail ? "" : "Invalid email address",
+        email: isValidEmail ? "" : "Invalid email address",
       });
     } else if (name === "password") {
       const passwordRegex = /^.{8,16}$/;
@@ -107,19 +119,21 @@ export function LoginComponent() {
     }
   };
 
+  // Function to handle changes in the signup form input fields
   const handleSignupChange = (e) => {
     const { name, value } = e.target;
     setSignupFormData({
       ...signupFormData,
       [name]: value,
     });
+
     if (name === "email") {
       const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
       const isValidEmail = emailRegex.test(value);
 
       setErrors({
         ...errors,
-        mail: isValidEmail ? "" : "Invalid email address",
+        email: isValidEmail ? "" : "Invalid email address",
       });
     } else if (name === "password") {
       setErrors({
@@ -139,12 +153,15 @@ export function LoginComponent() {
     }
   };
 
+  // Function to handle login form submission
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
     try {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
+
+      let accountId = null;
 
       var raw = JSON.stringify({
         username: loginFormData.username,
@@ -165,35 +182,58 @@ export function LoginComponent() {
       if (!response.ok) {
         throw Error(response.status);
       } else {
-        const token = await response.text();
-        setData1(token);
-        localStorage.setItem("token", token);
-
+        accountId = await response.text();
+        // setData(accountId);
+        localStorage.setItem("token", accountId);
         if (loginFormData.rememberMe) {
           setCookie("username", loginFormData.username, { path: "/" });
           setCookie("password", loginFormData.password, { path: "/" });
         }
+        localStorage.setItem("id", accountId);
 
-        history.push("/");
-        window.location.reload();
+        const tokenData = localStorage.getItem("token");
+
+        const tokenObject = JSON.parse(tokenData);
+
+        const token = tokenObject.token;
+
+        const idData = localStorage.getItem("id");
+
+        const idObject = JSON.parse(idData);
+
+        const id = idObject.id;
+
+        if (token && id) {
+          console.log("Token:", token);
+          console.log("ID:", id);
+          localStorage.setItem("id", id);
+          localStorage.setItem("token", token);
+          setAccountId(id);
+          setToken(token);
+        } else {
+          console.log("Token hoặc ID không tồn tại trong local storage.");
+        }
+
+        history.push("/cart");
       }
     } catch (error) {
       console.error("Error", error);
     }
   };
 
+  // Function to handle signup form submission
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
 
-    const { mail, password, username } = signupFormData;
+    const { email, password, username } = signupFormData;
     const {
-      mail: emailError,
+      email: emailError,
       password: passwordError,
       username: usernameError,
     } = errors;
 
     if (
-      !mail ||
+      !email ||
       !password ||
       !username ||
       emailError ||
@@ -227,7 +267,7 @@ export function LoginComponent() {
   };
 
   return (
-    <div class="container" id="container">
+    <div className="container" id="container">
       <div class="form-container register-container">
         <form onSubmit={handleSignupSubmit} className="auth">
           <h1>Register here</h1>
@@ -272,12 +312,12 @@ export function LoginComponent() {
           </button>
           <span>Or use your account</span>
           <div class="social-container">
-            <a href="#" class="social">
+            <a href="/" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faSquareFacebook} />
               </i>
             </a>
-            <a href="#" class="social">
+            <a href="/" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faGoogle} />
               </i>
@@ -340,12 +380,12 @@ export function LoginComponent() {
           </button>
           <span>Or use your account</span>
           <div class="social-container">
-            <a href="#" class="social">
+            <a href="/" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faSquareFacebook} />
               </i>
             </a>
-            <a href="#" class="social">
+            <a href="/" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faGoogle} />
               </i>
@@ -395,3 +435,5 @@ export function LoginComponent() {
     </div>
   );
 }
+
+export default LoginComponent;

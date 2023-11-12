@@ -4,16 +4,30 @@ const PRESCRIPTION_API_BASE_URL =
   "http://localhost:8080/pharmacy-online/prescriptions";
 
 class PrescriptionServices {
-  createPrescriptions(presciption, accountId) {
+  createPrescriptions(prescription, accountId, accessToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
     return axios.post(
-      PRESCRIPTION_API_BASE_URL + "/create?account_id=" + accountId,
-      presciption
+      `${PRESCRIPTION_API_BASE_URL}/create?account_id=${accountId}`,
+      prescription,
+      config
     );
   }
 
-  getPrescriptionsByAccountId(accountId) {
+  getPrescriptionsByAccountId(accountId, accessToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
     return axios.get(
-      PRESCRIPTION_API_BASE_URL + "/byaccount?account_id=" + accountId
+      `${PRESCRIPTION_API_BASE_URL}/byaccount?account_id=${accountId}`,
+      config
     );
   }
 

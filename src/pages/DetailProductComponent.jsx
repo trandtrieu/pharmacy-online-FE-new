@@ -13,7 +13,7 @@ import {
 import WishListServices from "../services/WishListServices";
 import FeedbackServices from "../services/FeedbackServices";
 import ReplyServices from "../services/ReplyServices";
-
+const accountId = 5;
 class DetailProductComponent extends Component {
   constructor(props) {
     super(props);
@@ -116,7 +116,6 @@ class DetailProductComponent extends Component {
               this.forceUpdate(); // Cập nhật lại giao diện sau khi có dữ liệu
             }
           );
-          console.log(feedback.replies);
         });
       }
     );
@@ -225,14 +224,16 @@ class DetailProductComponent extends Component {
         comment: this.state.opinion,
         rating: this.state.rating,
       };
-      FeedbackServices.addFeedback(this.state.productId, 1, feedback).then(
-        (res) => {
-          toast.success("Feedback submitted successfully");
-        }
-      );
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+      FeedbackServices.addFeedback(
+        this.state.productId,
+        accountId,
+        feedback
+      ).then((res) => {
+        toast.success("Feedback submitted successfully");
+      });
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 1500);
     }
   };
 
@@ -245,9 +246,11 @@ class DetailProductComponent extends Component {
       let reply = {
         reply_feedback: this.state.replyByFeedback,
       };
-      ReplyServices.addReplyByFeedback(feedbackId, 1, reply).then((res) => {
-        toast.success("Reply submitted successfully");
-      });
+      ReplyServices.addReplyByFeedback(feedbackId, accountId, reply).then(
+        (res) => {
+          toast.success("Reply submitted successfully");
+        }
+      );
 
       setTimeout(() => {
         window.location.reload();
@@ -286,7 +289,7 @@ class DetailProductComponent extends Component {
     });
   };
   addProductToCart(product_id, quantity) {
-    const accountId = 1; // Replace with the actual account ID
+    const accountId = 5; // Replace with the actual account ID
     CartServices.addToCart(accountId, product_id, quantity)
       .then((response) => {
         console.log("Product added to cart:", response.data);
@@ -297,7 +300,7 @@ class DetailProductComponent extends Component {
       });
   }
   addWishListProduct(product_id) {
-    const accountId = 1; // Replace with the actual account ID
+    const accountId = 5; // Replace with the actual account ID
     WishListServices.addToWishlist(accountId, product_id)
       .then((response) => {
         console.log("Product added to wishlist:", response.data);
@@ -855,9 +858,9 @@ class DetailProductComponent extends Component {
                           </div>
                         ))}
                         {/* //model send reviews */}
-                        <div class="container">
+                        <div className="container">
                           <div
-                            class="modal fade modal-lg "
+                            className="modal fade modal-lg "
                             style={{
                               maxWidth: "10000px",
                               width: "100p0x",
@@ -870,20 +873,20 @@ class DetailProductComponent extends Component {
                           >
                             <div
                               style={{ maxWidth: "700px" }}
-                              class="modal-dialog"
+                              className="modal-dialog"
                             >
                               {/* <!-- Modal content--> */}
-                              <div class="modal-content">
-                                <div class="modal-header">
+                              <div className="modal-content">
+                                <div className="modal-header">
                                   <h4
                                     style={{ textAlign: "center" }}
-                                    class="modal-title"
+                                    className="modal-title"
                                   >
                                     Review Product <b></b>
                                   </h4>
                                   <button
                                     type="button"
-                                    class="close"
+                                    className="close"
                                     data-dismiss="modal"
                                   >
                                     &times;
@@ -903,7 +906,7 @@ class DetailProductComponent extends Component {
                                     <h4>{this.state.product.name}</h4>
                                   </div>
                                 </div>
-                                <div class="modal-body">
+                                <div className="modal-body">
                                   <form action="">
                                     <div
                                       style={{

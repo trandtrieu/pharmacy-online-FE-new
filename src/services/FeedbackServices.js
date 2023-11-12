@@ -1,39 +1,33 @@
 /* eslint-disable import/no-anonymous-default-export */
 import axios from "axios";
 
-const FEEDBACK_API_BASE_URL = "http://localhost:8080/pharmacy-online/products";
-const FEEDBACK_API_BASE_URL1 = "http://localhost:8080/pharmacy-online/";
+const FEEDBACK_API_BASE_URL =
+  "http://localhost:8080/pharmacy-online/product/feedback/";
 
 class FeedbackServices {
   getFeedbackByProductId(productId) {
-    return axios.get(FEEDBACK_API_BASE_URL + "/" + productId + "/feedbacks");
+    return axios.get(FEEDBACK_API_BASE_URL + productId);
   }
 
-  deleteFeedback(feedbackId) {
-    return axios.delete(FEEDBACK_API_BASE_URL1 + "delete/" + feedbackId);
+  deleteFeedback(feedbackId, user_id) {
+    return axios.delete(
+      FEEDBACK_API_BASE_URL + "delete/" + feedbackId + "/" + user_id
+    );
   }
 
   addFeedback(productId, user_id, feedback) {
     return axios.post(
-      FEEDBACK_API_BASE_URL1 +
-        "product/" +
-        productId +
-        "/feedback/add/" +
-        user_id,
+      FEEDBACK_API_BASE_URL + "add/" + productId + "/" + user_id,
       feedback
     );
   }
 
   getAverageRatingByProductId(productId) {
-    return axios.get(
-      FEEDBACK_API_BASE_URL1 + "product/" + productId + "/averageRating"
-    );
+    return axios.get(FEEDBACK_API_BASE_URL + "averageRating/" + productId);
   }
 
   getTotalFeedbackbyRating(productId, rating) {
-    return axios.get(
-      FEEDBACK_API_BASE_URL1 + "product/" + productId + "/" + rating
-    );
+    return axios.get(FEEDBACK_API_BASE_URL + productId + "/" + rating);
   }
 }
 

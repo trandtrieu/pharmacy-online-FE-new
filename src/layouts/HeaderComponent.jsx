@@ -1,13 +1,12 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
 import ProductServices from "../services/ProductServices";
-import SearchProduct from "../pages/SearchProduct";
 import { withRouter } from "react-router-dom";
 import CategoryServices from "../services/CategoryServices";
 import CartServices from "../services/CartServices";
 import WishListServices from "../services/WishListServices";
-const accountId = 1;
+import { useAuth } from "../AuthContext";
 
 const HeaderComponent = (props) => {
   const [keyword, setKeyword] = useState("");
@@ -18,7 +17,17 @@ const HeaderComponent = (props) => {
   const [categories, setCategories] = useState([]);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [wishlistItemCount, setWishlistItemCount] = useState(0);
+  const [username, setUsername] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { accountId, token } = useAuth();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setUsername(null);
+
+    history.push("/");
+  };
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       searchProductAndFilter();
@@ -28,7 +37,7 @@ const HeaderComponent = (props) => {
   const handleSearch = (e) => {
     e.preventDefault();
 
-    http: history.push(`/shop/search?keyword=${keyword}&price=${priceFilter}`);
+    history.push(`/shop/search?keyword=${keyword}&price=${priceFilter}`);
     searchProductAndFilter(keyword, priceFilter);
   };
 
@@ -52,35 +61,10 @@ const HeaderComponent = (props) => {
       });
   };
 
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   history.push(`/shop/search?keyword=${keyword}`);
-  //   searchProduct(keyword);
-  // };
+  useEffect(() => {
+    setIsLoggedIn(true);
+  }, []);
 
-  // const searchProduct = (keyword) => {
-  //   console.log("Searching for keyword: " + keyword);
-  //   ProductServices.searchProduct(keyword)
-  //     .then((res) => {
-  //       console.log("Search result:", res.data);
-  //       setProducts(res.data);
-  //     })
-  //     .catch((error) => {
-  //       console.log("Error occurred while searching for products: " + error);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams(location.search);
-  //   const initialKeyword = searchParams.get("keyword");
-
-  //   if (initialKeyword) {
-  //     setKeyword(initialKeyword);
-  //     searchProduct(initialKeyword);
-  //   } else {
-  //     searchProduct("");
-  //   }
-  // }, [location.search]);
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const initialKeyword = searchParams.get("keyword");
@@ -98,30 +82,25 @@ const HeaderComponent = (props) => {
     }
   }, [location.search]);
 
-  // const updatePriceFilter = (newPriceFilter) => {
-  //   setPriceFilte(newPriceFilter);
-  //   // You can optionally update the URL when the price filter changes
-  //   history.push(`/shop/search?keyword=${keyword}&price=${newPriceFilter}`);
+  // const updateCartItemCount = () => {
+  //   CartServices.getNumberProductInCart(accountId, token)
+  //     .then((res) => {
+  //       setCartItemCount(res.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
+  //     });
   // };
-  const updateCartItemCount = () => {
-    CartServices.getNumberProductInCart(accountId)
-      .then((res) => {
-        setCartItemCount(res.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
-      });
-  };
 
-  const updateWishListItemCount = () => {
-    WishListServices.countProduct(accountId)
-      .then((res) => {
-        setWishlistItemCount(res.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
-      });
-  };
+  // const updateWishListItemCount = () => {
+  //   WishListServices.countProduct(accountId, token)
+  //     .then((res) => {
+  //       setWishlistItemCount(res.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
+  //     });
+  // };
 
   useEffect(() => {
     CategoryServices.getCategoryType()
@@ -132,16 +111,16 @@ const HeaderComponent = (props) => {
         console.error("Lỗi khi tải sản phẩm:", error);
       });
 
-    updateCartItemCount();
-    updateWishListItemCount();
+    // updateCartItemCount();
+    // updateWishListItemCount();
 
-    const cartInterval = setInterval(updateCartItemCount, 1000);
-    const wishlistInterval = setInterval(updateWishListItemCount, 1000);
+    // const cartInterval = setInterval(updateCartItemCount, 1000);
+    // const wishlistInterval = setInterval(updateWishListItemCount, 1000);
 
-    return () => {
-      clearInterval(cartInterval);
-      clearInterval(wishlistInterval);
-    };
+    // return () => {
+    //   clearInterval(cartInterval);
+    //   clearInterval(wishlistInterval);
+    // };
   }, []);
 
   const viewProductByCategory = (category_id) => {
@@ -149,7 +128,7 @@ const HeaderComponent = (props) => {
   };
 
   const toAccount = () => {
-    props.history.push(`/profile/${1}`);
+    props.history.push(`/profile`);
   };
 
   return (
@@ -158,16 +137,16 @@ const HeaderComponent = (props) => {
         <div className="row bg-secondary py-1 px-xl-5">
           <div className="col-lg-6 d-none d-lg-block">
             <div className="d-inline-flex align-items-center h-100">
-              <a className="text-body mr-3" href>
+              <a className="text-body mr-3" href="/">
                 About
               </a>
-              <a className="text-body mr-3" href>
+              <a className="text-body mr-3" href="/">
                 Contact
               </a>
-              <a className="text-body mr-3" href>
+              <a className="text-body mr-3" href="/">
                 Help
               </a>
-              <a className="text-body mr-3" href>
+              <a className="text-body mr-3" href="/">
                 FAQs
               </a>
             </div>
@@ -193,17 +172,21 @@ const HeaderComponent = (props) => {
                   >
                     Profile
                   </button>
-                  <button className="dropdown-item" type="button">
-                    Sign in
-                  </button>
-                  <button className="dropdown-item" type="button">
-                    Sign up
-                  </button>
+
+                  {isLoggedIn ? (
+                    <button onClick={handleLogout} className="dropdown-item">
+                      Logout
+                    </button>
+                  ) : (
+                    <Link to="/login" className="dropdown-item">
+                      Login
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
             <div className="d-inline-flex align-items-center d-block d-lg-none">
-              <a href className="btn px-0 ml-2">
+              <a href="/" className="btn px-0 ml-2">
                 <i className="fas fa-heart text-dark" />
                 <span
                   className="badge text-dark border border-dark rounded-circle"
@@ -212,7 +195,7 @@ const HeaderComponent = (props) => {
                   0
                 </span>
               </a>
-              <a href className="btn px-0 ml-2">
+              <a href="/" className="btn px-0 ml-2">
                 <i className="fas fa-shopping-cart text-dark" />
                 <span
                   className="badge text-dark border border-dark rounded-circle"
@@ -226,7 +209,7 @@ const HeaderComponent = (props) => {
         </div>
         <div className="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
           <div className="col-lg-4">
-            <a href className="text-decoration-none">
+            <a href="/" className="text-decoration-none">
               <span className="h1 text-uppercase text-primary bg-dark px-2">
                 Multi
               </span>
