@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
@@ -88,7 +89,7 @@ const HeaderComponent = (props) => {
         setCartItemCount(res.data);
       })
       .catch((error) => {
-        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
+        // console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
       });
   };
 
@@ -98,7 +99,7 @@ const HeaderComponent = (props) => {
         setWishlistItemCount(res.data);
       })
       .catch((error) => {
-        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
+        // console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
       });
   };
 
@@ -114,8 +115,8 @@ const HeaderComponent = (props) => {
     updateCartItemCount();
     updateWishListItemCount();
 
-    const cartInterval = setInterval(updateCartItemCount, 1000);
-    const wishlistInterval = setInterval(updateWishListItemCount, 1000);
+    const cartInterval = setInterval(updateCartItemCount, 108800);
+    const wishlistInterval = setInterval(updateWishListItemCount, 1888000);
 
     return () => {
       clearInterval(cartInterval);

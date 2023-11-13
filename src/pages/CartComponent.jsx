@@ -164,7 +164,7 @@ const CartComponent = ({ history }) => {
         contentLabel="Remove All Confirmation"
         style={customStyles}
       >
-        <h4>Confirm Remove All</h4>
+        <h5>Confirm Remove All</h5>
         <p>Are you sure you want to remove all items from your cart?</p>
         <button
           onClick={() => {
@@ -330,7 +330,7 @@ const CartComponent = ({ history }) => {
               </button>
             </div>
             <div className="col-lg-4">
-              <h5 className="section-title position-relative text-uppercase mb-3">
+              <h5 className="section-title position-relative text-uppercase mb-3 mt-5">
                 <span className="bg-secondary pr-3">Cart Summary</span>
               </h5>
               <div className="bg-light p-30 mb-5">

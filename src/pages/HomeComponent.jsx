@@ -18,6 +18,7 @@ function HomeProduct(props) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { accountId, token } = useAuth();
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
     setLoading(true); // Set loading to true to display the loading indicator
@@ -40,10 +41,21 @@ function HomeProduct(props) {
       .then((response) => {
         console.log("Product added to cart:", response.data);
         toast.success("Product added to cart successfully!");
+        updateCartItemCount();
       })
       .catch((error) => {
         toast.error("Please login to use this feature!");
         console.error("Error adding product to cart:", error);
+      });
+  };
+
+  const updateCartItemCount = () => {
+    CartServices.getNumberProductInCart(accountId, token)
+      .then((res) => {
+        setCartItemCount(res.data);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
       });
   };
   const addWishListProduct = (product_id) => {
