@@ -10414,7 +10414,7 @@ button.bg-dark:focus {
 }
 
 .text-primary {
-    color: #A2FF86 !important
+    color: #155724 !important
 }
 
 a.text-primary:hover,
@@ -10468,7 +10468,7 @@ a.text-danger:focus {
 }
 
 .text-light {
-    color: #fff !important
+    color: #FFFFFF !important
 }
 
 a.text-light:hover,
@@ -10689,7 +10689,7 @@ h6 {
 
 .navbar-dark .navbar-nav .nav-link:hover,
 .navbar-dark .navbar-nav .nav-link.active {
-    color: #A2FF86
+    color: #80dbf7 
 }
 
 @media (max-width: 991.98px) {
@@ -10882,6 +10882,7 @@ h6 {
     z-index: 11;
     animation: action 1s infinite alternate
 }
+
 
 @keyframes action {
     0% {

@@ -77,7 +77,7 @@ class WishlistComponent extends Component {
                             >
                               {wishlistItem.imageUrls.length > 0 && (
                                 <img
-                                  src={`../assets/images/${wishlistItem.imageUrls[0]}`}
+                                  src={wishlistItem.imageUrls[0]}
                                   alt=""
                                   style={{ height: "100%", width: "100%" }}
                                 />

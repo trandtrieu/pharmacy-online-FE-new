@@ -65,12 +65,13 @@ section {
 body {
   margin: 0;
   font-family: "Roboto", sans-serif;
-  font-size: 1rem;
+  font-size: 1.02rem;
   font-weight: 400;
   line-height: 1.5;
   color: #6C757D;
   text-align: left;
-  background-color: #F5F5F5;
+  /* background-color: #F5F5F5; */
+  background-color: #F6F8FC;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {
@@ -445,7 +446,7 @@ h4,
 
 h5,
 .h5 {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 
 h6,
@@ -637,10 +638,11 @@ pre code {
 .container-lg,
 .container-xl {
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  /* padding-right: 15px;
+  padding-left: 15px; */
   margin-right: auto;
   margin-left: auto;
+  overflow-x: hidden;
 }
 
 @media (min-width: 576px) {
@@ -2710,8 +2712,11 @@ fieldset:disabled a.btn {
 
 .btn-primary {
   color: #212529;
-  background-color: #A2FF86;
-  border-color: #A2FF86;
+  /* background-color: #85BBF5;
+  border-color: #85BBF5; */
+  background-color: #5591C5;
+  border-color:  #5591C5;
+ 
 }
 
 .btn-primary:hover {
@@ -3357,7 +3362,7 @@ fieldset:disabled a.btn {
 .btn-sm,
 .btn-group-sm>.btn {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 15px;
   line-height: 1.5;
   border-radius: 0;
 }
@@ -6428,6 +6433,7 @@ a.close.disabled {
 
 .carousel {
   position: relative;
+  border-radius: 10px;
 }
 
 .carousel.pointer-event {
@@ -6438,6 +6444,7 @@ a.close.disabled {
   position: relative;
   width: 100%;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .carousel-inner::after {
@@ -6520,6 +6527,7 @@ a.close.disabled {
   text-align: center;
   opacity: 0.5;
   transition: opacity 0.15s ease;
+  
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -6692,7 +6700,7 @@ a.close.disabled {
 }
 
 .bg-primary {
-  background-color: #A2FF86 !important;
+  background-color: #BFE5FC !important;
 }
 
 a.bg-primary:hover,
@@ -6769,7 +6777,7 @@ button.bg-light:focus {
 }
 
 .bg-dark {
-  background-color: #3D464D !important;
+  background-color: #335E90!important;
 }
 
 a.bg-dark:hover,
@@ -7967,7 +7975,7 @@ button.bg-dark:focus {
 }
 
 .position-absolute {
-  position: absolute !important;
+  /* position: absolute !important; */
 }
 
 .position-fixed {
@@ -8336,7 +8344,7 @@ button.bg-dark:focus {
 
 .pb-3,
 .py-3 {
-  padding-bottom: 1rem !important;
+  padding-bottom: 0.5rem !important;
 }
 
 .pl-3,
@@ -10303,7 +10311,7 @@ button.bg-dark:focus {
 .text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 
 .text-left {
@@ -10415,7 +10423,7 @@ button.bg-dark:focus {
 }
 
 .text-primary {
-  color: #A2FF86 !important;
+  color: #FFFFFF !important;
 }
 
 a.text-primary:hover,
@@ -10656,7 +10664,7 @@ h6 {
 }
 
 .btn.btn-primary {
-  color: #3D464D !important;
+  color: #FFFFFF !important
 }
 
 .btn-square {
@@ -10681,6 +10689,7 @@ h6 {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 30px;
 }
 
 .navbar-dark .navbar-nav .nav-link {
@@ -10691,7 +10700,7 @@ h6 {
 
 .navbar-dark .navbar-nav .nav-link:hover,
 .navbar-dark .navbar-nav .nav-link.active {
-  color: #A2FF86;
+  color: #ffa56d;
 }
 
 @media (max-width: 991.98px) {
@@ -10753,6 +10762,7 @@ h6 {
 .product-offer {
   position: relative;
   overflow: hidden;
+  border-radius: 10px; /* Apply border-radius to make the element circular by default */
 }
 
 .product-offer img {
@@ -10761,10 +10771,12 @@ h6 {
   height: 100%;
   object-fit: cover;
   transition: .5s;
+  border-radius: 10px; /* Apply the same border-radius as the parent element */
 }
 
 .product-offer:hover img {
   transform: scale(1.2) rotate(5deg);
+  border-radius: 10px; /* Keep the same border-radius on hover */
 }
 
 .product-offer .offer-text {
@@ -10779,33 +10791,53 @@ h6 {
   justify-content: center;
   background: rgba(61, 70, 77, 0.5);
   z-index: 1;
+  border-radius: 10px; /* Apply border-radius to the overlay */
 }
 
+
+
 .cat-item {
-  background: #FFFFFF;
-  transition: .5s;
+  background-color: #F6FBFF;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.5s, box-shadow 0.5s;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin: 10px;
+  text-align: left;
+  cursor: pointer;
 }
 
 .cat-item:hover {
   background: #A2FF86;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .cat-item img {
-  transition: .5s;
+  transition: transform 0.5s;
+  margin: 0 auto;
+ 
+ 
 }
 
 .cat-item:hover img {
   transform: scale(1.2) rotate(5deg);
 }
 
+
 .product-item {
   transition: .5s;
 }
 
+
+
 .product-action {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 97%;
+  height: 95%;
+  margin-left: 1%;
+  margin-top: 2px;
+ 
   top: 0;
   left: 0;
   display: flex;
@@ -10887,6 +10919,81 @@ h6 {
   z-index: 11;
   animation: action 1s infinite alternate;
 }
+
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.product-item {
+  transition: border 0.01s; /* Đặt thời gian hiệu ứng chuyển đổi là 0.3 giây */
+}
+
+.product-item:hover {
+  border: 2px solid #0072BC; /* Đổi màu và độ dày của viền tại đây */
+}
+
+.title-bg {
+  background-color: #333; /* Đổi màu nền theo mong muốn */
+  color: #fff; /* Đổi màu chữ theo mong muốn */
+  border-radius: 15px; /* Đặt góc bo tròn theo mong muốn */
+  padding: 10px 20px; /* Đặt khoảng cách nội dung bên trong */
+
+}
+
+/* Default styles for larger screens */
+.cover-carousel {
+  padding-left: 8%;
+  padding-right: 8%;
+}
+
+.product-item {
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.product-img {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-img img {
+  border-radius: 10px;
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+  .cover-carousel {
+    padding-left: 2%;
+    padding-right: 2%;
+  }
+
+  .product-item {
+    width: 100%; /* Adjust the width for smaller screens */
+    margin-bottom: 20px; /* Add some spacing between items */
+  }
+
+  .product-img {
+    height: 150px; /* Adjust the height for smaller screens */
+  }
+
+  .product-action {
+    text-align: center;
+  }
+}
+
+/* .feature-products {
+  background-color: CEE0FF;
+  margin-top: 40px;
+  padding-bottom: 30px;
+} */
+
 
 @keyframes action {
   0% {

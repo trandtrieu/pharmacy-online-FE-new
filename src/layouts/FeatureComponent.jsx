@@ -16,6 +16,7 @@ class FeatureComponent extends Component {
                 <h5 className="font-weight-semi-bold m-0">Quality Product</h5>
               </div>
             </div>
+
             <div className="col-lg-3 col-md-6 col-sm-12 pb-1">
               <div
                 className="d-flex align-items-center bg-light mb-4"

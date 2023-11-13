@@ -204,9 +204,9 @@ function ShopComponent() {
       newProductCounts[id] = event.target.checked
         ? calculateProductCountForRange(id)
         : 0;
-      setSelectedPriceRange(id); // Update the selected price range
+      setSelectedPriceRange(id);
     } else {
-      setSelectedPriceRange("price-all"); // Set "price-all" as the default if nothing is selected
+      setSelectedPriceRange("price-all");
     }
 
     const allCheckboxIds = [
@@ -298,7 +298,7 @@ function ShopComponent() {
             <div className="row pb-3">
               <div className="col-12 pb-1">
                 <div className="d-flex align-items-center justify-content-between mb-4">
-                  <div>
+                  <div style={{ display: "flex" }}>
                     <button className="btn btn-sm btn-light">
                       <i className="fa fa-th-large" />
                     </button>
@@ -306,7 +306,7 @@ function ShopComponent() {
                       <i className="fa fa-bars" />
                     </button>
                   </div>
-                  <div className="ml-2">
+                  <div className="ml-2" style={{ display: "flex" }}>
                     <div className="btn-group">
                       <button
                         type="button"
@@ -382,6 +382,7 @@ function ShopComponent() {
                   </div>
                 </div>
               </div>
+
               {products.map((product) => (
                 <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
                   <div
@@ -392,9 +393,9 @@ function ShopComponent() {
                       {product.imageUrls.length > 0 && (
                         <img
                           className="img-fluid w-100"
-                          src={`assets/images/${product.imageUrls[0]}`}
-                          // src={product.imageUrls[0]}
-                          alt={`Imagee 0`}
+                          // src={`assets/images/${product.imageUrls[0]}`}
+                          src={product.imageUrls[0]}
+                          alt={`Image3 0`}
                         />
                       )}
                       <div className="product-action">
@@ -406,29 +407,7 @@ function ShopComponent() {
                         </a>
                       </div>
                     </div>
-                    {/* <div className="text-center py-4">
-                      <a
-                        className="h6 text-decoration-none text-truncate"
-                        href
-                        onClick={() => this.viewProduct(product.productId)}
-                      >
-                        ${product.name}
-                      </a>
-                      <div className="d-flex align-items-center justify-content-center mt-2">
-                        <h5>${product.price}</h5>
-                        <h6 className="text-muted ml-2">
-                          <del>${product.price}</del>
-                        </h6>
-                      </div>
-                      <div className="d-flex align-items-center justify-content-center mb-1">
-                        <small className="fa fa-star text-primary mr-1" />
-                        <small className="fa fa-star text-primary mr-1" />
-                        <small className="fa fa-star text-primary mr-1" />
-                        <small className="far fa-star text-primary mr-1" />
-                        <small className="far fa-star text-primary mr-1" />
-                        <small>(99)</small>
-                      </div>
-                    </div> */}
+
                     <div className="text-center py-4">
                       <div className="product-item-box">
                         <a
@@ -457,6 +436,7 @@ function ShopComponent() {
                   </div>
                 </div>
               ))}
+
               <div className="col-12">
                 <nav>
                   <ul className="pagination justify-content-center">

@@ -154,11 +154,11 @@ code {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  /* max-width: 200px; */
+  max-width: 200px;
   padding: 0 10px;
 }
 
-/* .product-link:hover::before {
+.product-link:hover::before {
   content: attr(title);
   position: absolute;
   background-color: #fff;
@@ -167,7 +167,7 @@ code {
   border-radius: 4px;
   z-index: 1;
   color: black;
-} */
+}
 
 .price-detail {
   background-color: #f2f4f5;
@@ -210,7 +210,7 @@ label.btn {
 }
 
 .text-light {
-  color: #babbbc !important;
+  color: #fff !important;
 }
 
 .btn-facebook {
