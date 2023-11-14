@@ -2,6 +2,7 @@ import { faLocationDot, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
+
 const DeliveryAddressAccount = ({
   deliveryAddress,
   deleteDeliveryAddress,

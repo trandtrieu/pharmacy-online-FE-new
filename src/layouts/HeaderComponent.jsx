@@ -104,13 +104,13 @@ const HeaderComponent = (props) => {
   };
 
   useEffect(() => {
-    CategoryServices.getCategoryType()
-      .then((res) => {
-        setCategories(res.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      });
+    // CategoryServices.getCategoryType()
+    //   .then((res) => {
+    //     setCategories(res.data);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Lỗi khi tải sản phẩm:", error);
+    //   });
 
     // updateCartItemCount();
     // updateWishListItemCount();

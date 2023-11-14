@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +12,7 @@ import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
 import { Link, useHistory } from "react-router-dom";
 import { AuthContext } from "../AuthContext"; // Import AuthContext
+import "../style/Login.css";
 
 export function LoginComponent() {
   const history = useHistory();
@@ -47,6 +47,28 @@ export function LoginComponent() {
     "username",
     "password",
   ]);
+
+  useEffect(() => {
+    const registerButton = document.getElementById("register");
+    const loginButton = document.getElementById("login");
+    const container = document.getElementById("container");
+
+    const handleRegisterClick = () => {
+      container.classList.add("right-panel-active");
+    };
+
+    const handleLoginClick = () => {
+      container.classList.remove("right-panel-active");
+    };
+
+    registerButton.addEventListener("click", handleRegisterClick);
+    loginButton.addEventListener("click", handleLoginClick);
+
+    return () => {
+      registerButton.removeEventListener("click", handleRegisterClick);
+      loginButton.removeEventListener("click", handleLoginClick);
+    };
+  }, []);
 
   useEffect(() => {
     // Load saved username and password from cookies on component mount
@@ -267,57 +289,57 @@ export function LoginComponent() {
   };
 
   return (
-    <div className="container" id="container">
+    <div class="container-auth" id="container">
       <div class="form-container register-container">
-        <form onSubmit={handleSignupSubmit} className="auth">
+        <form onSubmit={handleSignupSubmit}>
           <h1>Register here</h1>
-          <div class="form-control-auth">
+          <div class="form-control2">
             <input
-              name="username"
-              class="email-2"
+              className="email-2"
               type="text"
               id="username"
-              placeholder="Username"
+              placeholder="Name"
+              name="username"
               onChange={handleSignupChange}
             />
-            <small id="username-error">{errors.username}</small>
+            <small id="username-error"></small>
             <span></span>
           </div>
-          <div class="form-control-auth">
+          <div class="form-control2">
             <input
-              name="mail"
-              class="email-2"
               type="email"
               id="email"
               placeholder="Email"
+              name="mail"
+              className="email-2"
               onChange={handleSignupChange}
             />
-            <small id="email-error">{errors.mail}</small>
+            <small id="email-error"></small>
             <span></span>
           </div>
-          <div class="form-control-auth">
+          <div class="form-control2">
             <input
-              name="password"
-              class="email-2"
+              className="password-2"
               type="password"
               id="password"
               placeholder="Password"
+              name="password"
               onChange={handleSignupChange}
             />
-            <small id="password-error">{errors.password}</small>
+            <small id="password-error"></small>
             <span></span>
           </div>
           <button type="submit" value="submit" className="btn-login">
             Register
           </button>
-          <span>Or use your account</span>
+          <span>or use your account</span>
           <div class="social-container">
-            <a href="/" class="social">
+            <a href="#" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faSquareFacebook} />
               </i>
             </a>
-            <a href="/" class="social">
+            <a href="#" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faGoogle} />
               </i>
@@ -325,40 +347,31 @@ export function LoginComponent() {
           </div>
         </form>
       </div>
-      {/* Login */}
+
       <div class="form-container login-container">
-        <form class="form-lg auth" onSubmit={handleLoginSubmit}>
+        <form class="form-lg" onSubmit={handleLoginSubmit}>
           <h1>Login here.</h1>
           <div class="form-control2">
             <input
               type="username"
-              class="email-2"
+              className="email-2"
               placeholder="Username"
               name="username"
-              value={loginFormData.username}
               onChange={handleLoginChange}
             />
-            <small class="email-error-2">{errors.username}</small>
+            <small class="email-error-2"></small>
             <span></span>
           </div>
           <div class="form-control2">
             <input
-              type={showPassword ? "text" : "password"}
-              class="password-2"
+              type="password"
+              className="password-2"
               placeholder="Password"
-              value={loginFormData.password}
-              onChange={handleLoginChange}
               name="password"
-            ></input>
-            <small class="password-error-2"> {errors.password}</small>
-            <span className="error"></span>
+              onChange={handleLoginChange}
+            />
+            <small class="password-error-2"></small>
             <span></span>
-            <p
-              className="toggle-password-icon"
-              onClick={togglePasswordVisibility}
-            >
-              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
-            </p>
           </div>
 
           <div class="content">
@@ -367,12 +380,17 @@ export function LoginComponent() {
                 type="checkbox"
                 name="rememberMe"
                 id="rememberMe"
+                checked={loginFormData.rememberMe}
                 onChange={handleRememberMeChange}
               />
-              <label for="">Remember me</label>
+              <label for="rememberMe" style={{ marginTop: "10px" }}>
+                Remember me
+              </label>
             </div>
             <div class="pass-link">
-              <Link to="/forgotpass">Forgot password</Link>
+              <a href="/forgotpass" style={{ textDecoration: "none" }}>
+                Forgot password
+              </a>
             </div>
           </div>
           <button type="submit" value="submit" className="btn-login">
@@ -380,12 +398,12 @@ export function LoginComponent() {
           </button>
           <span>Or use your account</span>
           <div class="social-container">
-            <a href="/" class="social">
+            <a href="#" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faSquareFacebook} />
               </i>
             </a>
-            <a href="/" class="social">
+            <a href="#" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faGoogle} />
               </i>
@@ -393,6 +411,7 @@ export function LoginComponent() {
           </div>
         </form>
       </div>
+
       <div class="overlay-container">
         <div class="overlay">
           <div class="overlay-panel overlay-left">
@@ -401,7 +420,7 @@ export function LoginComponent() {
               friends
             </h1>
             <p>If you have an account, login here and have fun</p>
-            <button class="ghost" id="login" className="btn-login">
+            <button class="ghost btn-login" id="login">
               Login
               <i class="">
                 <FontAwesomeIcon
@@ -420,7 +439,7 @@ export function LoginComponent() {
             <p>
               If you don'n have an account yet, join us and start your journey
             </p>
-            <button class="ghost" id="register" className="btn-login">
+            <button class="ghost btn-login" id="register">
               Register
               <i class="">
                 <FontAwesomeIcon

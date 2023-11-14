@@ -80,9 +80,9 @@ const ProfileComponent = () => {
         if (districts !== undefined) {
           districts.map(
             (value) =>
-              (document.getElementById(
-                "districts"
-              ).innerHTML += `<option value='${value.district_id}'>${value.district_name}</option>`)
+            (document.getElementById(
+              "districts"
+            ).innerHTML += `<option value='${value.district_id}'>${value.district_name}</option>`)
           );
         }
       })
@@ -102,9 +102,9 @@ const ProfileComponent = () => {
         if (wards !== undefined) {
           wards.map(
             (value) =>
-              (document.getElementById(
-                "wards"
-              ).innerHTML += `<option value='${value.ward_id}'>${value.ward_name}</option>`)
+            (document.getElementById(
+              "wards"
+            ).innerHTML += `<option value='${value.ward_id}'>${value.ward_name}</option>`)
           );
         }
       })
@@ -149,8 +149,8 @@ const ProfileComponent = () => {
   const changeSpecificAddressRecipient = (event) => {
     setSpecificAddressRecipient(event.target.value);
   };
-  const createNewDeliveryAddress = (e) => {
-    e.preventDefault();
+  const createNewDeliveryAddress = (accountId) => {
+    // e.preventDefault();
     setTimeout(() => {
       let deliveryAddressData = {
         recipient_full_name: fullNameRecipient,
@@ -183,8 +183,10 @@ const ProfileComponent = () => {
       setDeliveryAddress(
         deliveryAddress.filter((delivery) => delivery.address_id !== address_id)
       );
+      toast.success("Delete Address successfully!");
+    }).catch((err) => {
+      toast.error("Error deleting Address!");
     });
-    toast.success("Delete Address successfully!");
     // .catch((error) => {
     //   console.error("Error deleting Address:", error);
     // });
@@ -358,6 +360,7 @@ const ProfileComponent = () => {
                     changeSpecificAddressRecipient
                   }
                   createNewDeliveryAddress={createNewDeliveryAddress}
+                  accountId={accountId}
                 />
               </div>
             </div>
