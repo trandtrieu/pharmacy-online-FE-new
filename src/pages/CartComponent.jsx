@@ -296,7 +296,7 @@ const CartComponent = ({ history }) => {
                           style={{ width: "100px" }}
                         >
                           <input
-                            min={0}
+                            min={1}
                             type="number"
                             className="form-control form-control-sm bg-secondary border-0 text-center"
                             value={cartItem.quantity}

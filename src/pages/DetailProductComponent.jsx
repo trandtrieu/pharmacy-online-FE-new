@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFileInvoice,
   faHeart,
-  faReply,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import WishListServices from "../services/WishListServices";
@@ -26,6 +25,7 @@ class DetailProductComponent extends Component {
       imageUrls: [],
       feedbacks: [],
       replies: [],
+      quantity: 1,
     };
     this.openReply = this.openReply.bind(this);
     this.hiddenReply = this.hiddenReply.bind(this);
@@ -427,6 +427,7 @@ class DetailProductComponent extends Component {
                         onClick={() =>
                           this.addWishListProduct(
                             this.state.product.productId,
+                            this.state.quantity,
                             accountId,
                             token
                           )

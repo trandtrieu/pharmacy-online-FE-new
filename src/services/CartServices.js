@@ -9,7 +9,9 @@ class CartServices {
         accountId +
         "&productId=" +
         productId +
-        "&quantity=1&cart_type=0",
+        "&quantity=" +
+        quantity +
+        "&cart_type=0",
       {},
       {
         headers: {
