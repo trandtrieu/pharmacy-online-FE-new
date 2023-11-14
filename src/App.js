@@ -19,6 +19,7 @@ import AboutComponent from "./pages/AboutComponent";
 import UpdatePrescriptionComponent from "./pages/UpdatePrescriptionComponent";
 import SearchProduct from "./pages/SearchProduct";
 import { Bubble } from "@typebot.io/react";
+import FeedbackComponent from "./pages/FeedbackComponent";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/cart" component={CartComponent} />
             <Route path="/wishlist" component={WishlistComponent} />
             <Route path="/profile/:accountId" component={ProfileComponent} />
+            <Route path="/feedback" component={FeedbackComponent} />
             <Route
               path="/create-prescription"
               component={CreatePrescriptionComponent}
