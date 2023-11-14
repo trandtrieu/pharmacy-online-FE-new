@@ -112,16 +112,16 @@ const HeaderComponent = (props) => {
         console.error("Lỗi khi tải sản phẩm:", error);
       });
 
-    updateCartItemCount();
-    updateWishListItemCount();
+    // updateCartItemCount();
+    // updateWishListItemCount();
 
-    const cartInterval = setInterval(updateCartItemCount, 108800);
-    const wishlistInterval = setInterval(updateWishListItemCount, 1888000);
+    // const cartInterval = setInterval(updateCartItemCount, 108800);
+    // const wishlistInterval = setInterval(updateWishListItemCount, 1888000);
 
-    return () => {
-      clearInterval(cartInterval);
-      clearInterval(wishlistInterval);
-    };
+    // return () => {
+    //   clearInterval(cartInterval);
+    //   clearInterval(wishlistInterval);
+    // };
   }, [updateCartItemCount, updateWishListItemCount]);
 
   const viewProductByCategory = (category_id) => {

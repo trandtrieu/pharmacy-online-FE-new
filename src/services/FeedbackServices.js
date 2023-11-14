@@ -15,10 +15,18 @@ class FeedbackServices {
     );
   }
 
-  addFeedback(productId, user_id, feedback) {
+  addFeedback(productId, user_id, feedback, accessToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json", // Assuming feedback data is in JSON format
+      },
+    };
+
     return axios.post(
-      FEEDBACK_API_BASE_URL + "add/" + productId + "/" + user_id,
-      feedback
+      `${FEEDBACK_API_BASE_URL}add/${productId}/${user_id}`,
+      feedback,
+      config
     );
   }
 

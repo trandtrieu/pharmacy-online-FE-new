@@ -3,17 +3,13 @@ import ProductServices from "../services/ProductServices";
 import CartServices from "../services/CartServices";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFileInvoice,
-  faHeart,
-  faReply,
-  faStar,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faReply, faStar } from "@fortawesome/free-solid-svg-icons";
 import WishListServices from "../services/WishListServices";
 import FeedbackServices from "../services/FeedbackServices";
 import ReplyServices from "../services/ReplyServices";
-const accountId = 5;
+import FeedbackComponent from "./FeedbackComponent";
+import { AuthContext } from "../AuthContext";
+
 class DetailProductComponent extends Component {
   constructor(props) {
     super(props);
@@ -24,20 +20,7 @@ class DetailProductComponent extends Component {
       products: [],
       imageUrls: [],
       feedbacks: [],
-      star: "",
       replies: [],
-      rating: 0,
-      ratingText: "",
-      opinion: "",
-      average: "",
-      feedbackOneStar: "",
-      feedbackTwoStar: "",
-      feedbackThreeStar: "",
-      feedbackFourStar: "",
-      feedbackFiveStar: "",
-      replyByFeedback: "",
-      totalFeedback: "",
-      quantity: 1, // Số lượng mặc định là 1
     };
     this.openReply = this.openReply.bind(this);
     this.hiddenReply = this.hiddenReply.bind(this);
@@ -48,11 +31,11 @@ class DetailProductComponent extends Component {
     this.changeReply = this.changeReply.bind(this);
     this.postReply = this.postReply.bind(this);
   }
+  static contextType = AuthContext;
 
   componentDidMount() {
     ProductServices.getProductById(this.state.productId).then((res) => {
       const productData = res.data;
-      console.log(res.data);
       const imageUrls = productData.imageUrls || []; // Replace 'imageUrls' with the correct field from your API data
       this.setState({ product: productData, imageUrls });
     });
@@ -60,7 +43,6 @@ class DetailProductComponent extends Component {
     ProductServices.get5ProductsRandom()
       .then((res) => {
         this.setState({ products: res.data });
-        console.log(res.data);
       })
       .catch((error) => {
         console.error("Lỗi khi tải sản phẩm:", error);
@@ -116,6 +98,7 @@ class DetailProductComponent extends Component {
               this.forceUpdate(); // Cập nhật lại giao diện sau khi có dữ liệu
             }
           );
+          console.log(feedback.replies);
         });
       }
     );
@@ -214,6 +197,7 @@ class DetailProductComponent extends Component {
   };
   postFeedback = (e) => {
     e.preventDefault();
+    const { accountId, token } = this.context;
 
     if (this.state.opinion.trim() === "") {
       toast.error("Opinion cannot be empty");
@@ -227,7 +211,8 @@ class DetailProductComponent extends Component {
       FeedbackServices.addFeedback(
         this.state.productId,
         accountId,
-        feedback
+        feedback,
+        token
       ).then((res) => {
         toast.success("Feedback submitted successfully");
       });
@@ -246,11 +231,9 @@ class DetailProductComponent extends Component {
       let reply = {
         reply_feedback: this.state.replyByFeedback,
       };
-      ReplyServices.addReplyByFeedback(feedbackId, accountId, reply).then(
-        (res) => {
-          toast.success("Reply submitted successfully");
-        }
-      );
+      ReplyServices.addReplyByFeedback(feedbackId, 1, reply).then((res) => {
+        toast.success("Reply submitted successfully");
+      });
 
       setTimeout(() => {
         window.location.reload();
@@ -281,16 +264,9 @@ class DetailProductComponent extends Component {
     }
     return stars;
   };
-  handleQuantityChange = (change) => {
-    // Hàm này cập nhật số lượng dựa trên sự thay đổi (+1 hoặc -1)
-    this.setState((prevState) => {
-      const newQuantity = prevState.quantity + change;
-      return { quantity: newQuantity };
-    });
-  };
   addProductToCart(product_id, quantity) {
-    const accountId = 5; // Replace with the actual account ID
-    CartServices.addToCart(accountId, product_id, quantity)
+    const { accountId, token } = this.context;
+    CartServices.addToCart(accountId, product_id, quantity, token)
       .then((response) => {
         console.log("Product added to cart:", response.data);
         toast.success("Product added to cart successfully!");
@@ -300,8 +276,8 @@ class DetailProductComponent extends Component {
       });
   }
   addWishListProduct(product_id) {
-    const accountId = 5; // Replace with the actual account ID
-    WishListServices.addToWishlist(accountId, product_id)
+    const { accountId, token } = this.context;
+    WishListServices.addToWishlist(accountId, product_id, token)
       .then((response) => {
         console.log("Product added to wishlist:", response.data);
         toast.success("Product added to wishlist successfully!");
@@ -311,10 +287,8 @@ class DetailProductComponent extends Component {
       });
   }
 
-  createPrescription = () => {
-    this.props.history.push(`/create-prescription`);
-  };
   render() {
+    const { accountId, token } = this.context;
     return (
       <>
         {/* Shop Detail Start */}
@@ -364,7 +338,11 @@ class DetailProductComponent extends Component {
                 <h4 className="title text-dark">{this.state.product.name}</h4>
                 <div className="d-flex flex-row my-3">
                   <div className="text-warning mb-1 me-2">
-                    {this.starRating(`${this.state.average}`)}
+                    <FontAwesomeIcon icon={faStar} />
+                    <FontAwesomeIcon icon={faStar} />
+                    <FontAwesomeIcon icon={faStar} />
+                    <FontAwesomeIcon icon={faStar} />
+                    <FontAwesomeIcon icon={faStar} />
                   </div>
                   <span className="text-muted">
                     <i className="fas fa-shopping-basket fa-sm mx-1 " />
@@ -376,12 +354,6 @@ class DetailProductComponent extends Component {
                   <span className="h2">${this.state.product.price}</span>
                   <span className="text-muted">/per box</span>
                 </div>
-                {/* <p>
-                  Modern look and quality demo item is a streetwear-inspired
-                  collection that continues to break away from the conventions
-                  of mainstream fashion. Made in Italy, these black and brown
-                  clothing low-top shirts for men.
-                </p> */}
                 <div className="row">
                   <dt className="col-3">Category</dt>
                   <dd className="col-9">{this.state.product.category_name}</dd>
@@ -393,76 +365,55 @@ class DetailProductComponent extends Component {
                   <dd className="col-9">{this.state.product.brand}</dd>
                 </div>
                 <hr />
-                {this.state.product.type === 0 ? (
-                  <div className="d-flex flex-column align-items-start mb-4 pt-2">
-                    <div
-                      className="input-group quantity mb-3"
-                      style={{ width: "130px" }}
-                    >
-                      <div className="input-group-btn">
-                        <button
-                          className="btn btn-primary btn-minus"
-                          onClick={() => this.handleQuantityChange(-1)}
-                        >
-                          <i className="fa fa-minus" />
-                        </button>
-                      </div>
-                      <input
-                        type="text"
-                        className="form-control bg-secondary border-0 text-center"
-                        value={this.state.quantity}
-                      />
-                      <div className="input-group-btn">
-                        <button
-                          className="btn btn-primary btn-plus"
-                          onClick={() => this.handleQuantityChange(1)}
-                        >
-                          <i className="fa fa-plus" />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="d-flex flex-column">
-                      <button
-                        className="btn btn-primary px-3 mb-3"
-                        onClick={() =>
-                          this.addProductToCart(
-                            this.state.product.productId,
-                            this.state.quantity
-                          )
-                        }
-                      >
-                        <i className="fa fa-shopping-cart mr-1" /> Add To Cart
+                <div className="d-flex flex-column align-items-start mb-4 pt-2">
+                  <div
+                    className="input-group quantity mb-3"
+                    style={{ width: "130px" }}
+                  >
+                    <div className="input-group-btn">
+                      <button className="btn btn-primary btn-minus">
+                        <i className="fa fa-minus" />
                       </button>
-                      <button
-                        className="btn btn-primary px-3"
-                        onClick={() =>
-                          this.addWishListProduct(this.state.product.productId)
-                        }
-                      >
-                        <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control bg-secondary border-0 text-center"
+                      defaultValue={1}
+                    />
+                    <div className="input-group-btn">
+                      <button className="btn btn-primary btn-plus">
+                        <i className="fa fa-plus" />
                       </button>
                     </div>
                   </div>
-                ) : (
-                  <div className="d-flex flex-column align-items-start">
-                    <p className="note-block-addcart">
-                      <span>Note:</span> This product is only sold when
-                      prescribed by a doctor, all information on the Website and
-                      App is for reference only. Please confirm that you are a
-                      pharmacist, doctor, or medical staff member who wants to
-                      learn about this product
-                    </p>
+                  <div className="d-flex flex-column">
                     <button
-                      className="btn btn-primary px-3 mr-3"
-                      onClick={() => {
-                        this.createPrescription();
-                      }}
+                      className="btn btn-primary px-3 mb-3"
+                      onClick={() =>
+                        this.addProductToCart(
+                          this.state.product.productId,
+                          this.state.quantity,
+                          accountId,
+                          token
+                        )
+                      }
                     >
-                      <FontAwesomeIcon icon={faFileInvoice} /> Buy with
-                      prescription
+                      <i className="fa fa-shopping-cart mr-1" /> Add To Cart
+                    </button>
+                    <button
+                      className="btn btn-primary px-3"
+                      onClick={() =>
+                        this.addWishListProduct(
+                          this.state.product.productId,
+                          accountId,
+                          token
+                        )
+                      }
+                    >
+                      <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
                     </button>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
@@ -563,7 +514,6 @@ class DetailProductComponent extends Component {
                 </div>
               </div>
             </div>
-
             <div className="container-fluid mb-5 mt-5">
               <h4 style={{ color: "#3D464D" }} className="mb-5 mt-5">
                 Reviews <span>(3 reviews)</span>
@@ -709,291 +659,12 @@ class DetailProductComponent extends Component {
             </div>
 
             {/* feedback */}
-            <div className="container-fluid mb-5 mt-5">
-              <div className="card">
-                <div className="row">
-                  <h4 className=" mb-1">Feedback Product</h4>
-                  <div className="col-md-12">
-                    <div className="row">
-                      <div className="col-md-12">
-                        {this.state.feedbacks.map((feedback) => (
-                          <div className="media mt-5 mb-5">
-                            <img
-                              className="mr-3 rounded-circle"
-                              alt="Bootstrap Media Preview"
-                              src="https://tse1.mm.bing.net/th?id=OIP.a1qV9wx2tjVVv86EW-lZaAHaE8&pid=Api&P=0&h=220"
-                            />
 
-                            <div className="media-body">
-                              <div className="row">
-                                <div className="col-8 d-flex">
-                                  <h5>
-                                    <b>{feedback.user_name}</b>{" "}
-                                    <span>
-                                      {this.starRating(feedback.rating)}
-                                    </span>
-                                  </h5>
-                                </div>
-                                <div className="col-4">
-                                  <div className="pull-right reply">
-                                    <button
-                                      className="btn  btn-sm shadow-none"
-                                      style={{ color: "#003973" }}
-                                      href=""
-                                    >
-                                      <span
-                                        onClick={() =>
-                                          this.openReply(feedback.feedback_id)
-                                        }
-                                        className="m-1"
-                                      >
-                                        <FontAwesomeIcon icon={faReply} /> Reply
-                                      </span>
-                                      {feedback.user_id === 3 && (
-                                        <span
-                                          className="m-1"
-                                          onClick={() =>
-                                            this.deleteFeedback(
-                                              feedback.feedback_id
-                                            )
-                                          }
-                                        >
-                                          <FontAwesomeIcon
-                                            style={{ color: "#dc3545" }}
-                                            icon={faTrash}
-                                          />{" "}
-                                          Delete
-                                        </span>
-                                      )}
-                                      {/* 
-                                          <span className="m-1" onClick={() => this.deleteFeedback(feedback.feedback_id)}>
-                                            <FontAwesomeIcon style={{ color: "#dc3545" }} icon={faTrash} /> Delete
-
-                                          </span> */}
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                              {feedback.comment}
-                              <br></br>
-                              {feedback.created_at_time} -{" "}
-                              {feedback.created_date}
-                              {/* reply form */}
-                              <div className="wrap">
-                                <div
-                                  key={feedback.feedback_id}
-                                  id={`replyDiv${feedback.feedback_id}`}
-                                  style={{ display: "none" }}
-                                  className="media mt-4"
-                                >
-                                  <form style={{ width: "80%" }} action="">
-                                    <div className="bg-light p-2">
-                                      <div className="d-flex flex-row align-items-start">
-                                        <img
-                                          alt=""
-                                          className="rounded-circle mr-3 "
-                                          src="https://scontent.xx.fbcdn.net/v/t1.15752-9/396643098_1499022063974040_6274169702054090360_n.jpg?stp=dst-jpg_s206x206&_nc_cat=101&ccb=1-7&_nc_sid=510075&_nc_ohc=D5IR0pjWX8AAX-3e1p1&_nc_oc=AQlze1JL0dPlVA6q8X__lZrwqW59WXORB-6wWvS0WqGuxjMbhD7nsErQPomniGxzUx1-JAAejyWqyGjT-0tgYGHl&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdTxfLI6tXHQ4Wl3HDm0xqqn_gMq5ee9SqlKuKEeukBhXg&oe=6567E054"
-                                        />
-                                        <textarea
-                                          className="form-control ml-1 shadow-none textarea rounded"
-                                          defaultValue={""}
-                                          onChange={this.changeReply}
-                                        />
-                                      </div>
-                                      <div className="mt-2 text-right">
-                                        <button
-                                          className="btn btn-info btn-sm shadow-none rounded"
-                                          type="button"
-                                          onClick={() =>
-                                            this.postReply(feedback.feedback_id)
-                                          }
-                                        >
-                                          Reply
-                                        </button>
-                                        <button
-                                          onClick={() =>
-                                            this.hiddenReply(
-                                              feedback.feedback_id
-                                            )
-                                          }
-                                          className="btn btn-danger btn-sm ml-1 shadow-none rounded"
-                                          type="button"
-                                        >
-                                          Cancel
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </form>
-                                </div>
-                                {feedback.replies &&
-                                  feedback.replies.map((reply) => (
-                                    <div
-                                      key={reply.reply_id}
-                                      className="media mt-4 "
-                                    >
-                                      <img
-                                        className="rounded-circle mr-3"
-                                        alt="Bootstrap Media Another Preview"
-                                        src="https://tse3.mm.bing.net/th?id=OIP.-eS1RlYwKg5bUqgPtV_WYAHaHa&pid=Api&P=0&h=220"
-                                      />
-                                      <div className="media-body">
-                                        <div className="row">
-                                          <div className="col-12 d-flex">
-                                            <h5>
-                                              <b>{reply.user_name}</b>
-                                              {/* <span style={{ opacity: '0.7' }}></span> */}
-                                            </h5>
-                                          </div>
-                                        </div>
-                                        {reply.reply_feedback} <br></br>
-                                        <span>
-                                          {reply.created_at_time}{" "}
-                                          {reply.created_date}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  ))}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                        {/* //model send reviews */}
-                        <div className="container">
-                          <div
-                            className="modal fade modal-lg "
-                            style={{
-                              maxWidth: "10000px",
-                              width: "100p0x",
-                              margin: "0 auto",
-                              marginTop: "",
-                              paddingRight: "0",
-                            }}
-                            id={`myModal`}
-                            role="dialog"
-                          >
-                            <div
-                              style={{ maxWidth: "700px" }}
-                              className="modal-dialog"
-                            >
-                              {/* <!-- Modal content--> */}
-                              <div className="modal-content">
-                                <div className="modal-header">
-                                  <h4
-                                    style={{ textAlign: "center" }}
-                                    className="modal-title"
-                                  >
-                                    Review Product <b></b>
-                                  </h4>
-                                  <button
-                                    type="button"
-                                    className="close"
-                                    data-dismiss="modal"
-                                  >
-                                    &times;
-                                  </button>
-                                </div>
-                                <div className=" container row mt-3">
-                                  <div className="col-md-3 col-sm-3 ">
-                                    <img
-                                      // style={{ width: "100%", height: "100%" }}
-                                      src={`../assets/images/${this.state.product.imageUrls}`}
-                                      alt="loi"
-                                      srcSet=""
-                                      width={100}
-                                    />
-                                  </div>
-                                  <div className="col-md-9 col-sm-9 d-flex align-items-center ">
-                                    <h4>{this.state.product.name}</h4>
-                                  </div>
-                                </div>
-                                <div className="modal-body">
-                                  <form action="">
-                                    <div
-                                      style={{
-                                        height: "30px",
-                                        marginBottom: "0.5rem",
-                                        fontSize: "1.3rem",
-                                      }}
-                                      className="rating mt-3 mb-3"
-                                    >
-                                      <input
-                                        type="number"
-                                        name="rating"
-                                        hidden
-                                      />
-                                      <select
-                                        required
-                                        value={this.state.rating}
-                                        style={{
-                                          width: "20%",
-                                          textAlign: "center",
-                                          outline: "none",
-                                        }}
-                                        className="form-select rounded"
-                                        name=""
-                                        id=""
-                                        onChange={this.handleRatingChange}
-                                      >
-                                        <option value="0" selected>
-                                          Star
-                                        </option>
-                                        <option value="1"> 1 Star </option>
-                                        <option value="2"> 2 Star </option>
-                                        <option value="3"> 3 Star </option>
-                                        <option value="4"> 4 Star </option>
-                                        <option value="5"> 5 Star </option>
-                                      </select>
-                                      <div
-                                        style={{
-                                          width: "30%",
-                                          marginLeft: "7%",
-                                        }}
-                                      >
-                                        {this.starRating(this.state.rating)}
-                                      </div>
-                                      <div>
-                                        <p
-                                          style={{
-                                            marginBottom: "0.5rem",
-                                            marginTop: "12px",
-                                            color: "#FFBD13",
-                                          }}
-                                          id="ratingText"
-                                        >
-                                          {this.state.ratingText}
-                                        </p>
-                                      </div>
-                                    </div>
-                                    <textarea
-                                      onChange={this.changeOpinion}
-                                      name="opinion"
-                                      cols="30"
-                                      rows="5"
-                                      placeholder="Your opinion..."
-                                      required
-                                    ></textarea>
-                                    <div className="btn btn-info rounded">
-                                      <button
-                                        onClick={this.postFeedback}
-                                        style={{ color: "#fff" }}
-                                        type="submit"
-                                        className="btn submit"
-                                      >
-                                        Submit
-                                      </button>
-                                    </div>
-                                  </form>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <FeedbackComponent
+              productId={this.state.productId}
+              feedbacks={this.state.feedbacks}
+              replies={this.state.replies}
+            />
           </div>
           {/* send review */}
         </div>

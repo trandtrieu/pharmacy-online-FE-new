@@ -18,12 +18,11 @@ function HomeProduct(props) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { accountId, token } = useAuth();
-  const [cartItemCount, setCartItemCount] = useState(0);
+  const [setCartItemCount] = useState(0);
 
   useEffect(() => {
-    setLoading(true); // Set loading to true to display the loading indicator
+    setLoading(true);
 
-    // Simulate a 5-second delay before setting the products
     setTimeout(() => {
       ProductServices.getProducts()
         .then((res) => {
@@ -34,7 +33,7 @@ function HomeProduct(props) {
           console.error("Lỗi khi tải sản phẩm:", error);
           setLoading(false);
         });
-    }, 5000); // 5000 milliseconds = 5 seconds
+    }, 1000); // 5000 milliseconds = 5 seconds
   }, [accountId, token, history]);
   const addProductToCart = (product_id) => {
     CartServices.addToCart(accountId, product_id, 1, token)
