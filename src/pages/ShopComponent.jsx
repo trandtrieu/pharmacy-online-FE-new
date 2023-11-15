@@ -308,7 +308,7 @@ function ShopComponent() {
                       <i className="fa fa-bars" />
                     </button>
                   </div>
-                  <div className="ml-2">
+                  <div className="ml-2" style={{ display: "flex" }}>
                     <div className="btn-group">
                       <button
                         type="button"

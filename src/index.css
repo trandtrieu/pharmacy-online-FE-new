@@ -155,6 +155,7 @@ code {
   overflow: hidden;
   text-overflow: ellipsis;
   /* max-width: 200px; */
+  max-width: 200px;
   padding: 0 10px;
 }
 
@@ -210,7 +211,7 @@ label.btn {
 }
 
 .text-light {
-  color: #babbbc !important;
+  color: #fff !important;
 }
 
 .btn-facebook {
