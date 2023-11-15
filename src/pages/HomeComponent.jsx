@@ -58,7 +58,7 @@ function HomeProduct(props) {
       .then((response) => {
         console.log("Product added to cart:", response.data);
         toast.success("Product added to cart successfully!");
-        updateCartItemCount();
+        // updateCartItemCount();
       })
       .catch((error) => {
         toast.error("Please login to use this feature!");
@@ -258,7 +258,6 @@ function HomeProduct(props) {
                                   <div className="card-body product-action">
                                     <a
                                       className="btn btn-outline-dark btn-square"
-                                      href="#"
                                       onClick={() =>
                                         addProductToCart(product.productId)
                                       }
@@ -267,7 +266,6 @@ function HomeProduct(props) {
                                     </a>
                                     <a
                                       className="btn btn-outline-dark btn-square"
-                                      href="#"
                                       onClick={() =>
                                         addWishListProduct(product.productId)
                                       }
@@ -275,7 +273,6 @@ function HomeProduct(props) {
                                       <i className="far fa-heart" />
                                     </a>
                                     <a
-                                      href="#"
                                       className="btn btn-outline-dark btn-square"
                                       onClick={() =>
                                         viewProduct(product.productId)

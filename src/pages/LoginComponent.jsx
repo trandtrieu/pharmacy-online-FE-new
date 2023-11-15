@@ -279,10 +279,10 @@ export function LoginComponent() {
   };
 
   return (
-    <div class="container-auth" id="container">
+    <div class="container-auth login-linh" id="container">
       <div class="form-container register-container">
         <form onSubmit={handleSignupSubmit} className="form-login">
-          <h1>Register here</h1>
+          <h1 className="h1-title-login">Register here</h1>
           <div class="form-control2">
             <input
               className="email-2"
@@ -322,7 +322,7 @@ export function LoginComponent() {
           <button type="submit" value="submit" className="btn-login">
             Register
           </button>
-          <span>or use your account</span>
+          <span className="span-login">or use your account</span>
           <div class="social-container">
             <a href="#" class="social">
               <i class="">
@@ -340,7 +340,7 @@ export function LoginComponent() {
 
       <div class="form-container login-container">
         <form class="form-lg" onSubmit={handleLoginSubmit}>
-          <h1>Login here.</h1>
+          <h1 className="h1-title-login">Login here.</h1>
           <div class="form-control2">
             <input
               type="username"
@@ -390,7 +390,7 @@ export function LoginComponent() {
           <button type="submit" value="submit" className="btn-login">
             Login
           </button>
-          <span>Or use your account</span>
+          <span className="span-login">Or use your account</span>
           <div class="social-container">
             <a href="#" class="social">
               <i class="">

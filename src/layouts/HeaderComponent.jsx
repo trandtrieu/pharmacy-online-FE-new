@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
@@ -16,8 +17,6 @@ import {
   faBell,
 } from "@fortawesome/free-solid-svg-icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-
-const accountId = 1;
 
 const HeaderComponent = (props) => {
   const [keyword, setKeyword] = useState("");
@@ -125,25 +124,23 @@ const HeaderComponent = (props) => {
       });
   };
 
-  // useEffect(() => {
-  //   // CategoryServices.getCategoryType()
-  //   //   .then((res) => {
-  //   //     setCategories(res.data);
-  //   //   })
-  //   //   .catch((error) => {
-  //   //     console.error("Lỗi khi tải sản phẩm:", error);
-  //   //   });
-  //   updateCartItemCount();
-  //   updateWishListItemCount();
-  //   // updateCartItemCount();
-  //   // updateWishListItemCount();
-  //   // const cartInterval = setInterval(updateCartItemCount, 108800);
-  //   // const wishlistInterval = setInterval(updateWishListItemCount, 1888000);
-  //   // return () => {
-  //   //   clearInterval(cartInterval);
-  //   //   clearInterval(wishlistInterval);
-  //   // };
-  // }, [updateCartItemCount, updateWishListItemCount]);
+  useEffect(() => {
+    // CategoryServices.getCategoryType()
+    //   .then((res) => {
+    //     setCategories(res.data);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Lỗi khi tải sản phẩm:", error);
+    //   });
+    // updateCartItemCount();
+    // updateWishListItemCount();
+    // const cartInterval = setInterval(updateCartItemCount, 108800);
+    // const wishlistInterval = setInterval(updateWishListItemCount, 1888000);
+    // return () => {
+    //   clearInterval(cartInterval);
+    //   clearInterval(wishlistInterval);
+    // };
+  }, [updateCartItemCount, updateWishListItemCount]);
 
   const viewProductByCategory = (category_id) => {
     props.history.push(`/category/${category_id}`);
@@ -159,7 +156,10 @@ const HeaderComponent = (props) => {
         <div className="avc" style={{ backgroundColor: "#07304f" }}></div>
 
         <div className="container-fluid bg-light py-3 px-xl-5 d-none d-lg-block ">
-          <div className="row align-items-center">
+          <div
+            className="row align-items-center"
+            style={{ marginRight: "0px" }}
+          >
             <div className="col-lg-3 text-left">
               <a href="#" className="text-decoration-none">
                 <img
@@ -277,7 +277,10 @@ const HeaderComponent = (props) => {
         </div>
 
         <div className="container-fluid bg-dark mb-30">
-          <div className="row px-xl-5" style={{ zIndex: "1000" }}>
+          <div
+            className="row px-xl-5"
+            style={{ zIndex: "1000", marginRight: "0px" }}
+          >
             <div className="col-lg-3 d-none d-lg-block">
               <a
                 className="btn d-flex align-items-center justify-content-between bg-primary w-100"
@@ -352,23 +355,7 @@ const HeaderComponent = (props) => {
                     >
                       Prescription
                     </Link>
-                    <div className="nav-item dropdown">
-                      <a
-                        href="/"
-                        className="nav-link dropdown-toggle"
-                        data-toggle="dropdown"
-                      >
-                        Pages <i className="fa fa-angle-down mt-1" />
-                      </a>
-                      <div className="dropdown-menu bg-primary rounded-0 border-0 m-0">
-                        <a href="cart.html" className="dropdown-item">
-                          Shopping Cart
-                        </a>
-                        <a href="checkout.html" className="dropdown-item">
-                          Checkout
-                        </a>
-                      </div>
-                    </div>
+
                     <Link to="/contact" className="nav-item nav-link">
                       Contact
                     </Link>

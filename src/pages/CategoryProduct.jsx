@@ -358,7 +358,7 @@ class CategoryProduct extends Component {
                         {product.imageUrls.length > 0 && (
                           <img
                             className="img-fluid w-100"
-                            src={`../assets/images/${product.imageUrls[0]}`}
+                            src={product.imageUrls[0]}
                             alt={`Imagee 0`}
                           />
                         )}

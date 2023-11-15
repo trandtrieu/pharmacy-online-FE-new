@@ -22,6 +22,7 @@ const ProfileComponent = () => {
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
 
   const { accountId, token } = useAuth();
   useEffect(() => {
@@ -176,7 +177,22 @@ const ProfileComponent = () => {
     }
     toast.success("Created new delivery addresss successfully!");
   };
-
+  const setDefaultAddress = (accountId, address_id) => {
+    DeliveryAddressServices.setDefaultDeliveryAddress(
+      accountId,
+      address_id,
+      token
+    )
+      .then((res) => {
+        window.location.reload();
+        toast.success("Set default delivery address successfully!");
+      })
+      .catch((error) => {
+        console.log(token);
+        // Xử lý lỗi ở đây nếu cần
+        toast.error("Error setting default delivery address:", error);
+      });
+  };
   const deleteDeliveryAddress = (user_id, address_id) => {
     console.log("token" + token);
     DeliveryAddressServices.deleteDeliveryAddress(user_id, address_id, token)
@@ -357,12 +373,15 @@ const ProfileComponent = () => {
                   deleteDeliveryAddress={deleteDeliveryAddress}
                   changeFullNameRecipient={changeFullNameRecipient}
                   changePhoneRecipient={changePhoneRecipient}
+                  selectedAddressId={selectedAddressId}
+                  setSelectedAddressId={setSelectedAddressId}
                   getProvinces={getProvinces}
                   getDistricts={getDistricts}
                   getWards={getWards}
                   changeSpecificAddressRecipient={
                     changeSpecificAddressRecipient
                   }
+                  setDefaultAddress={setDefaultAddress}
                   createNewDeliveryAddress={createNewDeliveryAddress}
                   accountId={accountId}
                 />
