@@ -1,9 +1,12 @@
 import React, { Component } from "react";
-import ReactQuill from "react-quill";
+// import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import BlogServices from "../services/BlogServices";
-import {toast} from"react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import * as ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { Form } from "react-bootstrap";
 
 class AddBlogComponent extends Component {
   constructor(props) {
@@ -12,6 +15,7 @@ class AddBlogComponent extends Component {
       title: "",
       // update_day: "",
       content: "",
+      descriptionCkData: "",
       imgUrls: [],
     };
     this.changeTitleHandler = this.changeTitleHandler.bind(this);
@@ -34,7 +38,7 @@ class AddBlogComponent extends Component {
     BlogServices.addBlog(blog).then((res) => {
       this.props.history.push("/blog");
     });
-    toast.success('Create New Blog Successfully', {
+    toast.success("Create New Blog Successfully", {
       position: "top-center",
       autoClose: 5000,
       hideProgressBar: false,
@@ -43,7 +47,7 @@ class AddBlogComponent extends Component {
       draggable: true,
       progress: undefined,
       theme: "light",
-      });
+    });
   };
 
   changeTitleHandler = (event) => {
@@ -54,13 +58,18 @@ class AddBlogComponent extends Component {
   //   this.setState({ update_day: event.target.value });
   // };
 
-  changeContentHandler = (value) => {
+  // changeContentHandler = (value) => {
+  //   // const contentWithoutPTags = value.replace(/<p>/g, '').replace(/<\/p>/g, '');
+
+  //   this.setState({ content: value });
+  //   console.log(value);
+  // };
+  changeContentHandler = (event) => {
     // const contentWithoutPTags = value.replace(/<p>/g, '').replace(/<\/p>/g, '');
 
-    this.setState({ content: value });
-    console.log(value);
+    this.setState({ content: event.target.value });
+    // console.log(value);
   };
-
   changeImageHandler = (event) => {
     const files = event.target.files;
     const imgUrls = [];
@@ -95,17 +104,6 @@ class AddBlogComponent extends Component {
                 />
               </div>
 
-              {/* <div className="form-group">
-              <label>Day Update :</label>
-              <input
-                placeholder="Day Update"
-                name="update_day"
-                className="form-control"
-                value={this.state.update_day}
-                onChange={this.changeUpdateHandler}
-              />
-            </div> */}
-
               <div className="form-group">
                 <input
                   type="file"
@@ -117,21 +115,44 @@ class AddBlogComponent extends Component {
               </div>
 
               <div className="form-group">
-                <label>Content :</label>
-                {/* <input
-                placeholder="Day Update"
-                name="update_day"
-                className="form-control"
-                value={this.state.update_day}
-                onChange={this.changeUpdateHandler}
-              /> */}
+                <label>Content :</label><br/>
+                <textarea
+                  placeholder="Content"
+                  className="form-control"
+                  name="content"
+                  value={this.state.content}
+                  onChange={this.changeContentHandler}
+                  style={{height:"15rem"}}
+                />
+
+                {/* 
                 <ReactQuill
                   theme="snow"
                   className="edit-content"
                   value={this.state.content}
                   onChange={this.changeContentHandler}
                   style={{ height: "200px" }}
-                />
+                /> */}
+
+                {/* <CKEditor
+                  
+                    editor={ClassicEditor}
+                    data={this.state.content}
+                    onReady={(editor) => {
+                      editor.editing.view.change((writer) => {
+                        writer.setStyle(
+                          "height",
+                          "200px",
+                          editor.editing.view.document.getRoot()
+                        );
+                      });
+                    }}
+                    onChange={(event, editor) => {
+                      const data = editor.getData();
+                      // const data = event.target.value;
+                      this.setState({ content: data });
+                    }}
+                  ></CKEditor> */}
               </div>
             </form>
 
