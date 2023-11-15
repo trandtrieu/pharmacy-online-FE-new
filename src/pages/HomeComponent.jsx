@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from "react";
 import CarouselComponent from "../layouts/CarouselComponent";
 import CategoriesComponent from "../layouts/CategoriesComponent";
@@ -19,6 +20,7 @@ function HomeProduct(props) {
   const [loading, setLoading] = useState(true);
   const { accountId, token } = useAuth();
   const [setCartItemCount] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -35,6 +37,20 @@ function HomeProduct(props) {
         });
     }, 1000); // 5000 milliseconds = 5 seconds
   }, [accountId, token, history]);
+
+  const fetchNextProducts = () => {
+    const nextIndex = currentIndex + 5;
+    ProductServices.getProducts(nextIndex)
+      .then((res) => {
+        const newProducts = res.data;
+        setProducts(newProducts);
+        setCurrentIndex(nextIndex);
+      })
+      .catch((error) => {
+        console.error("Error fetching new products:", error);
+      });
+  };
+
   const addProductToCart = (product_id) => {
     CartServices.addToCart(accountId, product_id, 1, token)
       .then((response) => {
@@ -158,6 +174,7 @@ function HomeProduct(props) {
           </div>
         )}
       </div>
+
       <PrescriptionBanner />
       <div className="container-fluid pt-5 pb-3">
         <div className="row px-xl-5">

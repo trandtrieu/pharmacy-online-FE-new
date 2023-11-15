@@ -149,42 +149,48 @@ const ProfileComponent = () => {
   const changeSpecificAddressRecipient = (event) => {
     setSpecificAddressRecipient(event.target.value);
   };
-  const createNewDeliveryAddress = (e) => {
-    e.preventDefault();
-    setTimeout(() => {
-      let deliveryAddressData = {
-        recipient_full_name: fullNameRecipient,
-        recipient_phone_number: phoneRecipient,
-        specific_address: `${specificAddressRecipient}, ${ward}, ${district}, ${province}.`,
-      };
-      console.log("deliveryAddress => " + JSON.stringify(deliveryAddress));
+  const createNewDeliveryAddress = (accountId) => {
+    // e.preventDefault();
 
+    let deliveryAddressData = {
+      recipient_full_name: fullNameRecipient,
+      recipient_phone_number: phoneRecipient,
+      specific_address: `${specificAddressRecipient}, ${ward}, ${district}, ${province}.`,
+    };
+    console.log("deliveryAddress => " + JSON.stringify(deliveryAddress));
+
+    if (
+      !deliveryAddressData.recipient_full_name ||
+      !deliveryAddressData.recipient_phone_number ||
+      !deliveryAddressData.specific_address
+    ) {
+      toast.error("Please Enter full info!");
+    } else {
       DeliveryAddressServices.addDeliveryAddress(
         accountId,
         deliveryAddressData,
         token
       ).then((res) => {
-        // window.location.reload();
+        window.location.reload();
       }, 100000);
-      toast.success("good");
-    }).catch((error) => {
-      toast.error("fail");
-      console.error("Error creating delivery address:", error);
-    });
+    }
+    toast.success("Created new delivery addresss successfully!");
   };
 
   const deleteDeliveryAddress = (user_id, address_id) => {
     console.log("token" + token);
-    DeliveryAddressServices.deleteDeliveryAddress(
-      user_id,
-      address_id,
-      token
-    ).then((res) => {
-      setDeliveryAddress(
-        deliveryAddress.filter((delivery) => delivery.address_id !== address_id)
-      );
-    });
-    toast.success("Delete Address successfully!");
+    DeliveryAddressServices.deleteDeliveryAddress(user_id, address_id, token)
+      .then((res) => {
+        setDeliveryAddress(
+          deliveryAddress.filter(
+            (delivery) => delivery.address_id !== address_id
+          )
+        );
+        toast.success("Delete Address successfully!");
+      })
+      .catch((err) => {
+        toast.error("Error deleting Address!");
+      });
     // .catch((error) => {
     //   console.error("Error deleting Address:", error);
     // });
@@ -358,6 +364,7 @@ const ProfileComponent = () => {
                     changeSpecificAddressRecipient
                   }
                   createNewDeliveryAddress={createNewDeliveryAddress}
+                  accountId={accountId}
                 />
               </div>
             </div>

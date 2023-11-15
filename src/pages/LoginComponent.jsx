@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +12,7 @@ import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
 import { Link, useHistory } from "react-router-dom";
 import { AuthContext } from "../AuthContext"; // Import AuthContext
+import "../style/Login.css";
 
 export function LoginComponent() {
   const history = useHistory();
@@ -26,12 +26,12 @@ export function LoginComponent() {
 
   const [signupFormData, setSignupFormData] = useState({
     username: "",
-    email: "",
+    mail: "",
     password: "",
   });
 
   const [errors, setErrors] = useState({
-    email: "",
+    mail: "",
     password: "",
     username: "",
   });
@@ -47,6 +47,28 @@ export function LoginComponent() {
     "username",
     "password",
   ]);
+
+  useEffect(() => {
+    const registerButton = document.getElementById("register");
+    const loginButton = document.getElementById("login");
+    const container = document.getElementById("container");
+
+    const handleRegisterClick = () => {
+      container.classList.add("right-panel-active");
+    };
+
+    const handleLoginClick = () => {
+      container.classList.remove("right-panel-active");
+    };
+
+    registerButton.addEventListener("click", handleRegisterClick);
+    loginButton.addEventListener("click", handleLoginClick);
+
+    return () => {
+      registerButton.removeEventListener("click", handleRegisterClick);
+      loginButton.removeEventListener("click", handleLoginClick);
+    };
+  }, []);
 
   useEffect(() => {
     // Load saved username and password from cookies on component mount
@@ -72,12 +94,6 @@ export function LoginComponent() {
     });
   };
 
-  // Function to toggle password visibility
-  const togglePasswordVisibility = (e) => {
-    e.preventDefault();
-    setShowPassword((prevShowPassword) => !prevShowPassword);
-  };
-
   // Function to check if an active session is stored in the browser's sessionStorage
   const checkActiveSession = () => {
     const storedUser = sessionStorage.getItem("user");
@@ -100,15 +116,15 @@ export function LoginComponent() {
     });
 
     if (name === "email") {
-      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-      const isValidEmail = emailRegex.test(value);
+      const mailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+      const isValidMail = mailRegex.test(value);
 
       setErrors({
         ...errors,
-        email: isValidEmail ? "" : "Invalid email address",
+        mail: isValidMail ? "" : "Invalid email address",
       });
     } else if (name === "password") {
-      const passwordRegex = /^.{8,16}$/;
+      const passwordRegex = /^(?=.*[A-Z]).{8,16}$/;
       const isValidPassword = passwordRegex.test(value);
       setErrors({
         ...errors,
@@ -127,30 +143,23 @@ export function LoginComponent() {
       [name]: value,
     });
 
-    if (name === "email") {
-      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-      const isValidEmail = emailRegex.test(value);
-
-      setErrors({
-        ...errors,
-        email: isValidEmail ? "" : "Invalid email address",
-      });
-    } else if (name === "password") {
-      setErrors({
-        ...errors,
-        password:
-          value.length >= 8 ? "" : "Password must be at least 8 characters",
-      });
-    } else if (name === "username") {
-      const usernameRegex = /^.{8,16}$/;
-      const isValidUsername = usernameRegex.test(value);
-      setErrors({
-        ...errors,
-        username: isValidUsername
-          ? ""
-          : "Username must be between 8 and 16 characters",
-      });
-    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]:
+        name === "mail"
+          ? /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)
+            ? ""
+            : "Invalid email address"
+          : name === "password"
+          ? /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,16}$/.test(value)
+            ? ""
+            : "Password must be 8 to 16 characters with at least one uppercase letter"
+          : name === "username"
+          ? /^[a-zA-Z0-9]{8,16}$/.test(value)
+            ? ""
+            : "Username must be between 8 and 16 characters"
+          : prevErrors[name],
+    }));
   };
 
   // Function to handle login form submission
@@ -180,6 +189,7 @@ export function LoginComponent() {
         requestOptions
       );
       if (!response.ok) {
+        toast.error("Invalid username or password");
         throw Error(response.status);
       } else {
         accountId = await response.text();
@@ -214,32 +224,33 @@ export function LoginComponent() {
           console.log("Token hoặc ID không tồn tại trong local storage.");
         }
 
-        history.push("/cart");
+        history.push("/");
       }
     } catch (error) {
       console.error("Error", error);
     }
   };
 
-  // Function to handle signup form submission
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
 
-    const { email, password, username } = signupFormData;
+    const { mail, password, username } = signupFormData;
     const {
-      email: emailError,
+      mail: mailError,
       password: passwordError,
       username: usernameError,
     } = errors;
 
     if (
-      !email ||
+      !mail ||
       !password ||
       !username ||
-      emailError ||
+      mailError ||
       passwordError ||
       usernameError
     ) {
+      console.log("signupFormData", signupFormData);
+      console.log("errors", errors);
       toast.error("Please fix the form errors!!!");
       return;
     }
@@ -263,61 +274,62 @@ export function LoginComponent() {
         ...loginFormData,
         message: "Registration failed. Please check your input.",
       });
+      toast.error("Registration failed. Please check your input.");
     }
   };
 
   return (
-    <div className="container" id="container">
+    <div class="container-auth" id="container">
       <div class="form-container register-container">
-        <form onSubmit={handleSignupSubmit} className="auth">
+        <form onSubmit={handleSignupSubmit} className="form-login">
           <h1>Register here</h1>
-          <div class="form-control-auth">
+          <div class="form-control2">
             <input
-              name="username"
-              class="email-2"
+              className="email-2"
               type="text"
               id="username"
-              placeholder="Username"
+              placeholder="Name"
+              name="username"
               onChange={handleSignupChange}
             />
-            <small id="username-error">{errors.username}</small>
+            <small id="username-error"></small>
             <span></span>
           </div>
-          <div class="form-control-auth">
+          <div class="form-control2">
             <input
-              name="mail"
-              class="email-2"
               type="email"
               id="email"
               placeholder="Email"
+              name="mail"
+              className="email-2"
               onChange={handleSignupChange}
             />
-            <small id="email-error">{errors.mail}</small>
+            <small id="email-error"></small>
             <span></span>
           </div>
-          <div class="form-control-auth">
+          <div class="form-control2">
             <input
-              name="password"
-              class="email-2"
+              className="password-2"
               type="password"
               id="password"
               placeholder="Password"
+              name="password"
               onChange={handleSignupChange}
             />
-            <small id="password-error">{errors.password}</small>
+            <small id="password-error"></small>
             <span></span>
           </div>
           <button type="submit" value="submit" className="btn-login">
             Register
           </button>
-          <span>Or use your account</span>
+          <span>or use your account</span>
           <div class="social-container">
-            <a href="/" class="social">
+            <a href="#" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faSquareFacebook} />
               </i>
             </a>
-            <a href="/" class="social">
+            <a href="#" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faGoogle} />
               </i>
@@ -325,40 +337,31 @@ export function LoginComponent() {
           </div>
         </form>
       </div>
-      {/* Login */}
+
       <div class="form-container login-container">
-        <form class="form-lg auth" onSubmit={handleLoginSubmit}>
+        <form class="form-lg" onSubmit={handleLoginSubmit}>
           <h1>Login here.</h1>
           <div class="form-control2">
             <input
               type="username"
-              class="email-2"
+              className="email-2"
               placeholder="Username"
               name="username"
-              value={loginFormData.username}
               onChange={handleLoginChange}
             />
-            <small class="email-error-2">{errors.username}</small>
+            <small class="email-error-2"></small>
             <span></span>
           </div>
           <div class="form-control2">
             <input
-              type={showPassword ? "text" : "password"}
-              class="password-2"
+              type="password"
+              className="password-2"
               placeholder="Password"
-              value={loginFormData.password}
-              onChange={handleLoginChange}
               name="password"
-            ></input>
-            <small class="password-error-2"> {errors.password}</small>
-            <span className="error"></span>
+              onChange={handleLoginChange}
+            />
+            <small class="password-error-2"></small>
             <span></span>
-            <p
-              className="toggle-password-icon"
-              onClick={togglePasswordVisibility}
-            >
-              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
-            </p>
           </div>
 
           <div class="content">
@@ -367,12 +370,21 @@ export function LoginComponent() {
                 type="checkbox"
                 name="rememberMe"
                 id="rememberMe"
+                checked={loginFormData.rememberMe}
                 onChange={handleRememberMeChange}
               />
-              <label for="">Remember me</label>
+              <label for="rememberMe" style={{ marginTop: "10px" }}>
+                Remember me
+              </label>
             </div>
             <div class="pass-link">
-              <Link to="/forgotpass">Forgot password</Link>
+              <a
+                href="/forgotpass"
+                style={{ textDecoration: "none" }}
+                className="forgot-password"
+              >
+                Forgot password
+              </a>
             </div>
           </div>
           <button type="submit" value="submit" className="btn-login">
@@ -380,12 +392,12 @@ export function LoginComponent() {
           </button>
           <span>Or use your account</span>
           <div class="social-container">
-            <a href="/" class="social">
+            <a href="#" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faSquareFacebook} />
               </i>
             </a>
-            <a href="/" class="social">
+            <a href="#" class="social">
               <i class="">
                 <FontAwesomeIcon icon={faGoogle} />
               </i>
@@ -393,6 +405,7 @@ export function LoginComponent() {
           </div>
         </form>
       </div>
+
       <div class="overlay-container">
         <div class="overlay">
           <div class="overlay-panel overlay-left">
@@ -400,8 +413,10 @@ export function LoginComponent() {
               Hello <br />
               friends
             </h1>
-            <p>If you have an account, login here and have fun</p>
-            <button class="ghost" id="login" className="btn-login">
+            <p className="notification">
+              If you have an account, login here and have fun
+            </p>
+            <button class="ghost btn-login" id="login">
               Login
               <i class="">
                 <FontAwesomeIcon
@@ -417,10 +432,10 @@ export function LoginComponent() {
               Start your <br />
               journey now
             </h1>
-            <p>
+            <p className="notification">
               If you don'n have an account yet, join us and start your journey
             </p>
-            <button class="ghost" id="register" className="btn-login">
+            <button class="ghost btn-login" id="register">
               Register
               <i class="">
                 <FontAwesomeIcon

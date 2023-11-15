@@ -26,6 +26,7 @@ import LoginComponent from "./pages/LoginComponent";
 import ForgotPassword from "./pages/ForgetPassword";
 import SetNewPass from "./pages/SetNewPass";
 import { AuthProvider } from "./AuthContext";
+import ReturnPage from "./pages/ReturnPage";
 
 function App() {
   return (
@@ -74,6 +75,8 @@ function App() {
               <Route path="/check-out" component={CheckoutComponent} />
 
               <Route path="/blog" component={BlogComponent} />
+              <Route path="/bill" component={ReturnPage} />
+
               <Route
                 path="/blog-detail/:blog_id"
                 component={BlogDetailComponent}

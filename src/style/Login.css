@@ -1,25 +1,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 * {
+    /* margin: 0;
+    padding: 0; */
     box-sizing: border-box;
 }
 
-
-.title-login {
+h1 {
     font-weight: 700;
     letter-spacing: -1.5px;
     margin: 0;
     margin-bottom: 15px;
 }
 
-h1.title {
+.title h1 {
     font-size: 45px;
     line-height: 45px;
     margin: 0;
     text-shadow: 0 0 10px rgba(16, 64, 74, 0.5);
 }
 
-.content-login {
+.notification {
     font-size: 14px;
     font-weight: 100;
     line-height: 20px;
@@ -28,10 +29,18 @@ h1.title {
     text-shadow: 0 0 10px rgba(16, 64, 74, 0.5);
 }
 
-/* span {
+.forgot-password {
+    color: #333;
+    font-size: 14px;
+    text-decoration: none;
+    margin: 15px 0;
+    transition: 0.3s ease-in-out;
+}
+
+span {
     font-size: 14px;
     margin-top: 20px;
-} */
+}
 
 .social {
     color: #333;
@@ -51,7 +60,6 @@ a:hover {
     height: 50px;
     align-items: center;
     justify-content: space-around;
-    margin-top: 10px;
 }
 
 .content .checkbox {
@@ -70,11 +78,6 @@ a:hover {
     font-size: 14px;
     user-select: none;
     padding: 5px;
-    margin-top: 7px;
-}
-
-.pass-link a {
-    text-decoration: none;
 }
 
 .btn-login {
@@ -105,7 +108,7 @@ a:hover {
     outline: none;
 }
 
-.btn-login.ghost {
+.ghost {
     background-color: rgba(255, 255, 255, 0.2);
     border: 2px solid #fff;
     color: #fff;
@@ -121,18 +124,18 @@ a:hover {
     right: 50px;
 }
 
-button.ghost i {
+.ghost i {
     position: absolute;
     opacity: 1;
     transition: 0.3s ease-in-out;
     z-index: 6;
 }
 
-button.ghost i.register {
+.ghost i.register {
     right: 70px;
 }
 
-button.ghost i.login {
+.ghost i.login {
     left: 70px;
 }
 
@@ -147,8 +150,17 @@ form {
     text-align: center;
 }
 
+.email-2 {
+    background-color: #fff;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid #adadad;
+    padding: 12px 0px;
+    margin: 8px 0;
+    width: 100%;
+}
 
-input {
+.password-2 {
     background-color: #fff;
     outline: none;
     border: none;
@@ -166,7 +178,6 @@ input {
     width: 768px;
     max-width: 100%;
     min-height: 500px;
-    display: flex;
     margin: 0 auto;
 }
 
@@ -177,27 +188,11 @@ input {
     transition: all 0.6s ease-in-out;
 }
 
-.form-control-auth {
-    width: 100%;
-    position: relative;
-}
+
 
 .form-control2 {
     width: 100%;
     position: relative;
-    display: inline-block;
-}
-
-.password-2 {
-    width: 100%;
-}
-
-.toggle-password-icon {
-    position: absolute;
-    margin-left: 250px;
-    top: 10%;
-    transform: translateY(-0%);
-    cursor: pointer;
 }
 
 .form-control2 span {
@@ -213,35 +208,34 @@ input {
     width: 100%;
 }
 
-.form-control-auth small {
+.form-control small {
     color: red;
     position: absolute;
     top: 50px;
     left: 0;
     font-size: 12px;
     z-index: 100;
-    margin-top: 10px;
 }
 
-.form-control-auth span {
-    position: absolute;
-    border-bottom: 3px solid #2691d9;
-    left: 0;
-    bottom: 8px;
-    width: 0%;
-    transition: all 0.3s ease;
-}
+/* .form-control span {
+  position: absolute;
+  border-bottom: 3px solid #2691d9;
+  left: 0;
+  bottom: 8px;
+  width: 0%;
+  transition: all 0.3s ease;
+} */
 
-.form-control-auth input:focus~span {
+.form-control input:focus~span {
     width: 100%;
 }
 
 .form-control2 small {
     color: red;
     position: absolute;
-    top: 60px;
+    top: 50px;
     left: 0;
-    font-size: 14px;
+    font-size: 12px;
     z-index: 100;
 }
 

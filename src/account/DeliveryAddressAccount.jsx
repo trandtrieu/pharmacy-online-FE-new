@@ -207,18 +207,18 @@ const DeliveryAddressAccount = ({
                 </div>
               </div>
               <div class="modal-body">
-                <form action="">
-                  <div className="btn btn-info rounded">
-                    <button
-                      onClick={() => createNewDeliveryAddress(accountId)}
-                      style={{ color: "#fff" }}
-                      type="submit"
-                      className="btn submit"
-                    >
-                      Create
-                    </button>
-                  </div>
-                </form>
+                {/* <form action=""> */}
+                <div className="btn btn-info rounded">
+                  <button
+                    onClick={() => createNewDeliveryAddress(accountId)}
+                    style={{ color: "#fff" }}
+                    type="submit"
+                    className="btn submit"
+                  >
+                    Create
+                  </button>
+                </div>
+                {/* </form> */}
               </div>
             </div>
           </div>

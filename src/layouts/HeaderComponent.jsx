@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -24,6 +25,8 @@ const HeaderComponent = (props) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("id");
+
     setIsLoggedIn(false);
     setUsername(null);
 
@@ -63,8 +66,12 @@ const HeaderComponent = (props) => {
   };
 
   useEffect(() => {
-    setIsLoggedIn(true);
-  }, []);
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [token]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -104,24 +111,15 @@ const HeaderComponent = (props) => {
   };
 
   useEffect(() => {
-    CategoryServices.getCategoryType()
-      .then((res) => {
-        setCategories(res.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      });
-
-    // updateCartItemCount();
-    // updateWishListItemCount();
-
-    // const cartInterval = setInterval(updateCartItemCount, 108800);
-    // const wishlistInterval = setInterval(updateWishListItemCount, 1888000);
-
-    // return () => {
-    //   clearInterval(cartInterval);
-    //   clearInterval(wishlistInterval);
-    // };
+    // CategoryServices.getCategoryType()
+    //   .then((res) => {
+    //     setCategories(res.data);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Lỗi khi tải sản phẩm:", error);
+    //   });
+    updateCartItemCount();
+    updateWishListItemCount();
   }, [updateCartItemCount, updateWishListItemCount]);
 
   const viewProductByCategory = (category_id) => {

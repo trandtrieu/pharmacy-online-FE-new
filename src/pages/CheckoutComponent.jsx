@@ -13,6 +13,7 @@ import { useAuth } from "../AuthContext";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
+import DeliveryAddressServices from "../services/DeliveryAddressServices";
 
 const customStyles = {
   content: {
@@ -33,7 +34,7 @@ const CheckoutComponent = () => {
   const [totalCostAfterDiscount, setTotalCostAfterDiscount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [checkingCoupon, setCheckingCoupon] = useState(false);
-
+  const [deliveryAddress, setDeliveryAddress] = useState([]);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponCode, setCouponCode] = useState("");
   const [carts, setCarts] = useState([]);
@@ -58,7 +59,16 @@ const CheckoutComponent = () => {
     loadShippingCost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId, token]);
-
+  useEffect(() => {
+    DeliveryAddressServices.getDeliveryAddressByUserid(accountId, token)
+      .then((res) => {
+        setDeliveryAddress(res.data);
+        console.log("delivery-address: " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading delivery-address:", error);
+      });
+  }, [accountId, token]);
   const loadSubTotalCost = () => {
     CheckoutServices.getSubTotalCart(accountId, 0, token)
       .then((res) => {
@@ -132,6 +142,46 @@ const CheckoutComponent = () => {
 
   const toCart = () => {
     history.push(`/cart`);
+  };
+  const handlePlaceOrder = () => {
+    const dataToPass = {
+      name: "John Doe",
+      address: "123 Main Street",
+      phoneNumber: "123456789",
+      subTotalCost: subTotalCost,
+      shippingCost: shippingCost,
+    };
+
+    localStorage.getItem("token");
+    console.log(token);
+
+    fetch("http://localhost:8080/payment/create_payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        amount: totalCostAfterDiscount.toString(),
+        orderInfo: "",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        const paymentUrl = data.url;
+
+        window.location.href = paymentUrl;
+
+        console.log(paymentUrl);
+      })
+      .catch((error) => {
+        console.error("Error placing order:", error);
+      });
+    // history.push({
+    //   pathname: "/bill",
+    //   state: { data: dataToPass },
+    // });
   };
 
   return (
@@ -261,8 +311,31 @@ const CheckoutComponent = () => {
                           </p>
                           <hr />
                           <p className="m-0">
-                            <FontAwesomeIcon icon={faLocationDot} /> An Luong,
-                            Duy Hai, Duy Xuyen, Quang Nam
+                            <FontAwesomeIcon icon={faLocationDot} />
+                            <select
+                              style={{
+                                height: "56%",
+                                outline: "none",
+                                border: "none",
+                                marginLeft: "7px",
+                                opacity: "0.7",
+                              }}
+                              name="category_id"
+                              value={deliveryAddress.specific_address}
+                              // onChange={this.changeSpecifixAddress}
+                              required
+                            >
+                              {/* <option value="" disabled selected>Select a delivery address</option> */}
+                              {deliveryAddress.map((delivery) => (
+                                <option
+                                  style={{ color: "#6C757" }}
+                                  value={delivery.specific_address}
+                                  key={delivery.address_id}
+                                >
+                                  {delivery.specific_address}
+                                </option>
+                              ))}
+                            </select>
                           </p>
                         </blockquote>
                       </div>
@@ -387,7 +460,7 @@ const CheckoutComponent = () => {
                   </div>
                 </div>
 
-                <div className="form-group mb-4">
+                {/* <div className="form-group mb-4">
                   <div className="custom-control custom-radio">
                     <input
                       type="radio"
@@ -408,7 +481,7 @@ const CheckoutComponent = () => {
                       &nbsp; Momo
                     </label>
                   </div>
-                </div>
+                </div> */}
                 <div className="form-group mb-4">
                   <div className="custom-control custom-radio">
                     <input
@@ -449,6 +522,7 @@ const CheckoutComponent = () => {
                   <button
                     className="btn btn-block btn-primary font-weight-bold py-3"
                     disabled={!isChecked}
+                    onClick={handlePlaceOrder}
                   >
                     Place Order
                   </button>

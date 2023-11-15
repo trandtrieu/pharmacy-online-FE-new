@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { faCamera, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -89,9 +90,9 @@ const UpdatePrescriptionComponent = ({ history }) => {
     if (name === "note") setNote(value);
   };
 
-  const changeImageHandler = (event) => {
-    setImageFile(event.target.files[0]);
-  };
+  // const changeImageHandler = (event) => {
+  //   setImageFile(event.target.files[0]);
+  // };
 
   const updatePrescription = (e) => {
     e.preventDefault();

@@ -139,7 +139,16 @@ const WishlistComponent = () => {
             </div>
           ) : (
             <section>
-              <div className="container py-5">
+              <div className="container">
+                <h3
+                  className="text-center mb-3"
+                  style={{
+                    letterSpacing: "2px",
+                  }}
+                >
+                  My wishlist
+                </h3>
+
                 {wishlists.map((wishlistItem) => (
                   <div
                     className="row justify-content-center"
