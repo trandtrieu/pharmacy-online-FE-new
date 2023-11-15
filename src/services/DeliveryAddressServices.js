@@ -55,6 +55,9 @@ class DeliveryAddressServices {
     );
   }
 
+  // setDefaultDeliveryAddress(user_id, address_id) {
+  //   return axios.put(DeliveryAddress_API_BASE_URL + "delivery-address/setDefault?user_id=" + user_id + "&deliveryAddressID=" + address_id);
+  // }
 
   // addReplyByFeedback(feedbackId, userId, reply) {
   //     return axios.post(
