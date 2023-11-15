@@ -9,14 +9,25 @@ class CategoriesComponent extends Component {
 
     this.state = {
       categories: [],
+      showSecondRow: false,
     };
   }
+
+  toggleSecondRow = () => {
+    this.setState(
+      (prevState) => ({
+        showSecondRow: !prevState.showSecondRow,
+      }),
+      () => {
+        console.log("showSecondRow state:", this.state.showSecondRow);
+      }
+    );
+  };
 
   componentDidMount() {
     CategoryServices.getCategoryType()
       .then((res) => {
         const categories = res.data;
-        // Gọi API để lấy số lượng sản phẩm cho từng danh mục và cập nhật categories.
         const promises = categories.map((category) => {
           return ProductServices.getNumberProductByCategory(
             category.category_id
@@ -28,7 +39,6 @@ class CategoriesComponent extends Component {
               console.error("Lỗi khi tải sản phẩm:", error);
             });
         });
-        // Sau khi tất cả các cuộc gọi hoàn thành, cập nhật trạng thái.
         Promise.all(promises).then(() => {
           this.setState({
             categories: categories,
@@ -43,48 +53,82 @@ class CategoriesComponent extends Component {
     this.props.history.push(`/category/${category_id}`);
   }
   render() {
+    const { showSecondRow } = this.state;
     return (
       <>
         {/* Categories Start */}
-        <div className="container-fluid pt-5">
-          <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
-            <span className="bg-secondary pr-3">Categories</span>
+        {/* <img
+          src="https://cdn.nhathuoclongchau.com.vn/unsafe/301x173/filters:quality(90)/https://cms-prod.s3-sgn09.fptcloud.com/icon_noi_dung_san_pham_doi_tuong_4f5363c4ef.png"
+          alt=""
+        /> */}
+        <div className="container-fluid cover-category pt-5 ">
+          <h2
+            className="section-title position-relative text-uppercase mx-xl-5 mb-4"
+            style={{ fontSize: "27px", paddingLeft: "2%" }}
+          >
+            <img
+              loading="lazy"
+              src="https://cdn.nhathuoclongchau.com.vn/unsafe/28x28/https://cms-prod.s3-sgn09.fptcloud.com/smalls/danh_muc_noi_bat_d03496597a.png"
+              alt=""
+              style={{ paddingRight: "0.5%", paddingBottom: "3px" }}
+            />
+            <span className=" pr-3">Categories</span>
           </h2>
-          <div className="row px-xl-5 pb-3">
-            {this.state.categories.map((category) => (
+
+          <div className="row bg-category px-xl-5 pb-3 pt-3">
+            {this.state.categories.slice(0, 6).map((category) => (
               <div
-                className="col-lg-3 col-md-4 col-sm-6 pb-1"
+                className="col-lg-2 col-md-4 col-sm-6 col-12 pb-1 category-item"
                 key={category.category_id}
                 onClick={() => this.viewProductByCategory(category.category_id)}
               >
-                {/* <a
-                  className="text-decoration-none"
-                  href={`/category/${category.category_id}`}
-                > */}
-                <div className="cat-item d-flex align-items-center mb-4">
-                  <div
-                    className="overflow-hidden"
-                    style={{ width: "100px", height: "100px" }}
-                  >
-                    <img
-                      className="img-fluid"
-                      src={`assets/images/${category.category_image}`}
-                      alt=""
-                      style={{ width: "100%", height: "100%" }}
-                    />
-                  </div>
-                  <div className="flex-fill pl-3">
-                    <h6> {category.category_name}</h6>
-                    <small className="text-body">
-                      {category.productCount} Products
-                    </small>
-                  </div>
+                <div className="category-image">
+                  <img src={category.category_image} alt="" />
                 </div>
-                {/* </a> */}
+                <div className="category-name">
+                  <h6>{category.category_name}</h6>
+                </div>
               </div>
             ))}
           </div>
+          {showSecondRow && (
+            <div className="row bg-category px-xl-5 pb-3 pt-3">
+              {this.state.categories.slice(6).map((category) => (
+                <div
+                  className="col-lg-2 col-md-4 col-sm-6 col-12 pb-1 category-item"
+                  key={category.category_id}
+                  onClick={() =>
+                    this.viewProductByCategory(category.category_id)
+                  }
+                >
+                  <div className="category-image">
+                    <img src={category.category_image} alt="" />
+                  </div>
+                  <div className="category-name">
+                    <h6>{category.category_name}</h6>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="text-center">
+            <span onClick={this.toggleSecondRow} style={{ cursor: "pointer" }}>
+              {showSecondRow ? (
+                <i
+                  className="fas fa-chevron-up"
+                  style={{ paddingBottom: "50px" }}
+                ></i>
+              ) : (
+                <i
+                  className="fas fa-chevron-down"
+                  style={{ paddingBottom: "50px" }}
+                ></i>
+              )}
+            </span>
+          </div>
         </div>
+
         {/* Categories End */}
       </>
     );

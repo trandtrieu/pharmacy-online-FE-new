@@ -1,0 +1,581 @@
+/* ------------------------Start-HomeComponent--------------------------------------------- */
+
+.feature-products {
+
+  /* background: linear-gradient(to top, #FCFDFF, #EDF3FF); */
+  background: linear-gradient(to bottom, #f3f7fe, #B8D0FF);
+  /* margin-top: 40px; */
+  padding-bottom: 30px;
+}
+
+.fearture-products-part {
+  text-align: center;
+  position: relative;
+  padding-bottom: 50px;
+}
+
+.fearture-products-part img {
+  max-width: 100%;
+  max-height: auto;
+  position: absolute;
+  margin-bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-28%);
+  width: 400px;
+}
+
+.fearture-products-part h2 {
+  transform: translateX(-50%);
+  font-size: 25px;
+  font-family: unset;
+  position: absolute;
+  bottom: 10;
+  left: 50%;
+  font-weight: lightber;
+}
+
+.feature-products .container-fluid {
+
+  background: linear-gradient(to top, #B9D1FF, #EDF3FF);
+  padding-top: 50px;
+  animation: gradientTransition 4s ease infinite;
+}
+
+.cover-carousel {
+  padding-left: 8%;
+  padding-right: 8%;
+}
+
+.cover-carousel .card .product-item {
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.product-star {
+  color: orange;
+}
+
+.text-wrap {
+  color: #0072BC;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bolder;
+  font-size: 20px;
+}
+
+.text-wrap span {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: inherit;
+  font-size: 18px;
+}
+
+.product-offer {
+  height: 300px;
+}
+
+/* 
+Style for previous button */
+.carousel-control-prev {
+  left: 5px;
+  background-color: rgba(150, 149, 149, 0.9);
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  /* Adjust border-radius to control the size */
+  padding: 8px;
+  /* Adjust the padding as needed to make it smaller */
+  /* color: white; */
+  font-size: 20px;
+  /* Adjust font-size to make it smaller */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  height: 50px;
+  width: 50px;
+  top: 45%;
+}
+
+.carousel-control-prev:hover {
+  /* background-color: rgba(53, 93, 238, 0.6); */
+  background-color: rgba(67, 61, 61, 0.6);
+}
+
+/* Style for next button */
+/* Style for next button */
+.carousel-control-next {
+  right: 5px;
+  /* background-color: rgba(212, 212, 212, 0.9);  */
+  background-color: rgba(150, 149, 149, 0.9);
+  border: 1px solid #ccc;
+  /* Gray border */
+  border-radius: 50%;
+  /* Rounded shape */
+  padding: 8px;
+  color: #FFFFFF;
+  /* Blue color for the arrow */
+  font-size: 20px;
+  /* Adjust font-size to make it visible */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  height: 50px;
+  width: 50px;
+  /* Adjust the width to make it square */
+  top: 45%;
+}
+
+.carousel-inner {
+  transition: transform 2.5 ease-in-out;
+}
+
+.carousel-item {
+  transition: transform 1.8s ease-in-out;
+}
+
+
+.carousel-control-next:hover {
+  background-color: rgba(67, 61, 61, 0.6);
+}
+
+
+
+.carousel-control-prev-icon {
+  color: #1250DC;
+}
+
+
+
+
+
+/* ------------------------End-HomeComponent--------------------------------------------- */
+
+
+/* ------------------------Start-CategoriesComponent--------------------------------------------- */
+
+.bg-category {
+  /* background-color: #C6D9FF; */
+  /* background: linear-gradient(to bottom, #B9D1FF, #EDF3FF); */
+  padding-top: 20px;
+  /* margin-bottom: 100px; */
+  justify-content: space-evenly;
+  margin: 0 180px 0px 180px;
+
+}
+
+.category-item {
+  text-align: center;
+  margin-bottom: 30px;
+  transition: all 0.3s;
+
+}
+
+.category-item:hover {
+  background-color: #F2F6FE;
+  /* Replace with your desired hover color */
+  transform: scale(1.05);
+  /* Increase size by 5% on hover */
+  border: 1px solid #0072BC;
+  border-radius: 10%;
+  padding: 10px;
+}
+
+.category-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto;
+  background-color: #FFFFFF;
+  /* Thay #your-color bằng mã màu bạn muốn */
+  padding: 10px;
+}
+
+
+.category-image img {
+  width: 65%;
+  height: 80%;
+  padding-top: 20%;
+}
+
+.category-name {
+  margin-top: 10px;
+}
+
+.cover-category {
+  /* background: linear-gradient(to bottom, #FCF3E8, #F2F7FE); */
+
+  background: linear-gradient(to bottom, #FCF3E8, #FFFFFF);
+}
+
+
+
+
+
+/* ------------------------End-CategoriesComponent--------------------------------------------- */
+
+/* ------------------------Start-Offer--------------------------------------------- */
+
+.bg-offer {
+  background: linear-gradient(to top, #F6F8FC, #F2F7FE);
+}
+
+/* ------------------------End-Offer--------------------------------------------- */
+
+
+/* ------------------------Start-FavoriteBrand--------------------------------------------- */
+
+
+
+
+/* ------------------------End-FavoriteBrand--------------------------------------------- */
+
+
+.cover-carousel-slide {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 15px;
+}
+
+.card.product-item-favor {
+  border: 0.08rem solid #C1C8D1;
+  border-radius: 10px;
+  /* box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); 
+    transition: transform 0.2s; */
+  background-color: #fff;
+}
+
+.card.product-item-favor:hover {
+  /* transform: scale(1.01);  */
+  border: 2px solid #0072BC;
+}
+
+.card.product-item-favor .product-img {
+  position: relative;
+  overflow: hidden;
+}
+
+.card.product-item-favor .product-img img {
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+}
+
+.card.product-item-favor .logo img {
+  width: 100%;
+  height: auto;
+  margin-top: 8px;
+  border: 1px solid rgb(174, 174, 174);
+  border-radius: 10px;
+  padding: 0 10px;
+
+}
+
+.product-item-favor .logo {
+  padding-top: 12px;
+  width: 100%;
+  height: 60px;
+
+}
+
+
+
+.card-title-favorite {
+  font-size: 16px;
+  text-decoration: none;
+  color: #1250DC;
+  transition: color 0.2s;
+  padding-top: 10px;
+}
+
+.card-title-favorite:hover {
+  /* color: #007bff;  */
+  color: #1250DC;
+
+}
+
+.product-item-favor .card-title-bottom {
+  padding-top: 40px;
+  padding-bottom: 10px;
+}
+
+
+
+
+/* ---------------------------------Start-FeatureCategory-------------------------------- */
+.cover-feature-category {
+  padding-left: 10%;
+  padding-right: 10%;
+  height: 100%;
+  margin-bottom: 80px;
+}
+
+.item {
+  border: 2px solid #E3E8ED;
+  text-align: center;
+  padding: 10px;
+  margin: 10px;
+  width: 190px;
+  height: 120px;
+  border-radius: 13px;
+  background-color: #FFFFFF;
+}
+
+.item a {
+  text-decoration: none;
+  color: #333;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.feature-category-cate-item-content {
+  margin-top: 10px;
+  color: black;
+  font-weight: 500;
+  font-size: 90%;
+
+}
+
+.feature-category-cate-item-img {
+  height: max-content;
+}
+
+.feature-category-cate-item-img img {
+  max-width: 100%;
+  padding-top: 12px;
+
+}
+
+
+@media (max-width: 767px) {
+  .cover-feature-category {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-left: 5%;
+    margin-right: 5%;
+
+  }
+
+  .cover-feature-category .col-6 {
+    flex-basis: calc(50% - 10px);
+  }
+}
+
+
+
+
+
+
+
+/* ---------------------------------End-FeatureCategory-------------------------------- */
+
+
+/* ---------------------------------Start-OptionCarousel-------------------------------- */
+
+.row.option-carousel {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 20px;
+}
+
+.option-carousel-item {
+
+  align-items: center;
+}
+
+.option-carousel-item img {
+  width: 40%;
+  order: 2;
+}
+
+.option-carousel-text {
+  order: 1;
+}
+
+.option-carousel-text span {
+  font-size: 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 400;
+}
+
+.option-carousel-item .new-icon {
+  position: absolute;
+  top: 0;
+  right: 39px;
+  width: 19%;
+}
+
+.option-carousel-item a {
+  text-decoration: none;
+}
+
+/* ---------------------------------End-OptionCarousel-------------------------------- */
+
+/* ---------------------------------Start-HealthService-------------------------------- */
+.health-service-container {
+  margin-top: 50px;
+}
+
+.health-service-container p {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: #76777A;
+  font-size: 17px;
+}
+
+.health-service-container h2 {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 2.48958rem;
+  font-weight: 300 !important;
+  color: #003057;
+  margin-bottom: 20px;
+}
+
+.image-container {
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  clip-path: polygon(0 0, 95% 0, 90% 100%, 0 90%);
+  transform: scale(1.1);
+  transition: transform 0.5s ease;
+}
+
+.image-container:hover img {
+  transform: scale(1);
+}
+
+/* ------------------------------Start-Wishlist---------------------------------------- */
+/* WishlistComponent.css */
+
+
+.card-wishlist {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+}
+
+/* Style the image to have rounded corners */
+.card-wishlist img {
+  border-radius: 8px;
+}
+
+/* Add a border between the image and card body */
+.card-body .card-wishlist-body {
+  border-top: 1px solid #dee2e6;
+}
+
+/* Style the product name */
+.card-body .card-wishlist-body h5 {
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.card-body .card-wishlist-body h5:hover {
+  color: #007bff;
+}
+
+/* Style the brand and description */
+.card-body .card-wishlist-body .text-muted span {
+  color: #6c757d;
+}
+
+.card-body .card-wishlist-body p {
+  color: #495057;
+}
+
+/* Style the price */
+.card-body .card-wishlist-body h4 {
+  color: #28a745;
+}
+
+/* Style the "Free shipping" text */
+.card-body .card-wishlist-body .text-success {
+  color: #28a745;
+}
+
+/* Style the buttons with a consistent color */
+.btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Add spacing between the buttons */
+.d-flex.flex-row button {
+  margin-right: 8px;
+}
+
+/* Apply animation styles */
+.animate__animated {
+  animation-duration: 0.5s;
+}
+
+.animate__fadeInUp {
+  animation-name: fadeInUp;
+}
+
+/* Add a delay to the animation based on the index */
+.animate__delay-1s {
+  animation-delay: 1s;
+}
+
+.animate__delay-2s {
+  animation-delay: 2s;
+}
+
+.card-wishlist img {
+  border-radius: 8px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.card-wishlist img:hover {
+  transform: scale(1.1);
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .card-wishlist {
+    margin-bottom: 20px;
+  }
+}
+
+
+
+/* ------------------------------End-Wishlist---------------------------------------- */
+
+.scroll-to-top-span {
+  display: none;
+  position: fixed;
+  bottom: 88px;
+  right: 20px;
+  font-size: 16px;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #598E71;
+  color: #fff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.scroll-to-top-span.hidden {
+  opacity: 0;
+}
+
+.scroll-to-top-span.visible {
+  display: inline-block;
+}

@@ -27,7 +27,7 @@ import ForgotPassword from "./pages/ForgetPassword";
 import SetNewPass from "./pages/SetNewPass";
 import { AuthProvider } from "./AuthContext";
 import ReturnPage from "./pages/ReturnPage";
-
+import HealthService from "./pages/HealthService";
 function App() {
   return (
     <>
@@ -60,6 +60,7 @@ function App() {
               <Route path="/cart" component={CartComponent} />
               <Route path="/wishlist" component={WishlistComponent} />
               <Route path="/profile" component={ProfileComponent} />
+              <Route path="/healthService" component={HealthService} />
               <Route
                 path="/create-prescription"
                 component={CreatePrescriptionComponent}
