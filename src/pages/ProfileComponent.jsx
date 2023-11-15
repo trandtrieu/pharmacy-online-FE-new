@@ -16,6 +16,7 @@ const ProfileComponent = () => {
     useState(null);
   const history = useHistory();
   const [deliveryAddress, setDeliveryAddress] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [fullNameRecipient, setFullNameRecipient] = useState("");
   const [phoneRecipient, setPhoneRecipient] = useState("");
   const [specificAddressRecipient, setSpecificAddressRecipient] = useState("");
@@ -150,28 +151,44 @@ const ProfileComponent = () => {
     setSpecificAddressRecipient(event.target.value);
   };
   const createNewDeliveryAddress = (accountId) => {
-    // e.preventDefault();
-    setTimeout(() => {
-      let deliveryAddressData = {
-        recipient_full_name: fullNameRecipient,
-        recipient_phone_number: phoneRecipient,
-        specific_address: `${specificAddressRecipient}, ${ward}, ${district}, ${province}.`,
-      };
-      console.log("deliveryAddress => " + JSON.stringify(deliveryAddress));
 
+    let deliveryAddressData = {
+      recipient_full_name: fullNameRecipient,
+      recipient_phone_number: phoneRecipient,
+      specific_address: `${specificAddressRecipient}, ${ward}, ${district}, ${province}.`,
+    };
+    console.log("deliveryAddress => " + JSON.stringify(deliveryAddress));
+
+    if (!deliveryAddressData.recipient_full_name ||
+      !deliveryAddressData.recipient_phone_number ||
+      !deliveryAddressData.specific_address) {
+      toast.error("Please enter full info!")
+    } else {
       DeliveryAddressServices.addDeliveryAddress(
         accountId,
         deliveryAddressData,
         token
       ).then((res) => {
-        // window.location.reload();
+        window.location.reload();
       }, 100000);
-      toast.success("good");
-    }).catch((error) => {
-      toast.error("fail");
-      console.error("Error creating delivery address:", error);
-    });
+      toast.success("Created new delivery address successfully!");
+    }
   };
+  const setDefaultAddress = (accountId, address_id) => {
+    DeliveryAddressServices.setDefaultDeliveryAddress(
+      accountId,
+      address_id,
+      token
+    ).then((res) => {
+      window.location.reload();
+      toast.success("Set default delivery address successfully!");
+    })
+      .catch((error) => {
+        // Xử lý lỗi ở đây nếu cần
+        toast.error("Error setting default delivery address:");
+      });
+  }
+
 
   const deleteDeliveryAddress = (user_id, address_id) => {
     console.log("token" + token);
@@ -350,6 +367,8 @@ const ProfileComponent = () => {
 
                 <DeliveryAddressAccount
                   deliveryAddress={deliveryAddress}
+                  selectedAddressId={selectedAddressId}
+                  setSelectedAddressId={setSelectedAddressId}
                   deleteDeliveryAddress={deleteDeliveryAddress}
                   changeFullNameRecipient={changeFullNameRecipient}
                   changePhoneRecipient={changePhoneRecipient}
@@ -360,6 +379,7 @@ const ProfileComponent = () => {
                     changeSpecificAddressRecipient
                   }
                   createNewDeliveryAddress={createNewDeliveryAddress}
+                  setDefaultAddress={setDefaultAddress}
                   accountId={accountId}
                 />
               </div>

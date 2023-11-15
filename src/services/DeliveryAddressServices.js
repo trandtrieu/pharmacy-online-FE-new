@@ -42,6 +42,19 @@ class DeliveryAddressServices {
       config
     );
   }
+  setDefaultDeliveryAddress(user_id, address_id, accessToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    return axios.put(
+      `${DeliveryAddress_API_BASE_URL}delivery-address/setDefault?user_id=${user_id}&address_id=${address_id}`,
+      config
+    );
+  }
+
 
   // addReplyByFeedback(feedbackId, userId, reply) {
   //     return axios.post(

@@ -13,6 +13,7 @@ import { useAuth } from "../AuthContext";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
+import DeliveryAddressServices from "../services/DeliveryAddressServices";
 
 const customStyles = {
   content: {
@@ -37,6 +38,7 @@ const CheckoutComponent = () => {
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponCode, setCouponCode] = useState("");
   const [carts, setCarts] = useState([]);
+  const [deliveryAddress, setDeliveryAddress] = useState([])
   const [selectedOption, setSelectedOption] = useState("delivery");
   const [isChecked, setIsChecked] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -50,6 +52,17 @@ const CheckoutComponent = () => {
       })
       .catch((error) => {
         console.error("Error loading carts:", error);
+      });
+  }, [accountId, token]);
+
+  useEffect(() => {
+    DeliveryAddressServices.getDeliveryAddressByUserid(accountId, token)
+      .then((res) => {
+        setDeliveryAddress(res.data);
+        console.log("delivery-address: " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading delivery-address:", error);
       });
   }, [accountId, token]);
 
@@ -261,8 +274,21 @@ const CheckoutComponent = () => {
                           </p>
                           <hr />
                           <p className="m-0">
-                            <FontAwesomeIcon icon={faLocationDot} /> An Luong,
-                            Duy Hai, Duy Xuyen, Quang Nam
+                            <FontAwesomeIcon icon={faLocationDot} />
+                            <select
+                              style={{ height: '56%', outline: 'none', border: 'none', marginLeft: '7px', opacity: '0.7' }}
+                              name="category_id"
+                              value={deliveryAddress.specific_address}
+                              // onChange={this.changeSpecifixAddress}  
+                              required
+                            >
+
+                              {deliveryAddress.map((delivery) => (
+                                <option style={{ color: '#6C757' }} value={delivery.specific_address} key={delivery.address_id}>
+                                  {delivery.specific_address}
+                                </option>
+                              ))}
+                            </select>
                           </p>
                         </blockquote>
                       </div>
