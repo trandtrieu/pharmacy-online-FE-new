@@ -42,6 +42,7 @@ const CheckoutComponent = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [note, setNote] = useState("");
+  const [deliveryAddressStatusDefault, setDeliveryAddressStatusDefault] = useState("")
   const { accountId, token } = useAuth();
 
   useEffect(() => {
@@ -67,6 +68,17 @@ const CheckoutComponent = () => {
       })
       .catch((error) => {
         console.error("Error loading delivery-address:", error);
+      });
+  }, [accountId, token]);
+
+  useEffect(() => {
+    DeliveryAddressServices.getDeliveryAddressByStatusDefault(accountId, token)
+      .then((res) => {
+        setDeliveryAddressStatusDefault(res.data);
+        console.log("delivery-address status: " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading delivery-address status default:", error);
       });
   }, [accountId, token]);
   const loadSubTotalCost = () => {
@@ -306,36 +318,15 @@ const CheckoutComponent = () => {
                       <div className="card-body p-0">
                         <blockquote className="d-flex flex-column m-0">
                           <p className="m-0">
-                            <FontAwesomeIcon icon={faPhone} /> Trieu &bull;{" "}
-                            <span>0789458707</span>
+                            <FontAwesomeIcon icon={faPhone} /> {deliveryAddressStatusDefault.recipient_phone_number} &bull;{" "}
+                            <span>{deliveryAddressStatusDefault.recipient_full_name}</span>
                           </p>
                           <hr />
                           <p className="m-0">
                             <FontAwesomeIcon icon={faLocationDot} />
-                            <select
-                              style={{
-                                height: "56%",
-                                outline: "none",
-                                border: "none",
-                                marginLeft: "7px",
-                                opacity: "0.7",
-                              }}
-                              name="category_id"
-                              value={deliveryAddress.specific_address}
-                              // onChange={this.changeSpecifixAddress}
-                              required
-                            >
-                              {/* <option value="" disabled selected>Select a delivery address</option> */}
-                              {deliveryAddress.map((delivery) => (
-                                <option
-                                  style={{ color: "#6C757" }}
-                                  value={delivery.specific_address}
-                                  key={delivery.address_id}
-                                >
-                                  {delivery.specific_address}
-                                </option>
-                              ))}
-                            </select>
+                            <span style={{ marginLeft: '9px' }}>
+                              {deliveryAddressStatusDefault.specific_address}
+                            </span>
                           </p>
                         </blockquote>
                       </div>

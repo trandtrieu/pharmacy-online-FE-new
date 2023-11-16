@@ -1,0 +1,9 @@
+ .abc:before {
+     content: "";
+     position: absolute;
+     top: -30px;
+     left: 81%;
+     transform: translateX(-50%);
+     border: 15px solid;
+     border-color: transparent transparent #fff transparent;
+ }

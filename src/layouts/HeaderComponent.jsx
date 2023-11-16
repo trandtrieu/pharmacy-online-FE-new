@@ -30,6 +30,7 @@ const HeaderComponent = (props) => {
   const [username, setUsername] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { accountId, token } = useAuth();
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -45,6 +46,9 @@ const HeaderComponent = (props) => {
     if (event.key === "Enter") {
       searchProductAndFilter();
     }
+  };
+  const handleToggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
   };
 
   const handleCartClick = () => {
@@ -152,7 +156,7 @@ const HeaderComponent = (props) => {
 
   return (
     <>
-      <div className="container-fluid sticky-header">
+      <div style={{ overflowX: "clip" }} className="container-fluid sticky-header">
         <div className="avc" style={{ backgroundColor: "#07304f" }}></div>
 
         <div className="container-fluid bg-light py-3 px-xl-5 d-none d-lg-block ">
@@ -276,7 +280,7 @@ const HeaderComponent = (props) => {
           </div>
         </div>
 
-        <div className="container-fluid bg-dark mb-30">
+        <div style={{ overflowX: "clip" }} className="container-fluid bg-dark mb-30">
           <div
             className="row px-xl-5"
             style={{ zIndex: "1000", marginRight: "0px" }}
@@ -365,7 +369,7 @@ const HeaderComponent = (props) => {
                     </Link>
                   </div>
 
-                  <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
+                  <div style={{ zIndex: '10000' }} className="navbar-nav ml-auto py-0 d-none d-lg-block">
                     <Link to="/wishlist" className="btn px-0 position-relative">
                       <i
                         className="fas fa-heart text-primary"
@@ -388,7 +392,7 @@ const HeaderComponent = (props) => {
                       </span>
                     </Link>
 
-                    <Link to="#" className="btn px-3 ml-3 position-relative ">
+                    <Link to="#" className="btn px-3 ml-3 position-relative" onClick={handleToggleDropdown}>
                       <FontAwesomeIcon
                         icon={faBell}
                         style={{ color: "#FFFFFF", fontSize: "1.2rem" }}
@@ -408,7 +412,36 @@ const HeaderComponent = (props) => {
                           {cartItemCount}
                         </span>
                       </span>
+
                     </Link>
+                    {isDropdownOpen && (
+                      // Dropdown content goes here
+                      <div style={{ position: "absolute", zIndex: '100', backgroundColor: '#fff', width: '400px', top: "60px", right: "-50px" }} className="abc rounded p-3">
+                        <div className="notify_item">
+                          {/* <div className="notify_img">
+                          </div> */}
+                          <div className="notify_info">
+                            <p>
+                              Alex commented on<span>Timeline Share Lorem, ipsum dolor sit amet consectetur adipisicing elit. Et iusto laborum consequatur quia a sed vitae doloremque illo accusantium reprehenderit autem, ipsam possimus, porro veniam eaque obcaecati delectus fugiat illum.</span>
+                            </p>
+                            <span className="notify_time">10 minutes ago</span>
+                          </div>
+                          <div className="notify_info">
+                            <p>
+                              Alex commented on<span>Timeline Share</span>
+                            </p>
+                            <span className="notify_time">10 minutes ago</span>
+                          </div>
+                          <div className="notify_info">
+                            <p>
+                              Alex commented on<span>Timeline Share</span>
+                            </p>
+                            <span className="notify_time">10 minutes ago</span>
+                          </div>
+                        </div>
+
+                      </div>
+                    )}
 
                     <></>
                   </div>

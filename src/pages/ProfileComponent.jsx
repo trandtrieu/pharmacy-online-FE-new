@@ -81,9 +81,9 @@ const ProfileComponent = () => {
         if (districts !== undefined) {
           districts.map(
             (value) =>
-              (document.getElementById(
-                "districts"
-              ).innerHTML += `<option value='${value.district_id}'>${value.district_name}</option>`)
+            (document.getElementById(
+              "districts"
+            ).innerHTML += `<option value='${value.district_id}'>${value.district_name}</option>`)
           );
         }
       })
@@ -103,9 +103,9 @@ const ProfileComponent = () => {
         if (wards !== undefined) {
           wards.map(
             (value) =>
-              (document.getElementById(
-                "wards"
-              ).innerHTML += `<option value='${value.ward_id}'>${value.ward_name}</option>`)
+            (document.getElementById(
+              "wards"
+            ).innerHTML += `<option value='${value.ward_id}'>${value.ward_name}</option>`)
           );
         }
       })
@@ -174,8 +174,8 @@ const ProfileComponent = () => {
       ).then((res) => {
         window.location.reload();
       }, 100000);
+      toast.success("Created new delivery addresss successfully!");
     }
-    toast.success("Created new delivery addresss successfully!");
   };
   const setDefaultAddress = (accountId, address_id) => {
     DeliveryAddressServices.setDefaultDeliveryAddress(
