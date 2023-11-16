@@ -19,7 +19,7 @@ class BlogServices{
     }//http://localhost:8080/pharmacy-online/blogs/delete/7
     
     updateBlog(blog, blog_id){
-        return axios.put(BLOG_API_BASE_URL + "/update/" + blog_id, blog);
+        return axios.put(BLOG_API_BASE_URLL + "/update/" + blog_id, blog);
     }//http://localhost:8080/pharmacy-online/blog/update/5
 }
 // eslint-disable-next-line import/no-anonymous-default-export

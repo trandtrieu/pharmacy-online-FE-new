@@ -40,7 +40,8 @@ class UpdateBlogComponent extends Component {
     };
     console.log("blog =>" + JSON.stringify(blog));
 
-    BlogServices.addBlog(blog).then((res) => {
+    BlogServices.updateBlog(blog,this.state.blog_id).then((res) => {
+      // console.log()
       this.props.history.push("/blog");
     });
     toast.success('Update Blog is Successfully', {
@@ -82,8 +83,10 @@ class UpdateBlogComponent extends Component {
 
   render() {
     return (
+      <div className="col-lg-8 bg-light pt-3 mx-auto">
+      <div className="ps-lg-4">
       <div className="container">
-        <div className="row">
+        {/* <div className="row"> */}
           <h3 className="text-center">Update New Blog</h3>
           <form>
             <div className="form-group">
@@ -109,7 +112,7 @@ class UpdateBlogComponent extends Component {
             </div>
 
             <div className="form-group">
-              <label>Content :</label>
+              
               {/* <input
                 placeholder="Day Update"
                 name="update_day"
@@ -117,12 +120,21 @@ class UpdateBlogComponent extends Component {
                 value={this.state.update_day}
                 onChange={this.changeUpdateHandler}
               /> */}
-              <ReactQuill
+              {/* <ReactQuill
                 theme="snow"
                 className="edit-content"
                 value={this.state.content}
                 onChange={this.changeContentHandler}
-              />
+              /> */}
+              <label>Content :</label><br/>
+                <textarea
+                  placeholder="Content"
+                  className="form-control"
+                  name="content"
+                  value={this.state.content}
+                  onChange={this.changeContentHandler}
+                  style={{height:"15rem"}}
+                />
             </div>
 
             <button className="btn btn-success" onClick={this.updateBlog}>
@@ -137,6 +149,8 @@ class UpdateBlogComponent extends Component {
             </button>
           </form>
         </div>
+      {/* </div> */}
+      </div>
       </div>
     );
   }

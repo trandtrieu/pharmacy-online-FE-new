@@ -1,4 +1,4 @@
-// import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
@@ -55,6 +55,9 @@ class BlogDetailComponent extends Component {
             <div className="body">
               {/* {this.state.blogs.map((blog) => ( */}
               <div className="container">
+              <h1 className="title" style={{ marginTop: "30px", marginBottom:"30px" }}>
+                  {this.state.blog.title}
+                </h1>
                 {this.state.blog.imgUrls &&
                   this.state.blog.imgUrls.length > 0 && (
                     <img
@@ -64,9 +67,7 @@ class BlogDetailComponent extends Component {
                     />
                   )}
                 {/* <img className="content-img" src={`../assets/images/${this.state.blog.imgUrls[0]}`} alt="content-img"/> */}
-                <h1 className="title" style={{ marginTop: "10px" }}>
-                  {this.state.blog.title}
-                </h1>
+                
                 <h6 className="blog-date" style={{ marginTop: "20px" }}>
                   {this.state.blog.create_date}
                   {/* {this.state.blog.create_time} */}
@@ -80,9 +81,9 @@ class BlogDetailComponent extends Component {
                   <FontAwesomeIcon icon={faTrash} />
                   </button>
 
-                  {/* <button className="btn btn-primary" onClick={ () => this.updateBlog(this.state.blog.blog_id)} style={{marginLeft:"10px"}}>
+                  <button className="btn btn-primary" onClick={ () => this.updateBlog(this.state.blog.blog_id)} style={{marginLeft:"10px"}}>
                   <FontAwesomeIcon icon={faPenToSquare} />
-                  </button> */}
+                  </button>
                 {/* <div className="col-lg-8 col-md-10 mx-auto"> */}
 
                 <div
