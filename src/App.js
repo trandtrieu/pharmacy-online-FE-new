@@ -37,7 +37,18 @@ function App() {
         <Router>
           <AppWrapper>
             <HeaderComponent />
-            <ToastContainer />
+            <ToastContainer
+              position="top-right"
+              autoClose={500}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
             <Bubble
               typebot="customer-support-e4ekwgb"
               theme={{ button: { backgroundColor: "#598E71" } }}
