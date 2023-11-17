@@ -302,6 +302,17 @@ class DetailProductComponent extends Component {
     this.props.history.push(`/create-prescription`);
   };
 
+  convertDollarToVND = (soTien) => {
+    if (typeof soTien === 'number' && !isNaN(soTien)) {
+      var soTienDaXuLi = soTien.toLocaleString('vi-VN');
+      console.log(soTienDaXuLi);
+      return soTienDaXuLi;
+    } else {
+      console.error('Invalid input for convertDollarToVND:', soTien);
+      return '';
+    }
+  };
+
   render() {
     const { accountId, token } = this.context;
     return (
@@ -366,7 +377,7 @@ class DetailProductComponent extends Component {
                   <span className="text-success ms-2 ml-1"> In stock</span>
                 </div>
                 <div className="mb-3">
-                  <span className="h2">${this.state.product.price}</span>
+                  <span className="h2">{this.convertDollarToVND(this.state.product.price)}</span>
                   <span className="text-muted">/per box</span>
                 </div>
                 <div className="row">
