@@ -21,7 +21,7 @@ class CartServices {
     );
   }
 
-  getListCartByAccountId(accountId, accessToken) {
+  getListCartByAccountId(accountId, cart_type, accessToken) {
     const config = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -29,20 +29,27 @@ class CartServices {
     };
 
     return axios.get(
-      CART_API_BASE_URL + "/get-cart?accountId=" + accountId + "&cart_type=0",
+      CART_API_BASE_URL +
+        "/get-cart?accountId=" +
+        accountId +
+        "&cart_type=" +
+        cart_type,
       config
     );
   }
 
-  getListCartByAccountIdByPrescription(accountId, accessToken) {
+  getListCartByAccountIdByPrescription(accountId, cart_type, accessToken) {
     const config = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-
     return axios.get(
-      CART_API_BASE_URL + "/get-cart?accountId=" + accountId + "&cart_type=2",
+      CART_API_BASE_URL +
+        "/get-cart?accountId=" +
+        accountId +
+        "&cart_type=" +
+        cart_type,
       config
     );
   }

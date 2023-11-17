@@ -28,6 +28,8 @@ import SetNewPass from "./pages/SetNewPass";
 import { AuthProvider } from "./AuthContext";
 import ReturnPage from "./pages/ReturnPage";
 import HealthService from "./pages/HealthService";
+import CartPrescriptionComponent from "./pages/CartPrescriptionComponent";
+import CheckoutPrescriptionComponent from "./pages/CheckoutPrescriptionComponent";
 function App() {
   return (
     <>
@@ -57,6 +59,10 @@ function App() {
               <Route path="/shop/search" component={SearchProduct} />
 
               <Route path="/shop" component={ShopComponent} />
+              <Route
+                path="/cart-prescription"
+                component={CartPrescriptionComponent}
+              />
               <Route path="/cart" component={CartComponent} />
               <Route path="/wishlist" component={WishlistComponent} />
               <Route path="/profile" component={ProfileComponent} />
@@ -74,6 +80,10 @@ function App() {
                 component={UpdatePrescriptionComponent}
               />
               <Route path="/check-out" component={CheckoutComponent} />
+              <Route
+                path="/check-out-prescription"
+                component={CheckoutPrescriptionComponent}
+              />
 
               <Route path="/blog" component={BlogComponent} />
               <Route path="/bill" component={ReturnPage} />

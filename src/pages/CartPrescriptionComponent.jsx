@@ -26,8 +26,7 @@ const customStyles = {
   },
 };
 
-const CartComponent = ({ history }) => {
-  const [carts, setCarts] = useState([]);
+const CartPrescriptionComponent = ({ history }) => {
   const [cartsFromPresciption, setCartsFromPresciption] = useState([]);
 
   const { accountId, token } = useAuth();
@@ -39,15 +38,8 @@ const CartComponent = ({ history }) => {
     useState(false);
   useEffect(() => {
     Modal.setAppElement("#root");
-    CartServices.getListCartByAccountId(accountId, 0, token)
-      .then((res) => {
-        setCarts(res.data);
-        console.log("hello data: " + res.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải giỏ hàng:", error);
-      });
-    CartServices.getListCartByAccountIdByPrescription(accountId, token)
+
+    CartServices.getListCartByAccountIdByPrescription(accountId, 2, token)
       .then((res) => {
         setCartsFromPresciption(res.data);
         console.log("hello data: " + res.data);
@@ -64,10 +56,10 @@ const CartComponent = ({ history }) => {
   const handleDeleteConfirmed = (cartItem) => {
     CartServices.removeFromCart(cartItem.cartId)
       .then(() => {
-        const updatedCarts = carts.filter(
+        const updatedCarts = cartsFromPresciption.filter(
           (cart) => cart.cartId !== cartItem.cartId
         );
-        setCarts(updatedCarts);
+        setCartsFromPresciption(updatedCarts);
         setIsDeleteConfirmationOpen(false);
         setCartItemToDelete(null);
         toast.success("Delete product cart successfully!");
@@ -92,7 +84,7 @@ const CartComponent = ({ history }) => {
     setCartItemToDelete(null);
   };
   const handleQuantityChange = (cartId, newQuantity) => {
-    const updatedCarts = carts.map((cartItem) =>
+    const updatedCarts = cartsFromPresciption.map((cartItem) =>
       cartItem.cartId === cartId
         ? {
             ...cartItem,
@@ -102,17 +94,17 @@ const CartComponent = ({ history }) => {
     );
 
     // Immediately update the cart when the quantity changes
-    setCarts(updatedCarts);
+    setCartsFromPresciption(updatedCarts);
   };
 
   const handleUpdateCart = () => {
     return new Promise((resolve, reject) => {
-      const isQuantityExceeded = carts.some((cartItem) => {
+      const isQuantityExceeded = cartsFromPresciption.some((cartItem) => {
         return cartItem.quantity > cartItem.productDetail.quantity;
       });
 
       if (isQuantityExceeded) {
-        carts.forEach((cartItem) => {
+        cartsFromPresciption.forEach((cartItem) => {
           if (cartItem.quantity > cartItem.productDetail.quantity) {
             toast.error(
               `Product ${cartItem.productDetail.name} has a cart quantity (${cartItem.quantity}) exceeding available quantity (${cartItem.productDetail.quantity}).`
@@ -123,7 +115,7 @@ const CartComponent = ({ history }) => {
         return;
       }
 
-      const updatedCartData = carts.map((cartItem) => ({
+      const updatedCartData = cartsFromPresciption.map((cartItem) => ({
         cartId: cartItem.cartId,
         quantity: cartItem.quantity,
       }));
@@ -143,7 +135,7 @@ const CartComponent = ({ history }) => {
   const handleRemoveAllCart = () => {
     CartServices.removeAllCart(accountId, token)
       .then(() => {
-        setCarts([]);
+        setCartsFromPresciption([]);
         toast.success("Remove all cart items successfully");
       })
       .catch((error) => {
@@ -164,14 +156,15 @@ const CartComponent = ({ history }) => {
   const checkout = () => {
     handleUpdateCart()
       .then(() => {
-        history.push(`/check-out`);
+        history.push(`/check-out-prescription`);
       })
       .catch((error) => {
         console.error("Error updating cart:", error);
       });
   };
 
-  const { subTotal, isEligibleForFreeShipping } = calculateTotalPrice(carts);
+  const { subTotal, isEligibleForFreeShipping } =
+    calculateTotalPrice(cartsFromPresciption);
   const totalCost = subTotal + (isEligibleForFreeShipping ? 0 : SHIPPING_COST);
 
   const convertDollarToVND = (soTien) => {
@@ -229,7 +222,7 @@ const CartComponent = ({ history }) => {
       </Modal>
 
       {/* Cart Start */}
-      {carts.length === 0 ? (
+      {cartsFromPresciption.length === 0 ? (
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-12 d-flex flex-column align-items-center">
@@ -270,7 +263,7 @@ const CartComponent = ({ history }) => {
                         className="h4 mb-0"
                       />
                     </button>
-                    Cart
+                    Cart Prescription
                   </h3>
                 </div>
                 <div
@@ -313,7 +306,7 @@ const CartComponent = ({ history }) => {
                 </div>
               </div>
 
-              <table className="table table-light table-borderless table-hover text-center mb-0">
+              <table className="table table-light table-borderless table-hover text-center mb-0 mt-4">
                 <thead className="thead-dark">
                   <tr>
                     <th>Products</th>
@@ -324,10 +317,9 @@ const CartComponent = ({ history }) => {
                   </tr>
                 </thead>
                 <tbody className="align-middle">
-                  {carts.map((cartItem) => (
+                  {cartsFromPresciption.map((cartItem) => (
                     <tr key={cartItem.productId}>
                       <td
-                        // className="align-middle"
                         className="align-middle product-link"
                         onClick={() => {
                           viewProduct(cartItem.productDetail.productId);
@@ -338,7 +330,6 @@ const CartComponent = ({ history }) => {
                       <td className="align-middle">
                         {convertDollarToVND(cartItem.productDetail.price)} VND
                       </td>
-
                       <td className="align-middle">
                         <div
                           className="input-group quantity mx-auto"
@@ -374,7 +365,6 @@ const CartComponent = ({ history }) => {
                   ))}
                 </tbody>
               </table>
-
               <button
                 onClick={handleUpdateCart}
                 className="btn btn-primary float-md-right mt-3 mb-2"
@@ -422,4 +412,4 @@ const CartComponent = ({ history }) => {
   );
 };
 
-export default CartComponent;
+export default CartPrescriptionComponent;

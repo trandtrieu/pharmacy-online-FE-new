@@ -295,10 +295,12 @@ class DetailProductComponent extends Component {
     const { accountId, token } = this.context;
     addProductToCart(accountId, productId, quantity, token);
   };
+
   handleAddtoWishlist = (productId) => {
     const { accountId, token } = this.context;
     addWishListProduct(accountId, productId, token);
   };
+
   createPrescription = () => {
     const { accountId, token } = this.context;
 

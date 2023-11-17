@@ -28,7 +28,7 @@ const customStyles = {
   },
 };
 
-const CheckoutComponent = () => {
+const CheckoutPrescriptionComponent = () => {
   const history = useHistory();
 
   const [appliedCoupon, setAppliedCoupon] = useState("");
@@ -36,7 +36,7 @@ const CheckoutComponent = () => {
   const [deliveryAddress, setDeliveryAddress] = useState([]);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponCode, setCouponCode] = useState("");
-  const [carts, setCarts] = useState([]);
+  const [cartsFromPresciption, setCartsFromPresciption] = useState([]);
   const [selectedOption, setSelectedOption] = useState("delivery");
   const [isChecked, setIsChecked] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -44,34 +44,41 @@ const CheckoutComponent = () => {
   const [deliveryAddressStatusDefault, setDeliveryAddressStatusDefault] =
     useState("");
 
-  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [totalQuantityPrescription, setTotalQuantityPrescription] = useState(0);
 
-  const [subTotalCost, setSubTotalCost] = useState(0);
+  const [subTotalCostPrescription, setSubTotalCostPrescription] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
-  const [totalCostAfterDiscount, setTotalCostAfterDiscount] = useState(0);
-  const [totalCostBeforeDiscount, setTotalCostBeforeDiscount] = useState(0);
+  const [
+    totalCostAfterDiscountPrescription,
+    setTotalCostAfterDiscountPrescription,
+  ] = useState(0);
+  const [
+    totalCostBeforeDiscountPrescription,
+    setTotalCostBeforeDiscountPrescription,
+  ] = useState(0);
 
   const { accountId, token } = useAuth();
 
   useEffect(() => {
-    CartServices.getListCartByAccountId(accountId, 0, token)
+    CartServices.getListCartByAccountIdByPrescription(accountId, 2, token)
       .then((res) => {
-        setCarts(res.data);
+        setCartsFromPresciption(res.data);
       })
       .catch((error) => {
         console.error("Error loading carts:", error);
       });
 
-    CheckoutServices.getTotalQuantity(accountId, 0, token)
+    CheckoutServices.getTotalQuantity(accountId, 2, token)
       .then((res) => {
-        setTotalQuantity(res.data);
+        setTotalQuantityPrescription(res.data);
       })
       .catch((error) => {
         console.error("Error fetching total quantity:", error);
       });
-    CheckoutServices.getSubtotalAndShippingCost(accountId, 0, token)
+
+    CheckoutServices.getSubtotalAndShippingCost(accountId, 2, token)
       .then((res) => {
-        setTotalCostBeforeDiscount(res.data);
+        setTotalCostBeforeDiscountPrescription(res.data);
       })
       .catch((error) => {
         console.error("Error fetching total quantity:", error);
@@ -79,7 +86,7 @@ const CheckoutComponent = () => {
   }, [accountId, token]);
 
   useEffect(() => {
-    loadSubTotalCost();
+    loadSubTotalCostPrescription();
     loadShippingCost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId, token]);
@@ -87,7 +94,6 @@ const CheckoutComponent = () => {
     DeliveryAddressServices.getDeliveryAddressByUserid(accountId, token)
       .then((res) => {
         setDeliveryAddress(res.data);
-        console.log("delivery-address: " + res.data);
       })
       .catch((error) => {
         console.error("Error loading delivery-address:", error);
@@ -98,18 +104,18 @@ const CheckoutComponent = () => {
     DeliveryAddressServices.getDeliveryAddressByStatusDefault(accountId, token)
       .then((res) => {
         setDeliveryAddressStatusDefault(res.data);
-        console.log("delivery-address status: " + res.data);
       })
       .catch((error) => {
         console.error("Error loading delivery-address status default:", error);
       });
   }, [accountId, token]);
-  const loadSubTotalCost = () => {
-    CheckoutServices.getSubTotalCart(accountId, 0, token)
-      .then((res) => {
-        setSubTotalCost(res.data);
 
-        setTotalCostAfterDiscount(res.data + shippingCost);
+  const loadSubTotalCostPrescription = () => {
+    CheckoutServices.getSubTotalCart(accountId, 2, token)
+      .then((res) => {
+        setSubTotalCostPrescription(res.data);
+
+        setTotalCostAfterDiscountPrescription(res.data + shippingCost);
         console.log("subtotal: " + res.data);
       })
       .catch((error) => {
@@ -118,7 +124,7 @@ const CheckoutComponent = () => {
   };
 
   const loadShippingCost = () => {
-    CheckoutServices.getShippingCost(accountId, 0, token)
+    CheckoutServices.getShippingCost(accountId, 2, token)
       .then((res) => {
         setShippingCost(res.data);
         console.log("shipping cost: " + res.data);
@@ -129,15 +135,16 @@ const CheckoutComponent = () => {
   };
 
   const applyCoupon = () => {
-    // Chuyển nút Apply thành trạng thái Checking
     setCheckingCoupon(true);
 
     setTimeout(() => {
-      CheckoutServices.applyCode(accountId, 0, couponCode, token)
+      CheckoutServices.applyCode(accountId, 2, couponCode, token)
         .then((res) => {
           if (res && res.discountAmount !== undefined) {
             setCouponDiscount(res.discountAmount);
-            setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
+            setTotalCostBeforeDiscountPrescription(res.totalCostAfterDiscount);
+            console.log(res.totalCostAfterDiscountPrescription);
+
             setAppliedCoupon(couponCode);
             toast.success("Apply coupon successfully");
           } else {
@@ -176,9 +183,6 @@ const CheckoutComponent = () => {
     setNote(event.target.value);
   };
 
-  const toCart = () => {
-    history.push(`/cart`);
-  };
   const toCartPrescription = () => {
     history.push(`/cart-prescription`);
   };
@@ -187,7 +191,7 @@ const CheckoutComponent = () => {
       name: "John Doe",
       address: "123 Main Street",
       phoneNumber: "123456789",
-      subTotalCost: subTotalCost,
+      subTotalCost: subTotalCostPrescription,
       shippingCost: shippingCost,
     };
 
@@ -201,7 +205,7 @@ const CheckoutComponent = () => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        amount: totalCostAfterDiscount.toString(),
+        amount: totalCostAfterDiscountPrescription.toString(),
         orderInfo: "",
       }),
     })
@@ -225,10 +229,8 @@ const CheckoutComponent = () => {
   const convertDollarToVND = (soTien) => {
     if (typeof soTien === "number" && !isNaN(soTien)) {
       var soTienDaXuLi = soTien.toLocaleString("vi-VN");
-      console.log(soTienDaXuLi);
       return soTienDaXuLi;
     } else {
-      console.error("Invalid input for convertDollarToVND:", soTien);
       return "";
     }
   };
@@ -256,15 +258,16 @@ const CheckoutComponent = () => {
             <h5 className="section-title position-relative text-uppercase mb-3">
               <span className="bg-secondary pr-3">Checkout</span>
             </h5>
+
             <div className="bg-light p-30 mb-3">
               <div className="row">
                 <div className="table-header pb-4">
                   <h6>
-                    Cart ({totalQuantity} products) -{" "}
-                    {convertDollarToVND(subTotalCost)} VND
+                    Cart Prescription({totalQuantityPrescription} products) -{" "}
+                    {convertDollarToVND(subTotalCostPrescription)} VND
                     <span
                       className="click-to-change pl-3 "
-                      onClick={() => toCart()}
+                      onClick={() => toCartPrescription()}
                     >
                       Click to change
                     </span>
@@ -273,7 +276,7 @@ const CheckoutComponent = () => {
 
                 <table className="table table-light borderless">
                   <tbody className="">
-                    {carts.map((cartItem) => (
+                    {cartsFromPresciption.map((cartItem) => (
                       <tr key={cartItem.productId}>
                         <td className="pr-0">
                           <img
@@ -317,7 +320,6 @@ const CheckoutComponent = () => {
                 </div>
               </div>
             </div>
-
             <div className="container">
               <div className="d-flex justify-content-center">
                 <div className="radio-button-container">
@@ -450,7 +452,7 @@ const CheckoutComponent = () => {
               <div className="border-bottom pb-2">
                 <div className="d-flex justify-content-between ">
                   <h6>Subtotal</h6>
-                  <h6>{convertDollarToVND(subTotalCost)} VND</h6>
+                  <h6>{convertDollarToVND(subTotalCostPrescription)} VND</h6>
                 </div>
                 <div className="d-flex justify-content-between">
                   <h6 className="font-weight-medium">Shipping</h6>
@@ -474,7 +476,10 @@ const CheckoutComponent = () => {
               <div className="pt-2">
                 <div className="d-flex justify-content-between mt-2">
                   <h6>Total</h6>
-                  <h6>{convertDollarToVND(totalCostBeforeDiscount)} VND</h6>
+                  <h6>
+                    {convertDollarToVND(totalCostBeforeDiscountPrescription)}{" "}
+                    VND
+                  </h6>
                 </div>
               </div>
             </div>
@@ -579,4 +584,4 @@ const CheckoutComponent = () => {
   );
 };
 
-export default CheckoutComponent;
+export default CheckoutPrescriptionComponent;

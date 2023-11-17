@@ -15,6 +15,7 @@ import {
   faUser,
   faCartShopping,
   faBell,
+  faCartPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
@@ -409,7 +410,30 @@ const HeaderComponent = (props) => {
                         </span>
                       </span>
                     </Link>
-
+                    <Link
+                      to="cart-prescription"
+                      className="btn px-3 ml-3 position-relative"
+                    >
+                      <FontAwesomeIcon
+                        icon={faCartPlus}
+                        style={{ color: "#FFFFFF", fontSize: "1.2rem" }}
+                      />
+                      <span
+                        className="badge bg-danger rounded-circle"
+                        style={{
+                          position: "absolute",
+                          top: "-3px",
+                          right: "0.35rem",
+                        }}
+                      >
+                        <span
+                          className="text-light"
+                          style={{ padding: "0.5px" }}
+                        >
+                          0
+                        </span>
+                      </span>
+                    </Link>
                     <Link
                       to="#"
                       className="btn px-3 ml-3 position-relative"
@@ -435,6 +459,7 @@ const HeaderComponent = (props) => {
                         </span>
                       </span>
                     </Link>
+
                     {isDropdownOpen && (
                       // Dropdown content goes here
                       <div
