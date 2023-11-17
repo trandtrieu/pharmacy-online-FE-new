@@ -1,11 +1,6 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHeart,
-  faReply,
-  faStar,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faReply, faStar, faTrash } from "@fortawesome/free-solid-svg-icons";
 import FeedbackServices from "../services/FeedbackServices";
 import ReplyServices from "../services/ReplyServices";
 import { toast } from "react-toastify";
@@ -157,9 +152,9 @@ class FeedbackComponent extends Component {
       ).then((res) => {
         toast.success("Feedback submitted successfully");
       });
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 1500);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     }
   };
 
@@ -233,7 +228,7 @@ class FeedbackComponent extends Component {
                         <div className="row">
                           <div className="col-8 d-flex">
                             <h5>
-                              <b>{feedback.user_name}</b>{" "}
+                              <b>{feedback.user_name}</b>
                               <span>{this.starRating(feedback.rating)}</span>
                             </h5>
                           </div>

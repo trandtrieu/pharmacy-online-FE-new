@@ -1,3 +1,5 @@
+/* eslint-disable no-dupe-class-members */
+/* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import "../style/SetPassword.css";
 import { toast } from "react-toastify";
@@ -45,15 +47,22 @@ class SetNewPass extends Component {
       toast.error("Password and confirm password do not match");
       return;
     }
+
+    // Kiểm tra độ dài mật khẩu
     if (
       this.state.newPassword.length < 8 ||
       this.state.newPassword.length > 16
     ) {
       toast.error("Password must be between 8 and 16 characters");
-    } else if (!/[A-Z]/.test(this.state.newPassword)) {
-      toast.error("Password must contain at least one uppercase letter");
-    } else if (!/[!@#$%^&*]/.test(this.state.newPassword)) {
-      toast.error("Password must contain at least one special character");
+      return;
+    }
+
+    // Kiểm tra có ít nhất một chữ hoa, một chữ số, không chứa ký tự đặc biệt
+    if (!/(?=.*[A-Z])(?=.*\d)^[a-zA-Z\d]{8,16}$/.test(this.state.newPassword)) {
+      toast.error(
+        "Password must contain at least one uppercase letter, one digit, and no special characters"
+      );
+      return;
     }
 
     const apiUrl =
@@ -76,8 +85,9 @@ class SetNewPass extends Component {
       .then((data) => {
         if (data.success) {
           console.log("change password successfully");
-          toast.success("Password was successfully changed");
           this.setState({ success: true });
+          toast.success("Password was successfully changed");
+          this.props.history.push("/home");
         } else {
           toast.error("Change failed" + data.message);
         }

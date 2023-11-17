@@ -34,6 +34,19 @@ class CartServices {
     );
   }
 
+  getListCartByAccountIdByPrescription(accountId, accessToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    return axios.get(
+      CART_API_BASE_URL + "/get-cart?accountId=" + accountId + "&cart_type=2",
+      config
+    );
+  }
+
   removeFromCart(cartId) {
     return axios.delete(
       CART_API_BASE_URL + "/remove-from-cart?cartId=" + cartId

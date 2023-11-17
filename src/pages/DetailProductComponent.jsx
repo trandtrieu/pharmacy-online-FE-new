@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import ProductServices from "../services/ProductServices";
-import CartServices from "../services/CartServices";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,6 +12,9 @@ import FeedbackServices from "../services/FeedbackServices";
 import ReplyServices from "../services/ReplyServices";
 import FeedbackComponent from "./FeedbackComponent";
 import { AuthContext } from "../AuthContext";
+import Modal from "react-modal";
+import addProductToCart from "../utils/cartutils";
+import addWishListProduct from "../utils/wishlistutils";
 
 class DetailProductComponent extends Component {
   constructor(props) {
@@ -26,6 +28,7 @@ class DetailProductComponent extends Component {
       feedbacks: [],
       replies: [],
       quantity: 1,
+      isModalOpen: false,
     };
     this.openReply = this.openReply.bind(this);
     this.hiddenReply = this.hiddenReply.bind(this);
@@ -39,6 +42,8 @@ class DetailProductComponent extends Component {
   static contextType = AuthContext;
 
   componentDidMount() {
+    Modal.setAppElement("#root"); // Replace "#root" with the root element of your React application
+
     ProductServices.getProductById(this.state.productId).then((res) => {
       const productData = res.data;
       const imageUrls = productData.imageUrls || []; // Replace 'imageUrls' with the correct field from your API data
@@ -107,8 +112,18 @@ class DetailProductComponent extends Component {
         });
       }
     );
+    if (this.state.product.type === 0) {
+      this.openModal();
+      console.log("check type: " + this.state.product.type);
+    }
   }
-
+  openModal = () => {
+    this.setState({ isModalOpen: true });
+    console.log("opened");
+  };
+  closeModal = () => {
+    this.setState({ isModalOpen: false });
+  };
   deleteFeedback(id) {
     FeedbackServices.deleteFeedback(id).then((res) => {
       this.setState({
@@ -276,30 +291,22 @@ class DetailProductComponent extends Component {
       return { quantity: newQuantity };
     });
   };
-  addProductToCart(product_id, quantity) {
+  handleAddToCart = (productId, quantity) => {
     const { accountId, token } = this.context;
-    CartServices.addToCart(accountId, product_id, quantity, token)
-      .then((response) => {
-        console.log("Product added to cart:", response.data);
-        toast.success("Product added to cart successfully!");
-      })
-      .catch((error) => {
-        console.error("Error adding product to cart:", error);
-      });
-  }
-  addWishListProduct(product_id) {
+    addProductToCart(accountId, productId, quantity, token);
+  };
+  handleAddtoWishlist = (productId) => {
     const { accountId, token } = this.context;
-    WishListServices.addToWishlist(accountId, product_id, token)
-      .then((response) => {
-        console.log("Product added to wishlist:", response.data);
-        toast.success("Product added to wishlist successfully!");
-      })
-      .catch((error) => {
-        console.error("Error adding product to wishlist:", error);
-      });
-  }
+    addWishListProduct(accountId, productId, token);
+  };
   createPrescription = () => {
-    this.props.history.push(`/create-prescription`);
+    const { accountId, token } = this.context;
+
+    if (accountId && token) {
+      this.props.history.push(`/create-prescription`);
+    } else {
+      this.props.history.push(`/login`);
+    }
   };
 
   render() {
@@ -412,7 +419,7 @@ class DetailProductComponent extends Component {
                       <button
                         className="btn btn-primary px-3 mb-3"
                         onClick={() =>
-                          this.addProductToCart(
+                          this.handleAddToCart(
                             this.state.product.productId,
                             this.state.quantity,
                             accountId,
@@ -425,9 +432,8 @@ class DetailProductComponent extends Component {
                       <button
                         className="btn btn-primary px-3"
                         onClick={() =>
-                          this.addWishListProduct(
+                          this.handleAddtoWishlist(
                             this.state.product.productId,
-                            this.state.quantity,
                             accountId,
                             token
                           )
@@ -446,6 +452,7 @@ class DetailProductComponent extends Component {
                       pharmacist, doctor, or medical staff member who wants to
                       learn about this product
                     </p>
+
                     <button
                       className="btn btn-primary px-3 mr-3"
                       onClick={() => {
@@ -712,6 +719,16 @@ class DetailProductComponent extends Component {
           {/* send review */}
         </div>
         {/* Shop Detail End */}
+        <Modal
+          isOpen={this.state.isModalOpen}
+          onRequestClose={this.closeModal}
+          contentLabel="Product Type Modal"
+        >
+          <h2>Product Type 0 Modal</h2>
+          <p>This is a modal for products with type 0.</p>
+          {/* Add any additional content for your modal */}
+          <button onClick={this.closeModal}>Close Modal</button>
+        </Modal>
       </>
     );
   }

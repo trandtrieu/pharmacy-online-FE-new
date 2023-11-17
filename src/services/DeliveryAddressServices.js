@@ -16,6 +16,19 @@ class DeliveryAddressServices {
     );
   }
 
+  getDeliveryAddressByStatusDefault(user_id, accessToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    return axios.get(
+      `${DeliveryAddress_API_BASE_URL}delivery-address/status-default/${user_id}`,
+      config
+    );
+  }
+
   deleteDeliveryAddress(user_id, address_id, accessToken) {
     const config = {
       headers: {

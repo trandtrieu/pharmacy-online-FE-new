@@ -45,6 +45,8 @@ const UpdatePrescriptionComponent = ({ history }) => {
   const [showModal, setShowModal] = useState(false);
   const [droppedImage, setDroppedImage] = useState(null);
   const { accountId, token } = useAuth();
+  const [previousPrescriptionImage, setPreviousPrescriptionImage] =
+    useState(null);
 
   useEffect(() => {
     PrescriptionServices.getPrescriptionsDetail(id).then((res) => {
@@ -55,6 +57,7 @@ const UpdatePrescriptionComponent = ({ history }) => {
       setEmail(prescription.email);
       setNote(prescription.note);
       setImageFile(prescription.imageFile || null);
+      setPreviousPrescriptionImage(prescription.imageFile || null);
     });
   }, [id]);
 
@@ -179,11 +182,17 @@ const UpdatePrescriptionComponent = ({ history }) => {
                       }}
                     >
                       <input {...getInputProps()} accept="image/*" />
-                      {droppedImage ? ( // Check if a dropped image exists
+                      {droppedImage ||
+                      imageFile ||
+                      previousPrescriptionImage ? (
                         <div>
                           <img
-                            src={droppedImage}
-                            alt="Dropped Imagee"
+                            src={
+                              droppedImage ||
+                              imageFile ||
+                              previousPrescriptionImage
+                            }
+                            alt="Prescription Imagee"
                             style={{ maxWidth: "20%" }}
                           />
                         </div>

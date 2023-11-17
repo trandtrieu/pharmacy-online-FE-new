@@ -35,28 +35,26 @@ class CheckoutServiceServices {
       config
     );
   }
+  getSubtotalAndShippingCost(accountId, cart_type, bearerToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    };
 
-  // applyCode(accountId, cart_type, code, authToken) {
-  //   return axios.post(
-  //     CART_API_BASE_URL +
-  //       "/apply-discount?accountId=" +
-  //       accountId +
-  //       "&cartType=" +
-  //       cart_type +
-  //       "&discountCode=" +
-  //       code,
-  //     {},
-  //     {
-  //       headers: {
-  //         Authorization: "Bearer " + authToken,
-  //       },
-  //     }
-  //   );
-  // } //http://localhost:8080/pharmacy-online/cart/apply-discount?accountId=5&cartType=0&discountCode=30
+    return axios.get(
+      CART_API_BASE_URL +
+        "/get-total-cart-cost-with-shipping?accountId=" +
+        accountId +
+        "&cartType=" +
+        cart_type,
+      config
+    );
+  } //http://localhost:8080/pharmacy-online/cart/get-total-cart-cost-with-shipping?accountId=1&cartType=0
 
-  applyCode(accountId, cart_type, code, authToken) {
-    return axios
-      .post(
+  async applyCode(accountId, cart_type, code, authToken) {
+    try {
+      const response = await axios.post(
         CART_API_BASE_URL +
           "/apply-discount?accountId=" +
           accountId +
@@ -70,17 +68,29 @@ class CheckoutServiceServices {
             Authorization: "Bearer " + authToken,
           },
         }
-      )
-      .then((response) => {
-        const discountAmount = response.data.discountAmount;
-        const totalCostAfterDiscount = response.data.totalCostAfterDiscount;
-        return { discountAmount, totalCostAfterDiscount };
-      })
-      .catch((error) => {
-        console.error("Lỗi:", error);
-        throw error;
-      });
+      );
+      const discountAmount = response.data.discountAmount;
+      const totalCostAfterDiscount = response.data.totalCostAfterDiscount;
+      return { discountAmount, totalCostAfterDiscount };
+    } catch (error) {
+      console.error("Lỗi:", error);
+      throw error;
+    }
   }
+
+  getTotalQuantity(accountId, cart_type, token) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    return axios.get(
+      `${CART_API_BASE_URL}/get-total-quantity-in-cart?accountId=${accountId}&cartType=${cart_type}`,
+      config
+    );
+  }
+  //http://localhost:8080/pharmacy-online/cart/get-total-quantity-in-cart?accountId=1&cartType=0
 }
 // eslint-disable-next-line import/no-anonymous-default-export
 export default new CheckoutServiceServices();

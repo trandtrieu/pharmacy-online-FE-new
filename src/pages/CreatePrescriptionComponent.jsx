@@ -100,21 +100,13 @@ const CreatePrescriptionComponent = ({ history }) => {
     formData.append("phone", state.phone);
     formData.append("email", state.email);
     formData.append("note", state.note);
-    console.log("All data:", {
-      token,
-      accountId,
-      imageFile: state.imageFile,
-      name: state.name,
-      phone: state.phone,
-      email: state.email,
-      note: state.note,
-    });
+
     PrescriptionServices.createPrescriptions(formData, accountId, token)
       .then((res) => {
-        toast.success("Send prescription successfully");
         closeModal();
         // history.push(`/profile/${accountId}`);
         window.location.href = `/profile/${accountId}`;
+        toast.success("Send prescription successfully");
       })
       .catch((error) => {
         console.error("Error:", error);

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import CartServices from "../services/CartServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -42,6 +43,11 @@ const CheckoutComponent = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [note, setNote] = useState("");
+  const [deliveryAddressStatusDefault, setDeliveryAddressStatusDefault] =
+    useState("");
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [totalCostBeforeDiscount, setTotalCostBeforeDiscount] = useState(0);
+
   const { accountId, token } = useAuth();
 
   useEffect(() => {
@@ -51,6 +57,20 @@ const CheckoutComponent = () => {
       })
       .catch((error) => {
         console.error("Error loading carts:", error);
+      });
+    CheckoutServices.getTotalQuantity(accountId, 0, token)
+      .then((res) => {
+        setTotalQuantity(res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching total quantity:", error);
+      });
+    CheckoutServices.getSubtotalAndShippingCost(accountId, 0, token)
+      .then((res) => {
+        setTotalCostBeforeDiscount(res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching total quantity:", error);
       });
   }, [accountId, token]);
 
@@ -69,11 +89,23 @@ const CheckoutComponent = () => {
         console.error("Error loading delivery-address:", error);
       });
   }, [accountId, token]);
+
+  useEffect(() => {
+    DeliveryAddressServices.getDeliveryAddressByStatusDefault(accountId, token)
+      .then((res) => {
+        setDeliveryAddressStatusDefault(res.data);
+        console.log("delivery-address status: " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading delivery-address status default:", error);
+      });
+  }, [accountId, token]);
   const loadSubTotalCost = () => {
     CheckoutServices.getSubTotalCart(accountId, 0, token)
       .then((res) => {
         setSubTotalCost(res.data);
-        setTotalCostAfterDiscount(res.data);
+
+        setTotalCostAfterDiscount(res.data + shippingCost);
         console.log("subtotal: " + res.data);
       })
       .catch((error) => {
@@ -101,7 +133,7 @@ const CheckoutComponent = () => {
         .then((res) => {
           if (res && res.discountAmount !== undefined) {
             setCouponDiscount(res.discountAmount);
-            setTotalCostAfterDiscount(res.totalCostAfterDiscount);
+            setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
             setAppliedCoupon(couponCode);
             toast.success("Apply coupon successfully");
           } else {
@@ -183,7 +215,16 @@ const CheckoutComponent = () => {
     //   state: { data: dataToPass },
     // });
   };
-
+  const convertDollarToVND = (soTien) => {
+    if (typeof soTien === "number" && !isNaN(soTien)) {
+      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
+      console.log(soTienDaXuLi);
+      return soTienDaXuLi;
+    } else {
+      console.error("Invalid input for convertDollarToVND:", soTien);
+      return "";
+    }
+  };
   return (
     <>
       <ReactModal
@@ -212,7 +253,8 @@ const CheckoutComponent = () => {
               <div className="row">
                 <div className="table-header pb-4">
                   <h6>
-                    Cart (10 products) - $200
+                    Cart ({totalQuantity} products) -{" "}
+                    {convertDollarToVND(subTotalCost)} VND
                     <span
                       className="click-to-change pl-3 "
                       onClick={() => toCart()}
@@ -228,17 +270,23 @@ const CheckoutComponent = () => {
                       <tr key={cartItem.productId}>
                         <td className="pr-0">
                           <img
-                            src={`../assets/images/${cartItem.productDetail.imageUrls}`}
+                            src={cartItem.productDetail.imageUrls}
                             alt="em"
                             width={70}
                             height={85}
                           />
                         </td>
                         <td className="">{cartItem.productDetail.name}</td>
-                        <td className="">$ {cartItem.productDetail.price}</td>
+                        <td className="">
+                          {" "}
+                          {convertDollarToVND(cartItem.productDetail.price)} VND
+                        </td>
                         <td className="">{cartItem.quantity}</td>
                         <td className=" text-danger">
-                          $ {cartItem.productDetail.price * cartItem.quantity}
+                          {convertDollarToVND(
+                            cartItem.productDetail.price * cartItem.quantity
+                          )}{" "}
+                          VND
                         </td>
                       </tr>
                     ))}
@@ -306,36 +354,21 @@ const CheckoutComponent = () => {
                       <div className="card-body p-0">
                         <blockquote className="d-flex flex-column m-0">
                           <p className="m-0">
-                            <FontAwesomeIcon icon={faPhone} /> Trieu &bull;{" "}
-                            <span>0789458707</span>
+                            <FontAwesomeIcon icon={faPhone} />{" "}
+                            {
+                              deliveryAddressStatusDefault.recipient_phone_number
+                            }{" "}
+                            &bull;{" "}
+                            <span>
+                              {deliveryAddressStatusDefault.recipient_full_name}
+                            </span>
                           </p>
                           <hr />
                           <p className="m-0">
                             <FontAwesomeIcon icon={faLocationDot} />
-                            <select
-                              style={{
-                                height: "56%",
-                                outline: "none",
-                                border: "none",
-                                marginLeft: "7px",
-                                opacity: "0.7",
-                              }}
-                              name="category_id"
-                              value={deliveryAddress.specific_address}
-                              // onChange={this.changeSpecifixAddress}
-                              required
-                            >
-                              {/* <option value="" disabled selected>Select a delivery address</option> */}
-                              {deliveryAddress.map((delivery) => (
-                                <option
-                                  style={{ color: "#6C757" }}
-                                  value={delivery.specific_address}
-                                  key={delivery.address_id}
-                                >
-                                  {delivery.specific_address}
-                                </option>
-                              ))}
-                            </select>
+                            <span style={{ marginLeft: "9px" }}>
+                              {deliveryAddressStatusDefault.specific_address}
+                            </span>
                           </p>
                         </blockquote>
                       </div>
@@ -409,13 +442,15 @@ const CheckoutComponent = () => {
               <div className="border-bottom pb-2">
                 <div className="d-flex justify-content-between ">
                   <h6>Subtotal</h6>
-                  <h6>${subTotalCost}</h6>
+                  <h6>{convertDollarToVND(subTotalCost)} VND</h6>
                 </div>
                 <div className="d-flex justify-content-between">
                   <h6 className="font-weight-medium">Shipping</h6>
                   <h6 className="font-weight-medium">
                     {" "}
-                    {shippingCost === 0 ? "Free" : `+ $ ${shippingCost}`}
+                    {shippingCost === 0
+                      ? "Free"
+                      : `+ $ ${convertDollarToVND(shippingCost)}`}
                   </h6>
                 </div>
                 {couponDiscount !== 0 && (
@@ -423,7 +458,7 @@ const CheckoutComponent = () => {
                     <h6 className="font-weight-medium">Discount coupon</h6>
                     <h6 className="font-weight-medium">
                       {" "}
-                      - ${couponDiscount}{" "}
+                      - {convertDollarToVND(couponDiscount)} VND
                     </h6>
                   </div>
                 )}
@@ -431,7 +466,7 @@ const CheckoutComponent = () => {
               <div className="pt-2">
                 <div className="d-flex justify-content-between mt-2">
                   <h6>Total</h6>
-                  <h6>${totalCostAfterDiscount}</h6>
+                  <h6>{convertDollarToVND(totalCostBeforeDiscount)} VND</h6>
                 </div>
               </div>
             </div>

@@ -29,18 +29,30 @@ const HeaderComponent = (props) => {
   const [wishlistItemCount, setWishlistItemCount] = useState(0);
   const [username, setUsername] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+
   const { accountId, token } = useAuth();
 
   const handleLogout = () => {
+    // Remove token and id from local storage
     localStorage.removeItem("token");
     localStorage.removeItem("id");
 
+    // Update state to reflect the user being logged out
     setIsLoggedIn(false);
     setUsername(null);
 
-    history.push("/");
+    // Reload the window or navigate to the home page
+    window.location.reload(); // You may not need this line
+    window.location.href = "/home"; // Redirect to the home page
+
+    // If you're using React Router, you can use history to navigate
+    // history.push("/home");
   };
 
+  const handleToggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       searchProductAndFilter();
@@ -124,23 +136,23 @@ const HeaderComponent = (props) => {
       });
   };
 
-  useEffect(() => {
-    // CategoryServices.getCategoryType()
-    //   .then((res) => {
-    //     setCategories(res.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Lỗi khi tải sản phẩm:", error);
-    //   });
-    // updateCartItemCount();
-    // updateWishListItemCount();
-    // const cartInterval = setInterval(updateCartItemCount, 108800);
-    // const wishlistInterval = setInterval(updateWishListItemCount, 1888000);
-    // return () => {
-    //   clearInterval(cartInterval);
-    //   clearInterval(wishlistInterval);
-    // };
-  }, [updateCartItemCount, updateWishListItemCount]);
+  // useEffect(() => {
+  //   // CategoryServices.getCategoryType()
+  //   //   .then((res) => {
+  //   //     setCategories(res.data);
+  //   //   })
+  //   //   .catch((error) => {
+  //   //     console.error("Lỗi khi tải sản phẩm:", error);
+  //   //   });
+  //   updateCartItemCount();
+  //   updateWishListItemCount();
+  //   const cartInterval = setInterval(updateCartItemCount, 1000);
+  //   const wishlistInterval = setInterval(updateWishListItemCount, 1000);
+  //   return () => {
+  //     clearInterval(cartInterval);
+  //     clearInterval(wishlistInterval);
+  //   };
+  // }, [updateCartItemCount, updateWishListItemCount]);
 
   const viewProductByCategory = (category_id) => {
     props.history.push(`/category/${category_id}`);
@@ -152,7 +164,10 @@ const HeaderComponent = (props) => {
 
   return (
     <>
-      <div className="container-fluid sticky-header">
+      <div
+        style={{ overflowX: "clip" }}
+        className="container-fluid sticky-header"
+      >
         <div className="avc" style={{ backgroundColor: "#07304f" }}></div>
 
         <div className="container-fluid bg-light py-3 px-xl-5 d-none d-lg-block ">
@@ -161,9 +176,9 @@ const HeaderComponent = (props) => {
             style={{ marginRight: "0px" }}
           >
             <div className="col-lg-3 text-left">
-              <a href="#" className="text-decoration-none">
+              <a className="text-decoration-none">
                 <img
-                  src="assets/img/1.png"
+                  src="assets/images/logoSite.png"
                   alt=""
                   style={{ width: "66%", height: "75px" }}
                 />
@@ -250,16 +265,17 @@ const HeaderComponent = (props) => {
                   </button>
 
                   <div className="dropdown-menu dropdown-menu-right">
-                    <button
-                      className="dropdown-item"
-                      type="button"
-                      onClick={() => {
-                        toAccount();
-                      }}
-                    >
-                      Profile
-                    </button>
-
+                    {isLoggedIn ? (
+                      <button
+                        className="dropdown-item"
+                        type="button"
+                        onClick={() => {
+                          toAccount();
+                        }}
+                      >
+                        Profile
+                      </button>
+                    ) : null}
                     {isLoggedIn ? (
                       <button onClick={handleLogout} className="dropdown-item">
                         Logout
@@ -276,7 +292,10 @@ const HeaderComponent = (props) => {
           </div>
         </div>
 
-        <div className="container-fluid bg-dark mb-30">
+        <div
+          style={{ overflowX: "clip" }}
+          className="container-fluid bg-dark mb-30"
+        >
           <div
             className="row px-xl-5"
             style={{ zIndex: "1000", marginRight: "0px" }}
@@ -343,7 +362,7 @@ const HeaderComponent = (props) => {
                   id="navbarCollapse"
                 >
                   <div className="navbar-nav mr-auto py-0">
-                    <Link to="/home" className="nav-item nav-link active">
+                    <Link to="/home" className="nav-item nav-link">
                       Home
                     </Link>
                     <Link to="/shop" className="nav-item nav-link">
@@ -365,7 +384,10 @@ const HeaderComponent = (props) => {
                     </Link>
                   </div>
 
-                  <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
+                  <div
+                    style={{ zIndex: "10000" }}
+                    className="navbar-nav ml-auto py-0 d-none d-lg-block"
+                  >
                     <Link to="/wishlist" className="btn px-0 position-relative">
                       <i
                         className="fas fa-heart text-primary"
@@ -388,7 +410,11 @@ const HeaderComponent = (props) => {
                       </span>
                     </Link>
 
-                    <Link to="#" className="btn px-3 ml-3 position-relative ">
+                    <Link
+                      to="#"
+                      className="btn px-3 ml-3 position-relative"
+                      onClick={handleToggleDropdown}
+                    >
                       <FontAwesomeIcon
                         icon={faBell}
                         style={{ color: "#FFFFFF", fontSize: "1.2rem" }}
@@ -405,10 +431,55 @@ const HeaderComponent = (props) => {
                           className="text-light"
                           style={{ padding: "0.5px" }}
                         >
-                          {cartItemCount}
+                          0
                         </span>
                       </span>
                     </Link>
+                    {isDropdownOpen && (
+                      // Dropdown content goes here
+                      <div
+                        style={{
+                          position: "absolute",
+                          zIndex: "100",
+                          backgroundColor: "#fff",
+                          width: "400px",
+                          top: "60px",
+                          right: "-50px",
+                        }}
+                        className="abc rounded p-3"
+                      >
+                        <div className="notify_item">
+                          {/* <div className="notify_img">
+                          </div> */}
+                          <div className="notify_info">
+                            <p>
+                              Alex commented on
+                              <span>
+                                Timeline Share Lorem, ipsum dolor sit amet
+                                consectetur adipisicing elit. Et iusto laborum
+                                consequatur quia a sed vitae doloremque illo
+                                accusantium reprehenderit autem, ipsam possimus,
+                                porro veniam eaque obcaecati delectus fugiat
+                                illum.
+                              </span>
+                            </p>
+                            <span className="notify_time">10 minutes ago</span>
+                          </div>
+                          <div className="notify_info">
+                            <p>
+                              Alex commented on<span>Timeline Share</span>
+                            </p>
+                            <span className="notify_time">10 minutes ago</span>
+                          </div>
+                          <div className="notify_info">
+                            <p>
+                              Alex commented on<span>Timeline Share</span>
+                            </p>
+                            <span className="notify_time">10 minutes ago</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <></>
                   </div>

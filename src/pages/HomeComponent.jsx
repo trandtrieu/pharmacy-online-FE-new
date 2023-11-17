@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from "react";
 import CarouselComponent from "../layouts/CarouselComponent";
@@ -15,6 +16,8 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import FavouriteBrand from "../layouts/FavouriteBrand";
 import FeatureCategory from "../layouts/FeatureCategory";
 import ScrollToTop from "../layouts/ScrollToTop";
+import addProductToCart from "../utils/cartutils";
+import addWishListProduct from "../utils/wishlistutils";
 function HomeProduct(props) {
   const history = useHistory();
 
@@ -53,37 +56,12 @@ function HomeProduct(props) {
       });
   };
 
-  const addProductToCart = (product_id) => {
-    CartServices.addToCart(accountId, product_id, 1, token)
-      .then((response) => {
-        console.log("Product added to cart:", response.data);
-        toast.success("Product added to cart successfully!");
-        // updateCartItemCount();
-      })
-      .catch((error) => {
-        toast.error("Please login to use this feature!");
-        console.error("Error adding product to cart:", error);
-      });
+  const handleAddToCart = (productId) => {
+    addProductToCart(accountId, productId, 1, token);
   };
 
-  const updateCartItemCount = () => {
-    CartServices.getNumberProductInCart(accountId, token)
-      .then((res) => {
-        setCartItemCount(res.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
-      });
-  };
-  const addWishListProduct = (product_id) => {
-    WishListServices.addToWishlist(accountId, product_id, token)
-      .then((response) => {
-        console.log("Product added to wishlist:", response.data);
-        toast.success("Product added to wishlist successfully!");
-      })
-      .catch((error) => {
-        console.error("Error adding product to wishlist:", error);
-      });
+  const handleAddtoWishlist = (productId) => {
+    addWishListProduct(accountId, productId, token);
   };
 
   const viewProduct = (productId) => {
@@ -95,10 +73,18 @@ function HomeProduct(props) {
   };
 
   const handleOnlineCounselingClick = () => {
-    // Khi nút "Online counseling" được nhấp, hiển thị Bubble
     this.toggleChatBubble();
   };
-
+  const convertDollarToVND = (soTien) => {
+    if (typeof soTien === "number" && !isNaN(soTien)) {
+      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
+      console.log(soTienDaXuLi);
+      return soTienDaXuLi;
+    } else {
+      console.error("Invalid input for convertDollarToVND:", soTien);
+      return "";
+    }
+  };
   return (
     <>
       <div className="cover-body">
@@ -256,22 +242,28 @@ function HomeProduct(props) {
                                     />
                                   </div>
                                   <div className="card-body product-action">
-                                    <a
-                                      className="btn btn-outline-dark btn-square"
-                                      onClick={() =>
-                                        addProductToCart(product.productId)
-                                      }
-                                    >
-                                      <i className="fa fa-shopping-cart" />
-                                    </a>
-                                    <a
-                                      className="btn btn-outline-dark btn-square"
-                                      onClick={() =>
-                                        addWishListProduct(product.productId)
-                                      }
-                                    >
-                                      <i className="far fa-heart" />
-                                    </a>
+                                    {product.type === 0 ? (
+                                      <>
+                                        <a
+                                          className="btn btn-outline-dark btn-square"
+                                          onClick={() =>
+                                            handleAddToCart(product.productId)
+                                          }
+                                        >
+                                          <i className="fa fa-shopping-cart" />
+                                        </a>
+                                        <a
+                                          className="btn btn-outline-dark btn-square"
+                                          onClick={() =>
+                                            handleAddtoWishlist(
+                                              product.productId
+                                            )
+                                          }
+                                        >
+                                          <i className="far fa-heart" />
+                                        </a>
+                                      </>
+                                    ) : null}
                                     <a
                                       className="btn btn-outline-dark btn-square"
                                       onClick={() =>
@@ -296,10 +288,13 @@ function HomeProduct(props) {
                                       <FontAwesomeIcon icon={faStar} />
                                       <FontAwesomeIcon icon={faStar} />
                                     </div>
-                                    <div className="d-flex align-items-center justify-content-center mt-2">
+                                    <div
+                                      className="d-flex align-items-center justify-content-center mt-2"
+                                      style={{ fontSize: "10px" }}
+                                    >
                                       <h5 className="text-wrap">
-                                        ${product.price}
-                                        <span>/box</span>
+                                        {convertDollarToVND(product.price)} VND
+                                        {/* <span>/box</span> */}
                                       </h5>
                                     </div>
                                   </div>

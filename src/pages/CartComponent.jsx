@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import CartServices from "../services/CartServices";
 import { toast } from "react-toastify";
@@ -12,7 +13,7 @@ import Modal from "react-modal";
 import { calculateTotalPrice } from "../utils/cartutils";
 import { useAuth } from "../AuthContext";
 
-const SHIPPING_COST = 10;
+const SHIPPING_COST = 30000;
 const customStyles = {
   content: {
     top: "35%",
@@ -27,6 +28,8 @@ const customStyles = {
 
 const CartComponent = ({ history }) => {
   const [carts, setCarts] = useState([]);
+  const [cartsFromPresciption, setCartsFromPresciption] = useState([]);
+
   const { accountId, token } = useAuth();
 
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
@@ -35,13 +38,18 @@ const CartComponent = ({ history }) => {
   const [isRemoveAllConfirmationOpen, setIsRemoveAllConfirmationOpen] =
     useState(false);
   useEffect(() => {
-    // if (!accountId || !token) {
-    //   history.push("/login");
-    // } else {
     Modal.setAppElement("#root");
     CartServices.getListCartByAccountId(accountId, token)
       .then((res) => {
         setCarts(res.data);
+        console.log("hello data: " + res.data);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải giỏ hàng:", error);
+      });
+    CartServices.getListCartByAccountIdByPrescription(accountId, token)
+      .then((res) => {
+        setCartsFromPresciption(res.data);
         console.log("hello data: " + res.data);
       })
       .catch((error) => {
@@ -83,7 +91,6 @@ const CartComponent = ({ history }) => {
     setIsDeleteConfirmationOpen(false);
     setCartItemToDelete(null);
   };
-
   const handleQuantityChange = (cartId, newQuantity) => {
     const updatedCarts = carts.map((cartItem) =>
       cartItem.cartId === cartId
@@ -94,10 +101,20 @@ const CartComponent = ({ history }) => {
         : cartItem
     );
 
+    // Immediately update the cart when the quantity changes
     setCarts(updatedCarts);
   };
 
   const handleUpdateCart = () => {
+    const isQuantityExceeded = carts.some((cartItem) => {
+      return cartItem.quantity > cartItem.productDetail.quantity;
+    });
+
+    if (isQuantityExceeded) {
+      toast.error("Quantity in cart cannot exceed available quantity!");
+      return;
+    }
+
     const updatedCartData = carts.map((cartItem) => ({
       cartId: cartItem.cartId,
       quantity: cartItem.quantity,
@@ -132,11 +149,24 @@ const CartComponent = ({ history }) => {
   };
 
   const toHome = () => history.push(`/home`);
-  const checkout = () => history.push(`/check-out`);
+  const checkout = () => {
+    handleUpdateCart();
+    history.push(`/check-out`);
+  };
 
   const { subTotal, isEligibleForFreeShipping } = calculateTotalPrice(carts);
   const totalCost = subTotal + (isEligibleForFreeShipping ? 0 : SHIPPING_COST);
 
+  const convertDollarToVND = (soTien) => {
+    if (typeof soTien === "number" && !isNaN(soTien)) {
+      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
+      console.log(soTienDaXuLi);
+      return soTienDaXuLi;
+    } else {
+      console.error("Invalid input for convertDollarToVND:", soTien);
+      return "";
+    }
+  };
   return (
     <>
       <Modal
@@ -245,9 +275,9 @@ const CartComponent = ({ history }) => {
                       className="progress-bar"
                       role="progressbar"
                       style={{
-                        width: `${(subTotal / 100) * 100}%`,
+                        width: `${(subTotal / 300000) * 100}%`,
                         backgroundColor:
-                          subTotal >= 100 ? "#B8E8FC" : "#A2FF86",
+                          subTotal >= 300000 ? "#B8E8FC" : "#A2FF86",
                         height: "0.5 rem",
                       }}
                       aria-valuemin="0"
@@ -280,6 +310,7 @@ const CartComponent = ({ history }) => {
                   {carts.map((cartItem) => (
                     <tr key={cartItem.productId}>
                       <td
+                        // className="align-middle"
                         className="align-middle product-link"
                         onClick={() => {
                           viewProduct(cartItem.productDetail.productId);
@@ -288,7 +319,68 @@ const CartComponent = ({ history }) => {
                         {cartItem.productDetail.name}
                       </td>
                       <td className="align-middle">
-                        $ {cartItem.productDetail.price}
+                        {convertDollarToVND(cartItem.productDetail.price)} VND
+                      </td>
+
+                      <td className="align-middle">
+                        <div
+                          className="input-group quantity mx-auto"
+                          style={{ width: "100px" }}
+                        >
+                          <input
+                            min={1}
+                            type="number"
+                            className="form-control form-control-sm bg-secondary border-0 text-center"
+                            value={cartItem.quantity}
+                            onChange={(e) =>
+                              handleQuantityChange(
+                                cartItem.cartId,
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+                      </td>
+                      <td className="align-middle">
+                        {convertDollarToVND(
+                          cartItem.productDetail.price * cartItem.quantity
+                        )}{" "}
+                        VND
+                      </td>
+                      <td
+                        className="align-middle"
+                        onClick={() => handleRemoveFromCart(cartItem)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* <table className="table table-light table-borderless table-hover text-center mb-0 mt-4">
+                <thead className="thead-dark">
+                  <tr>
+                    <th>Products</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody className="align-middle">
+                  {cartsFromPresciption.map((cartItem) => (
+                    <tr key={cartItem.productId}>
+                      <td
+                        className="align-middle product-link"
+                        onClick={() => {
+                          viewProduct(cartItem.productDetail.productId);
+                        }}
+                      >
+                        {cartItem.productDetail.name}
+                      </td>
+                      <td className="align-middle">
+                        {convertDollarToVND(cartItem.productDetail.price)} VND
                       </td>
                       <td className="align-middle">
                         <div
@@ -310,7 +402,10 @@ const CartComponent = ({ history }) => {
                         </div>
                       </td>
                       <td className="align-middle">
-                        ${cartItem.productDetail.price * cartItem.quantity}
+                        {convertDollarToVND(
+                          cartItem.productDetail.price * cartItem.quantity
+                        )}{" "}
+                        VND
                       </td>
                       <td
                         className="align-middle"
@@ -321,10 +416,10 @@ const CartComponent = ({ history }) => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table> */}
               <button
                 onClick={handleUpdateCart}
-                className="btn btn-primary float-md-right mt-3"
+                className="btn btn-primary float-md-right mt-3 mb-2"
               >
                 Update Cart
               </button>
@@ -337,19 +432,19 @@ const CartComponent = ({ history }) => {
                 <div className="pt-2">
                   <div className="d-flex justify-content-between mt-2">
                     <h6> Sub Total</h6>
-                    <h5>$ {subTotal}</h5>
+                    <h5>{convertDollarToVND(subTotal)} VND</h5>
                   </div>
                   <div className="d-flex justify-content-between mt-2">
                     <h6>Shipping Cost</h6>
-                    <h5>{isEligibleForFreeShipping ? "Free" : "$ 10"}</h5>
+                    <h5>{isEligibleForFreeShipping ? "Free" : " 30.000"}</h5>
                   </div>
                   <div className="d-flex justify-content-between mt-2">
                     <h6>Total Cost</h6>
-                    <h5>{totalCost}</h5>
+                    <h5>{convertDollarToVND(totalCost)} VND</h5>
                   </div>
 
                   <button
-                    className="btn btn-block btn-primary font-weight-bold my-3 py-3"
+                    className="btn btn-block btn-primary font-weight-bold"
                     onClick={() => {
                       checkout();
                     }}

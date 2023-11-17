@@ -1,6 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import ProductServices from "../services/ProductServices";
+import addProductToCart from "../utils/cartutils";
+import { useAuth } from "../AuthContext";
+import addWishListProduct from "../utils/wishlistutils";
 
 export const SearchProduct = () => {
   const [keyword, setKeyword] = useState("");
@@ -11,16 +15,21 @@ export const SearchProduct = () => {
   const [selectedPriceFilter, setSelectedPriceFilter] = useState("price-all");
   const [productCounts, setProductCounts] = useState({});
   const [showNotification, setShowNotification] = useState(false);
-
+  const { accountId, token } = useAuth();
   const priceRanges = {
-    "price-all": { min: 0, max: 9999999 },
-    "price-1": { min: 0, max: 100 },
-    "price-2": { min: 100, max: 200 },
-    "price-3": { min: 200, max: 500 },
-    "price-4": { min: 500, max: 1000 },
-    "price-5": { min: 1000, max: 9999999 },
+    "price-all": { min: 0, max: 99999990000 },
+    "price-1": { min: 0, max: 100000 },
+    "price-2": { min: 100000, max: 200000 },
+    "price-3": { min: 200000, max: 500000 },
+    "price-4": { min: 500000, max: 1000000 },
+    "price-5": { min: 1000000, max: 9999999000 },
   };
-
+  const handleAddToCart = (productId) => {
+    addProductToCart(accountId, productId, 1, token);
+  };
+  const handleAddtoWishlist = (productId) => {
+    addWishListProduct(accountId, productId, token);
+  };
   const showFilterEmptyNotification = () => {
     setShowNotification(true);
     setTimeout(() => {
@@ -136,8 +145,8 @@ export const SearchProduct = () => {
           {rangeId === "price-all"
             ? "Price-all"
             : index === Object.keys(priceRanges).length - 1
-            ? "Greater than $1000"
-            : `$${priceRanges[rangeId].min} - $${priceRanges[rangeId].max}`}
+            ? "Greater than 1 million (VND)"
+            : `${priceRanges[rangeId].min} - ${priceRanges[rangeId].max} (VND)`}
         </label>
         <span>{productCounts[rangeId] || 0}</span>
       </div>
@@ -212,12 +221,28 @@ export const SearchProduct = () => {
                             />
                           )}
                           <div className="product-action">
-                            <a className="btn btn-outline-dark btn-square" href>
-                              <i className="fa fa-shopping-cart" />
-                            </a>
-                            <a className="btn btn-outlineDark btn-square" href>
-                              <i className="far fa-heart" />
-                            </a>
+                            {product.type === 0 ? (
+                              <>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() =>
+                                    handleAddToCart(product.productId)
+                                  }
+                                >
+                                  <i className="fa fa-shopping-cart" />
+                                </a>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() =>
+                                    handleAddtoWishlist(product.productId)
+                                  }
+                                >
+                                  <i className="far fa-heart" />
+                                </a>
+                              </>
+                            ) : null}
                           </div>
                         </div>
                         <div className="text-center py-4">

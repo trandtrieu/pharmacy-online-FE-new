@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from "react";
 import ProductServices from "../services/ProductServices";
@@ -6,6 +7,8 @@ import CartServices from "../services/CartServices";
 import WishListServices from "../services/WishListServices";
 import { toast } from "react-toastify";
 import { useAuth } from "../AuthContext";
+import addProductToCart from "../utils/cartutils";
+import addWishListProduct from "../utils/wishlistutils";
 
 function ShopComponent() {
   const [products, setProducts] = useState([]);
@@ -28,27 +31,13 @@ function ShopComponent() {
   const viewProduct = (productId) => {
     history.push(`/detail-product/${productId}`);
   };
-  const addProductToCart = (product_id) => {
-    CartServices.addToCart(accountId, product_id, 1, token)
-      .then((response) => {
-        console.log("Product added to cart:", response.data);
-        toast.success("Product added to cart successfully!");
-      })
-      .catch((error) => {
-        toast.error("Product added to cart fail!: " + token);
-        console.error("Error adding product to cart:", error);
-      });
+  const handleAddToCart = (productId) => {
+    addProductToCart(accountId, productId, 1, token);
   };
-  const addWishListProduct = (product_id) => {
-    WishListServices.addToWishlist(accountId, product_id, token)
-      .then((response) => {
-        console.log("Product added to wishlist:", response.data);
-        toast.success("Product added to wishlist successfully!");
-      })
-      .catch((error) => {
-        console.error("Error adding product to wishlist:", error);
-      });
+  const handleAddtoWishlist = (productId) => {
+    addWishListProduct(accountId, productId, token);
   };
+
   const searchProductsLatest = () => {
     ProductServices.searchProductsLatest()
       .then((res) => {
@@ -172,12 +161,12 @@ function ShopComponent() {
   };
 
   const priceRanges = {
-    "price-all": { min: 0, max: 9999999 },
-    "price-1": { min: 0, max: 100 },
-    "price-2": { min: 100, max: 200 },
-    "price-3": { min: 200, max: 500 },
-    "price-4": { min: 500, max: 1000 },
-    "price-5": { min: 1000, max: 9999999 },
+    "price-all": { min: 0, max: 999999900000 },
+    "price-1": { min: 0, max: 100000 },
+    "price-2": { min: 100000, max: 200000 },
+    "price-3": { min: 200000, max: 500000 },
+    "price-4": { min: 500000, max: 1000000 },
+    "price-5": { min: 1000000, max: 999999900000 },
   };
   const calculateProductCounts = (productData) => {
     const counts = {};
@@ -252,7 +241,16 @@ function ShopComponent() {
       }
     });
   };
-
+  const convertDollarToVND = (soTien) => {
+    if (typeof soTien === "number" && !isNaN(soTien)) {
+      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
+      console.log(soTienDaXuLi);
+      return soTienDaXuLi;
+    } else {
+      console.error("Invalid input for convertDollarToVND:", soTien);
+      return "";
+    }
+  };
   return (
     <>
       <div className="container-fluid">
@@ -282,8 +280,8 @@ function ShopComponent() {
                       {rangeId === "price-all"
                         ? "Price-all"
                         : index === Object.keys(priceRanges).length - 1
-                        ? "Greater than $1000"
-                        : `$${priceRanges[rangeId].min} - $${priceRanges[rangeId].max}`}
+                        ? "Greater than 1 million (VND)"
+                        : `${priceRanges[rangeId].min} - ${priceRanges[rangeId].max} (VND)`}
                     </label>
                     <span className="badge border font-weight-normal">
                       {productCounts[rangeId]}
@@ -400,45 +398,29 @@ function ShopComponent() {
                         />
                       )}
                       <div className="product-action">
-                        <a
-                          className="btn btn-outline-dark btn-square"
-                          href
-                          onClick={() => addProductToCart(product.productId)}
-                        >
-                          <i className="fa fa-shopping-cart" />
-                        </a>
-                        <a
-                          className="btn btn-outline-dark btn-square"
-                          href
-                          onClick={() => addWishListProduct(product.productId)}
-                        >
-                          <i className="far fa-heart" />
-                        </a>
+                        {product.type === 0 ? (
+                          <>
+                            <a
+                              className="btn btn-outline-dark btn-square"
+                              href
+                              onClick={() => handleAddToCart(product.productId)}
+                            >
+                              <i className="fa fa-shopping-cart" />
+                            </a>
+                            <a
+                              className="btn btn-outline-dark btn-square"
+                              href
+                              onClick={() =>
+                                handleAddtoWishlist(product.productId)
+                              }
+                            >
+                              <i className="far fa-heart" />
+                            </a>
+                          </>
+                        ) : null}
                       </div>
                     </div>
-                    {/* <div className="text-center py-4">
-                      <a
-                        className="h6 text-decoration-none text-truncate"
-                        href
-                        onClick={() => this.viewProduct(product.productId)}
-                      >
-                        ${product.name}
-                      </a>
-                      <div className="d-flex align-items-center justify-content-center mt-2">
-                        <h5>${product.price}</h5>
-                        <h6 className="text-muted ml-2">
-                          <del>${product.price}</del>
-                        </h6>
-                      </div>
-                      <div className="d-flex align-items-center justify-content-center mb-1">
-                        <small className="fa fa-star text-primary mr-1" />
-                        <small className="fa fa-star text-primary mr-1" />
-                        <small className="fa fa-star text-primary mr-1" />
-                        <small className="far fa-star text-primary mr-1" />
-                        <small className="far fa-star text-primary mr-1" />
-                        <small>(99)</small>
-                      </div>
-                    </div> */}
+
                     <div className="text-center py-4">
                       <div className="product-item-box">
                         <a
@@ -450,18 +432,7 @@ function ShopComponent() {
                         </a>
                       </div>
                       <div className="d-flex align-items-center justify-content-center mt-2">
-                        <h5>${product.price}</h5>
-                        <h6 className="text-muted ml-2">
-                          <del>${product.price}</del>
-                        </h6>
-                      </div>
-                      <div className="d-flex align-items-center justify-content-center mb-1">
-                        <small className="fa fa-star text-primary mr-1" />
-                        <small className="fa fa-star text-primary mr-1" />
-                        <small className="fa fa-star text-primary mr-1" />
-                        <small className="far fa-star text-primary mr-1" />
-                        <small className="far fa-star text-primary mr-1" />
-                        <small>(99)</small>
+                        <h5>{convertDollarToVND(product.price)} VND</h5>
                       </div>
                     </div>
                   </div>
