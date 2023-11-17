@@ -7,6 +7,10 @@ import PrescriptionAccount from "../account/PrescriptionAccount";
 import DeliveryAddressAccount from "../account/DeliveryAddressAccount";
 import { useAuth } from "../AuthContext";
 import { useHistory } from "react-router-dom";
+import { getAccountById, updateAccount, updateImage } from "../services/AccountService";
+
+const imagePath = '../assets/img/avatar/';
+
 
 const ProfileComponent = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -23,9 +27,20 @@ const ProfileComponent = () => {
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
   const [selectedAddressId, setSelectedAddressId] = useState(null);
-
+  const [account, setAccount] = useState({})
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [r, setR] = useState(null)
   const { accountId, token } = useAuth();
+
+  console.log(accountId, token)
+
   useEffect(() => {
+    getAccountById(accountId, token).then(
+      response => {
+        setAccount(response.data)
+      }
+    )
+
     PrescriptionServices.getPrescriptionsByAccountId(accountId, token)
       .then((res) => {
         console.log(accountId + "+ " + token);
@@ -68,7 +83,7 @@ const ProfileComponent = () => {
       districtDropdown.removeEventListener("change", getDistricts);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId, token]);
+  }, [accountId, token, r]);
 
   const fetchDistricts = (provincesID) => {
     fetch(`https://vapi.vnappmob.com/api/province/district/${provincesID}`)
@@ -81,9 +96,9 @@ const ProfileComponent = () => {
         if (districts !== undefined) {
           districts.map(
             (value) =>
-              (document.getElementById(
-                "districts"
-              ).innerHTML += `<option value='${value.district_id}'>${value.district_name}</option>`)
+            (document.getElementById(
+              "districts"
+            ).innerHTML += `<option value='${value.district_id}'>${value.district_name}</option>`)
           );
         }
       })
@@ -103,9 +118,9 @@ const ProfileComponent = () => {
         if (wards !== undefined) {
           wards.map(
             (value) =>
-              (document.getElementById(
-                "wards"
-              ).innerHTML += `<option value='${value.ward_id}'>${value.ward_name}</option>`)
+            (document.getElementById(
+              "wards"
+            ).innerHTML += `<option value='${value.ward_id}'>${value.ward_name}</option>`)
           );
         }
       })
@@ -262,6 +277,108 @@ const ProfileComponent = () => {
     history.push(`/update-prescription/${id}`);
   };
 
+  //------------------------------------
+
+  const imageChangeHandler = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+  }
+
+  const handlerSubmit = (e) => {
+    e.preventDefault()
+    if (selectedFile) {
+      const form = new FormData()
+      form.append('image', selectedFile)
+
+      // console.log(form.get('image'))
+
+      updateImage(accountId, token, form).then(
+        response => {
+          console.log(response)
+          setR(Math.random())
+        }
+      )
+    }
+  }
+
+  const handleNameChange = e => {
+    setAccount(
+      pre => (
+        {
+          ...pre,
+          name: e.target.value
+        }
+      )
+    )
+  }
+
+  const handleDOBChange = e => {
+    setAccount(
+      pre => (
+        {
+          ...pre,
+          dob: e.target.value
+        }
+      )
+    )
+  }
+
+  const handlePhoneChange = e => {
+    setAccount(
+      pre => (
+        {
+          ...pre,
+          phone: e.target.value
+        }
+      )
+    )
+  }
+  
+  const handleUpdateAccount = e => {
+    e.preventDefault()
+    let accountUpdate = {
+      name: account.name,
+      dob: account.dob,
+      phone: account.dob,
+      mail: account.mail
+    }
+
+    updateAccount(accountId, accountUpdate, token).then(
+      response => {
+        console.log(response.data)
+      }
+    )
+  }
+
+  const handleMailChange = e => {
+
+  }
+
+
+  //------------------------------------
+
+
+  // const imageChangeHandler = (e) => {
+  //   e.preventDefault()
+  //   const file = e.target.files[0];
+  //   setSelectedFile(file);
+  //   console.log("duoc roi")
+
+  //   if(selectedFile){
+  //     const form = new FormData()
+  //     form.append('image', selectedFile)
+  //     updateImage(accountId, token, form).then(
+  //       response => {
+  //         console.log(response)
+  //       }
+  //     )
+  //   }
+  // }
+
+  // const handlerSubmit = (e) => {
+  //   // e.preventDefault()
+
+  // }
   return (
     <>
       <div className="container light-style flex-grow-1 container-p-y">
@@ -272,25 +389,29 @@ const ProfileComponent = () => {
               <div className="tab-content">
                 <div className="tab-pane fade " id="account-general">
                   <div className="card-body media align-items-center">
-                    <img
-                      src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                      alt=""
-                      className="d-block ui-w-80"
-                    />
+                    <div style={{ border: "1px solid black" }}>
+                      <img
+                        src={`${imagePath}/${account.avatar}`}
+                        alt="avatar"
+                        className="d-block ui-w-80"
+                      />
+                    </div>
                     <div className="media-body ml-4">
                       <label className="btn btn-outline-primary">
                         Upload new photo
                         <input
                           type="file"
                           className="account-settings-fileinput"
+                          onChange={imageChangeHandler}
                         />
                       </label>
                       &nbsp;
                       <button
                         type="button"
                         className="btn btn-default md-btn-flat"
+                        onClick={handlerSubmit}
                       >
-                        Reset
+                        Apply
                       </button>
                       <div className="text-light small mt-1">
                         Allowed JPG, GIF or PNG. Max size of 800K
@@ -303,24 +424,32 @@ const ProfileComponent = () => {
                       <label className="form-label">Username</label>
                       <input
                         type="text"
+                        readOnly
                         className="form-control mb-1"
                         defaultValue="nmaxwell"
+                        value={account.username}
                       />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Name</label>
                       <input
                         type="text"
+                        onChange={handleNameChange}
                         className="form-control"
                         defaultValue="Nelle Maxwell"
+                        value={account.name}
+
                       />
                     </div>
                     <div className="form-group">
                       <label className="form-label">E-mail</label>
                       <input
                         type="text"
+                        readOnly
+                        onChange={handleMailChange}
                         className="form-control mb-1"
                         defaultValue="nmaxwell@mail.com"
+                        value={account.mail}
                       />
                       <div className="alert alert-warning mt-3">
                         Your email is not confirmed. Please check your inbox.
@@ -329,13 +458,27 @@ const ProfileComponent = () => {
                       </div>
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Company</label>
+                      <label className="form-label">DOB</label>
+                      <input
+                        type="date"
+                        onChange={handleDOBChange}
+                        className="form-control"
+                        defaultValue="Company Ltd."
+                        value={account.dob}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Phone</label>
                       <input
                         type="text"
                         className="form-control"
+                        onChange={handlePhoneChange}
                         defaultValue="Company Ltd."
+                        value={account.phone}
                       />
                     </div>
+
+                    <button onClick={handleUpdateAccount} className="btn btn-success" style={{float: "right"}}>Save</button>
                   </div>
                 </div>
                 <div className="tab-pane fade" id="account-change-password">
