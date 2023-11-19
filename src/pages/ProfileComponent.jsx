@@ -7,6 +7,7 @@ import PrescriptionAccount from "../account/PrescriptionAccount";
 import DeliveryAddressAccount from "../account/DeliveryAddressAccount";
 import { useAuth } from "../AuthContext";
 import { useHistory } from "react-router-dom";
+import CheckoutComponent from "./CheckoutComponent";
 
 const ProfileComponent = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -81,9 +82,9 @@ const ProfileComponent = () => {
         if (districts !== undefined) {
           districts.map(
             (value) =>
-              (document.getElementById(
-                "districts"
-              ).innerHTML += `<option value='${value.district_id}'>${value.district_name}</option>`)
+            (document.getElementById(
+              "districts"
+            ).innerHTML += `<option value='${value.district_id}'>${value.district_name}</option>`)
           );
         }
       })
@@ -103,9 +104,9 @@ const ProfileComponent = () => {
         if (wards !== undefined) {
           wards.map(
             (value) =>
-              (document.getElementById(
-                "wards"
-              ).innerHTML += `<option value='${value.ward_id}'>${value.ward_name}</option>`)
+            (document.getElementById(
+              "wards"
+            ).innerHTML += `<option value='${value.ward_id}'>${value.ward_name}</option>`)
           );
         }
       })
@@ -385,6 +386,7 @@ const ProfileComponent = () => {
                   createNewDeliveryAddress={createNewDeliveryAddress}
                   accountId={accountId}
                 />
+
               </div>
             </div>
           </div>

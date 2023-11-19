@@ -15,6 +15,9 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
+
+
 
 const customStyles = {
   content: {
@@ -27,6 +30,7 @@ const customStyles = {
     transform: "translate(-40%, -10%)",
   },
 };
+
 
 const CheckoutComponent = () => {
   const history = useHistory();
@@ -47,6 +51,7 @@ const CheckoutComponent = () => {
     useState("");
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalCostBeforeDiscount, setTotalCostBeforeDiscount] = useState(0);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
 
   const { accountId, token } = useAuth();
 
@@ -110,6 +115,27 @@ const CheckoutComponent = () => {
       })
       .catch((error) => {
         console.error("Error fetching total cost:", error);
+      });
+  };
+  const handleAddressClick = (addressId) => {
+    // Đặt địa chỉ được chọn khi click vào đó
+    setSelectedAddressId(addressId);
+    console.log(addressId);
+  };
+  const setDefaultAddress = (accountId, address_id) => {
+    DeliveryAddressServices.setDefaultDeliveryAddress(
+      accountId,
+      address_id,
+      token
+    )
+      .then((res) => {
+        window.location.reload();
+        toast.success("Set default delivery address successfully!");
+      })
+      .catch((error) => {
+        console.log(token);
+        // Xử lý lỗi ở đây nếu cần
+        toast.error("Error setting default delivery address:", error);
       });
   };
 
@@ -347,40 +373,69 @@ const CheckoutComponent = () => {
               </div>
             </div>
             {selectedOption === "delivery" && (
-              <div className="bg-light p-3 mb-3">
-                <div className="row">
-                  <div className="col-md-11 d-flex align-items-center">
-                    <div className="card bg-transparent">
-                      <div className="card-body p-0">
-                        <blockquote className="d-flex flex-column m-0">
-                          <p className="m-0">
-                            <FontAwesomeIcon icon={faPhone} />{" "}
-                            {
-                              deliveryAddressStatusDefault.recipient_phone_number
-                            }{" "}
-                            &bull;{" "}
-                            <span>
-                              {deliveryAddressStatusDefault.recipient_full_name}
-                            </span>
-                          </p>
-                          <hr />
-                          <p className="m-0">
-                            <FontAwesomeIcon icon={faLocationDot} />
-                            <span style={{ marginLeft: "9px" }}>
-                              {deliveryAddressStatusDefault.specific_address}
-                            </span>
-                          </p>
-                        </blockquote>
+              <>
+                {deliveryAddressStatusDefault === "" ? (
+                  <div style={{ backgroundColor: "#fff" }} className="container-fluid">
+                    <div className="row">
+                      <div className="col-md-12 d-flex flex-column align-items-center">
+                        <div
+                          className="empty-img mt-4"
+                          style={{ width: "150px", height: "100px" }}
+                        >
+                          <img
+                            src="../assets/images/empty-image.png"
+                            alt=""
+                            className="w-100 h-100"
+                          />
+                        </div>
+                        <h6 className="mb-2">
+                          I'm sorry! DrugMart couldn't find any delivery addresses
+                          in your cart.
+                        </h6>
+                        <button
+                          className="btn btn-primary mb-4"
+                        >
+                          Create a New Address
+                        </button>
                       </div>
                     </div>
                   </div>
-                  <div className="col-md-1 d-flex align-items-center">
-                    <button className="btn">
-                      <FontAwesomeIcon icon={faChevronRight} />
-                    </button>
+                ) : (
+                  <div className="bg-light p-3 mb-3">
+                    <div className="row">
+                      <div className="col-md-11 d-flex align-items-center">
+                        <div className="card bg-transparent">
+                          <div className="card-body p-0">
+                            <blockquote className="d-flex flex-column m-0">
+                              <p className="m-0">
+                                <FontAwesomeIcon icon={faPhone} />{" "}
+                                {deliveryAddressStatusDefault.recipient_phone_number} &bull;{" "}
+                                <span>{deliveryAddressStatusDefault.recipient_full_name}</span>
+                              </p>
+                              <hr />
+                              <p className="m-0">
+                                <FontAwesomeIcon icon={faLocationDot} />
+                                <span style={{ marginLeft: "9px" }}>
+                                  {deliveryAddressStatusDefault.specific_address}
+                                </span>
+                              </p>
+                            </blockquote>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-1 d-flex align-items-center">
+                        <button
+                          className="btn"
+                          data-toggle="modal"
+                          data-target="#setDefault"
+                        >
+                          <FontAwesomeIcon icon={faChevronRight} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                )}
+              </>
             )}
             {selectedOption === "pharmacy" && (
               <div className="bg-light p-3 mb-3">
@@ -567,6 +622,98 @@ const CheckoutComponent = () => {
           </div>
         </div>
       </div>
+      {/* model set default */}
+      <div class="container">
+        <div
+          class="modal fade modal-lg rounded "
+          style={{
+            maxWidth: "10000px",
+            margin: "0 auto",
+            marginTop: "",
+            paddingRight: "0",
+          }}
+          id={`setDefault`}
+          role="dialog"
+        >
+          <div
+            style={{
+              maxWidth: "700px",
+              overflowY: "auto",
+              maxHeight: "86%",
+            }}
+            class="modal-dialog rounded "
+          >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 style={{ textAlign: "center" }} class="modal-title">
+                  Set Default Delivery Address <b></b>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">
+                  &times;
+                </button>
+              </div>
+              <div className=" container mt-3">
+                {deliveryAddress.map((delivery) => (
+                  <div
+                    style={{
+                      border: "1px solid #ccc",
+                      position: "relative",
+                      backgroundColor:
+                        selectedAddressId === delivery.address_id
+                          ? "#d7ffcb"
+                          : "#f2f6fe",
+                      cursor: "pointer",
+                      marginRight: "15px",
+                      marginLeft: "15px",
+                    }}
+                    className="row mt-3 mb-3 rounded p-3"
+                    onClick={() => handleAddressClick(delivery.address_id)}
+                  >
+                    <div className="col-md-1">
+                      <div
+                        className="text-center  pt-1 pb-1"
+                        style={{
+                          width: "100%",
+                          backgroundColor: "#d7ffcb",
+                          borderRadius: "50%",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          style={{ color: "" }}
+                          icon={faLocationDot}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-10">
+                      <p>
+                        <strong>{delivery.recipient_full_name}</strong>{" "}
+                        <span className="ml-2 mr-2"> | </span>{" "}
+                        <span>{delivery.recipient_phone_number}</span>
+                      </p>
+                      <p>{delivery.specific_address}</p>
+                    </div>
+                  </div>
+                ))}
+                <div class="modal-body">
+                  <div className="btn btn-info rounded">
+                    <button
+                      onClick={() =>
+                        setDefaultAddress(accountId, selectedAddressId)
+                      }
+                      style={{ color: "#fff" }}
+                      type="submit"
+                      className="btn submit"
+                    >
+                      Set
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </>
   );
 };

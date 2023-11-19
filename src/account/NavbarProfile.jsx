@@ -7,7 +7,7 @@ class NavbarProfile extends Component {
         <div className="col-md-3 pt-0">
           <div className="list-group list-group-flush account-settings-links">
             <a
-              className="list-group-item list-group-item-action "
+              className="list-group-item list-group-item-action active"
               data-toggle="list"
               href="#account-general"
             >
@@ -21,14 +21,14 @@ class NavbarProfile extends Component {
               Change password
             </a>
             <a
-              className="list-group-item list-group-item-action active "
+              className="list-group-item list-group-item-action  "
               data-toggle="list"
               href="#account-prescripitons"
             >
               My presciptions
             </a>
             <a
-              className="list-group-item list-group-item-action"
+              className="list-group-item list-group-item-action "
               data-toggle="list"
               href="#account-delivery-address"
             >

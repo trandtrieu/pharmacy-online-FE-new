@@ -145,8 +145,8 @@ export const SearchProduct = () => {
           {rangeId === "price-all"
             ? "Price-all"
             : index === Object.keys(priceRanges).length - 1
-            ? "Greater than 1 million (VND)"
-            : `${priceRanges[rangeId].min} - ${priceRanges[rangeId].max} (VND)`}
+              ? "Greater than 1 million (VND)"
+              : `${priceRanges[rangeId].min} - ${priceRanges[rangeId].max} (VND)`}
         </label>
         <span>{productCounts[rangeId] || 0}</span>
       </div>
@@ -207,70 +207,70 @@ export const SearchProduct = () => {
               {showNotification || products.length === 0
                 ? null
                 : products.map((product) => (
-                    <div
-                      className="col-lg-4 col-md-6 col-sm-6 pb-1"
-                      key={product.productId}
-                    >
-                      <div className="product-item bg-light mb-4">
-                        <div className="product-img position-relative overflow-hidden">
-                          {product.imageUrls.length > 0 && (
-                            <img
-                              className="img-fluid w-100"
-                              src={`${product.imageUrls[0]}`}
-                              alt={`Imagee 0`}
-                            />
-                          )}
-                          <div className="product-action">
-                            {product.type === 0 ? (
-                              <>
-                                <a
-                                  className="btn btn-outline-dark btn-square"
-                                  href
-                                  onClick={() =>
-                                    handleAddToCart(product.productId)
-                                  }
-                                >
-                                  <i className="fa fa-shopping-cart" />
-                                </a>
-                                <a
-                                  className="btn btn-outline-dark btn-square"
-                                  href
-                                  onClick={() =>
-                                    handleAddtoWishlist(product.productId)
-                                  }
-                                >
-                                  <i className="far fa-heart" />
-                                </a>
-                              </>
-                            ) : null}
-                          </div>
+                  <div
+                    className="col-lg-4 col-md-6 col-sm-6 pb-1"
+                    key={product.productId}
+                  >
+                    <div className="product-item bg-light mb-4">
+                      <div className="product-img position-relative overflow-hidden">
+                        {product.imageUrls.length > 0 && (
+                          <img
+                            className="img-fluid w-100"
+                            src={`${product.imageUrls[0]}`}
+                            alt={`Imagee 0`}
+                          />
+                        )}
+                        <div className="product-action">
+                          {product.type === 0 ? (
+                            <>
+                              <a
+                                className="btn btn-outline-dark btn-square"
+                                href
+                                onClick={() =>
+                                  handleAddToCart(product.productId)
+                                }
+                              >
+                                <i className="fa fa-shopping-cart" />
+                              </a>
+                              <a
+                                className="btn btn-outline-dark btn-square"
+                                href
+                                onClick={() =>
+                                  handleAddtoWishlist(product.productId)
+                                }
+                              >
+                                <i className="far fa-heart" />
+                              </a>
+                            </>
+                          ) : null}
                         </div>
-                        <div className="text-center py-4">
-                          <a
-                            className="h6 text-decoration-none text-truncate"
-                            href
-                            onClick={() => viewProduct(product.productId)}
-                          >
-                            {product.name}
-                          </a>
-                          <div className="d-flex align-items-center justify-content-center mt-2">
-                            <h5>${product.price}</h5>
-                            <h6 className="text-muted ml-2">
-                              <del>${product.price}</del>
-                            </h6>
-                          </div>
-                          <div className="d-flex align-items-center justify-content-center mb-1">
-                            <small className="fa fa-star text-primary mr-1" />
-                            <small className="fa fa-star text-primary mr-1" />
-                            <small className="fa fa-star text-primary mr-1" />
-                            <small className="far fa-star text primary mr-1" />
-                            <small className="far fa-star text-primary mr-1" />
-                            <small>(99)</small>
-                          </div>
+                      </div>
+                      <div className="text-center py-4">
+                        <a
+                          className="h6 text-decoration-none text-truncate"
+                          href
+                          onClick={() => viewProduct(product.productId)}
+                        >
+                          {product.name}
+                        </a>
+                        <div className="d-flex align-items-center justify-content-center mt-2">
+                          <h5>${product.price}</h5>
+                          <h6 className="text-muted ml-2">
+                            <del>${product.price}</del>
+                          </h6>
+                        </div>
+                        <div className="d-flex align-items-center justify-content-center mb-1">
+                          <small className="fa fa-star text-primary mr-1" />
+                          <small className="fa fa-star text-primary mr-1" />
+                          <small className="fa fa-star text-primary mr-1" />
+                          <small className="far fa-star text primary mr-1" />
+                          <small className="far fa-star text-primary mr-1" />
+                          <small>(99)</small>
                         </div>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                ))}
               {!showNotification && products.length > 0 && (
                 <div className="col-12">
                   <nav>

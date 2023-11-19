@@ -90,6 +90,17 @@ const HeaderComponent = (props) => {
         console.log("Error occurred while searching for products: " + error);
       });
   };
+  // useEffect(() => {
+  //   const handleBeforeUnload = (event) => {
+  //     localStorage.clear();
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (token) {

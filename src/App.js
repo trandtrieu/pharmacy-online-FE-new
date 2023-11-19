@@ -28,6 +28,7 @@ import SetNewPass from "./pages/SetNewPass";
 import { AuthProvider } from "./AuthContext";
 import ReturnPage from "./pages/ReturnPage";
 import HealthService from "./pages/HealthService";
+import DeliveryAddressAccount from "./account/DeliveryAddressAccount";
 function App() {
   return (
     <>
