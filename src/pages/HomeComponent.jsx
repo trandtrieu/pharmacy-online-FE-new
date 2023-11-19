@@ -16,19 +16,37 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import FavouriteBrand from "../layouts/FavouriteBrand";
 import FeatureCategory from "../layouts/FeatureCategory";
 import ScrollToTop from "../layouts/ScrollToTop";
-import addProductToCart from "../utils/cartutils";
+import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
+import { useCart } from "../CartProvider";
+import Modal from "react-modal";
+const customStyles = {
+  content: {
+    top: "35%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    width: "30%",
+    transform: "translate(-40%, -10%)",
+  },
+};
 function HomeProduct(props) {
   const history = useHistory();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { accountId, token } = useAuth();
-  const [setCartItemCount] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  // const [cartItemCount, setCartItemCount] = useState(0);
+  const { updateCartItemCount } = useCart();
+  const { updateWishlistItemCount } = useCart();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    updateCartItemCount();
+    updateWishlistItemCount();
 
     setTimeout(() => {
       ProductServices.getProducts()
@@ -40,8 +58,8 @@ function HomeProduct(props) {
           console.error("Lỗi khi tải sản phẩm:", error);
           setLoading(false);
         });
-    }, 1000); // 5000 milliseconds = 5 seconds
-  }, [accountId, token, history]);
+    }, 1000);
+  }, [accountId, token, history, updateCartItemCount, updateWishlistItemCount]);
 
   const fetchNextProducts = () => {
     const nextIndex = currentIndex + 5;
@@ -55,13 +73,38 @@ function HomeProduct(props) {
         console.error("Error fetching new products:", error);
       });
   };
-
-  const handleAddToCart = (productId) => {
-    addProductToCart(accountId, productId, 1, token);
+  const openModal = () => {
+    setModalIsOpen(true);
   };
 
-  const handleAddtoWishlist = (productId) => {
-    addWishListProduct(accountId, productId, token);
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+  const handleAddToCart = async (productId) => {
+    if (!accountId || !token) {
+      openModal();
+      return;
+    }
+
+    try {
+      await addProductToCart(accountId, productId, 1, token);
+      await updateCartItemCount();
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+    }
+  };
+
+  const handleAddtoWishlist = async (productId) => {
+    if (!accountId || !token) {
+      openModal();
+      return;
+    }
+    try {
+      await addWishListProduct(accountId, productId, token);
+      await updateWishlistItemCount();
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+    }
   };
 
   const viewProduct = (productId) => {
@@ -75,18 +118,10 @@ function HomeProduct(props) {
   const handleOnlineCounselingClick = () => {
     this.toggleChatBubble();
   };
-  const convertDollarToVND = (soTien) => {
-    if (typeof soTien === "number" && !isNaN(soTien)) {
-      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
-      console.log(soTienDaXuLi);
-      return soTienDaXuLi;
-    } else {
-      console.error("Invalid input for convertDollarToVND:", soTien);
-      return "";
-    }
-  };
+
   return (
     <>
+      {" "}
       <div className="cover-body">
         <CarouselComponent />
         <div className="container">
@@ -129,7 +164,7 @@ function HomeProduct(props) {
 
             <div
               className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex align-items-center justify-content-center"
-              onClick={handleOnlineCounselingClick}
+              // onClick={handleOnlineCounselingClick}
             >
               <div className="option-carousel-item text-center">
                 <img
@@ -252,18 +287,16 @@ function HomeProduct(props) {
                                         >
                                           <i className="fa fa-shopping-cart" />
                                         </a>
-                                        <a
-                                          className="btn btn-outline-dark btn-square"
-                                          onClick={() =>
-                                            handleAddtoWishlist(
-                                              product.productId
-                                            )
-                                          }
-                                        >
-                                          <i className="far fa-heart" />
-                                        </a>
                                       </>
                                     ) : null}
+                                    <a
+                                      className="btn btn-outline-dark btn-square"
+                                      onClick={() =>
+                                        handleAddtoWishlist(product.productId)
+                                      }
+                                    >
+                                      <i className="far fa-heart" />
+                                    </a>
                                     <a
                                       className="btn btn-outline-dark btn-square"
                                       onClick={() =>
@@ -350,6 +383,23 @@ function HomeProduct(props) {
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Login Modal"
+        style={customStyles}
+      >
+        <p>Please log in to add products to the cart.</p>
+        <button className="btn" onClick={closeModal}>
+          Close
+        </button>
+        <button
+          className="btn btn-primary"
+          onClick={() => history.push("/login")}
+        >
+          Go to Login
+        </button>
+      </Modal>
       {/* <ScrollToTop /> */}
     </>
   );

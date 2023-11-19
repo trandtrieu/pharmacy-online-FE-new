@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import WishListServices from "../services/WishListServices";
-const addWishListProduct = (accountId, product_id, token) => {
-  WishListServices.addToWishlist(accountId, product_id, token)
+const addWishListProduct = async (accountId, product_id, token) => {
+  await WishListServices.addToWishlist(accountId, product_id, token)
     .then((response) => {
       console.log("Product added to wishlist:", response.data);
       toast.success("Product added to wishlist successfully!");

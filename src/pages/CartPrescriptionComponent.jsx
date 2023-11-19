@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Modal from "react-modal";
-import { calculateTotalPrice } from "../utils/cartutils";
+import { calculateTotalPrice, convertDollarToVND } from "../utils/cartutils";
 import { useAuth } from "../AuthContext";
 
 const SHIPPING_COST = 30000;
@@ -167,16 +167,6 @@ const CartPrescriptionComponent = ({ history }) => {
     calculateTotalPrice(cartsFromPresciption);
   const totalCost = subTotal + (isEligibleForFreeShipping ? 0 : SHIPPING_COST);
 
-  const convertDollarToVND = (soTien) => {
-    if (typeof soTien === "number" && !isNaN(soTien)) {
-      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
-      console.log(soTienDaXuLi);
-      return soTienDaXuLi;
-    } else {
-      console.error("Invalid input for convertDollarToVND:", soTien);
-      return "";
-    }
-  };
   return (
     <>
       <Modal

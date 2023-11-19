@@ -15,6 +15,7 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
+import { convertDollarToVND } from "../utils/cartutils";
 
 const customStyles = {
   content: {
@@ -226,14 +227,7 @@ const CheckoutPrescriptionComponent = () => {
     //   state: { data: dataToPass },
     // });
   };
-  const convertDollarToVND = (soTien) => {
-    if (typeof soTien === "number" && !isNaN(soTien)) {
-      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
-      return soTienDaXuLi;
-    } else {
-      return "";
-    }
-  };
+
   return (
     <>
       <ReactModal

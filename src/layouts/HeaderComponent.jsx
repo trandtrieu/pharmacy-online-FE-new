@@ -18,6 +18,7 @@ import {
   faCartPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { useCart } from "../CartProvider";
 
 const HeaderComponent = (props) => {
   const [keyword, setKeyword] = useState("");
@@ -26,29 +27,23 @@ const HeaderComponent = (props) => {
   const location = useLocation();
   const [priceFilter, setPriceFilter] = useState("price-all");
   const [categories, setCategories] = useState([]);
-  const [cartItemCount, setCartItemCount] = useState(0);
-  const [wishlistItemCount, setWishlistItemCount] = useState(0);
   const [username, setUsername] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   const { accountId, token } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const { cartItemCount, updateCartItemCount } = useCart();
+  const { wishlistItemCount, updateWishlistItemCount } = useCart();
 
   const handleLogout = () => {
-    // Remove token and id from local storage
     localStorage.removeItem("token");
     localStorage.removeItem("id");
-
-    // Update state to reflect the user being logged out
     setIsLoggedIn(false);
     setUsername(null);
 
-    // Reload the window or navigate to the home page
-    window.location.reload(); // You may not need this line
-    window.location.href = "/home"; // Redirect to the home page
-
-    // If you're using React Router, you can use history to navigate
-    // history.push("/home");
+    window.location.reload();
+    window.location.href = "/home";
   };
 
   const handleToggleDropdown = () => {
@@ -61,7 +56,6 @@ const HeaderComponent = (props) => {
   };
 
   const handleCartClick = () => {
-    // Navigate to the cart page
     history.push("/cart");
   };
 
@@ -117,43 +111,10 @@ const HeaderComponent = (props) => {
     }
   }, [location.search]);
 
-  const updateCartItemCount = () => {
-    CartServices.getNumberProductInCart(accountId, token)
-      .then((res) => {
-        setCartItemCount(res.data);
-      })
-      .catch((error) => {
-        // console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
-      });
-  };
-
-  const updateWishListItemCount = () => {
-    WishListServices.countProduct(accountId, token)
-      .then((res) => {
-        setWishlistItemCount(res.data);
-      })
-      .catch((error) => {
-        // console.error("Lỗi khi tải số lượng sản phẩm trong giỏ hàng:", error);
-      });
-  };
-
-  // useEffect(() => {
-  //   // CategoryServices.getCategoryType()
-  //   //   .then((res) => {
-  //   //     setCategories(res.data);
-  //   //   })
-  //   //   .catch((error) => {
-  //   //     console.error("Lỗi khi tải sản phẩm:", error);
-  //   //   });
-  //   updateCartItemCount();
-  //   updateWishListItemCount();
-  //   const cartInterval = setInterval(updateCartItemCount, 1000);
-  //   const wishlistInterval = setInterval(updateWishListItemCount, 1000);
-  //   return () => {
-  //     clearInterval(cartInterval);
-  //     clearInterval(wishlistInterval);
-  //   };
-  // }, [updateCartItemCount, updateWishListItemCount]);
+  useEffect(() => {
+    updateCartItemCount();
+    updateWishlistItemCount();
+  }, [accountId, token]);
 
   const viewProductByCategory = (category_id) => {
     props.history.push(`/category/${category_id}`);
@@ -179,7 +140,7 @@ const HeaderComponent = (props) => {
             <div className="col-lg-3 text-left">
               <a className="text-decoration-none">
                 <img
-                  src="assets/images/logoSite.png"
+                  src={`assets/images/logoSite.png?${new Date().getTime()}`}
                   alt=""
                   style={{ width: "66%", height: "75px" }}
                 />
@@ -376,12 +337,12 @@ const HeaderComponent = (props) => {
                       Prescription
                     </Link>
 
-                    <Link to="/contact" className="nav-item nav-link">
-                      Contact
-                    </Link>
-
                     <Link to="/blog" className="nav-item nav-link">
                       Blog
+                    </Link>
+
+                    <Link to="/cart-prescription" className="nav-item nav-link">
+                      Prescription Cart
                     </Link>
                   </div>
 
@@ -410,30 +371,7 @@ const HeaderComponent = (props) => {
                         </span>
                       </span>
                     </Link>
-                    <Link
-                      to="cart-prescription"
-                      className="btn px-3 ml-3 position-relative"
-                    >
-                      <FontAwesomeIcon
-                        icon={faCartPlus}
-                        style={{ color: "#FFFFFF", fontSize: "1.2rem" }}
-                      />
-                      <span
-                        className="badge bg-danger rounded-circle"
-                        style={{
-                          position: "absolute",
-                          top: "-3px",
-                          right: "0.35rem",
-                        }}
-                      >
-                        <span
-                          className="text-light"
-                          style={{ padding: "0.5px" }}
-                        >
-                          0
-                        </span>
-                      </span>
-                    </Link>
+
                     <Link
                       to="#"
                       className="btn px-3 ml-3 position-relative"
@@ -482,10 +420,6 @@ const HeaderComponent = (props) => {
                               <span>
                                 Timeline Share Lorem, ipsum dolor sit amet
                                 consectetur adipisicing elit. Et iusto laborum
-                                consequatur quia a sed vitae doloremque illo
-                                accusantium reprehenderit autem, ipsam possimus,
-                                porro veniam eaque obcaecati delectus fugiat
-                                illum.
                               </span>
                             </p>
                             <span className="notify_time">10 minutes ago</span>

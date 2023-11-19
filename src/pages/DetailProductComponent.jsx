@@ -13,9 +13,19 @@ import ReplyServices from "../services/ReplyServices";
 import FeedbackComponent from "./FeedbackComponent";
 import { AuthContext } from "../AuthContext";
 import Modal from "react-modal";
-import addProductToCart from "../utils/cartutils";
+import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
-
+const customStyles = {
+  content: {
+    top: "35%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    width: "30%",
+    transform: "translate(-40%, -10%)",
+  },
+};
 class DetailProductComponent extends Component {
   constructor(props) {
     super(props);
@@ -48,6 +58,10 @@ class DetailProductComponent extends Component {
       const productData = res.data;
       const imageUrls = productData.imageUrls || []; // Replace 'imageUrls' with the correct field from your API data
       this.setState({ product: productData, imageUrls });
+      if (productData.type === 1) {
+        this.openModal();
+        console.log("check type: " + productData.type);
+      }
     });
 
     ProductServices.get5ProductsRandom()
@@ -112,10 +126,6 @@ class DetailProductComponent extends Component {
         });
       }
     );
-    if (this.state.product.type === 0) {
-      this.openModal();
-      console.log("check type: " + this.state.product.type);
-    }
   }
   openModal = () => {
     this.setState({ isModalOpen: true });
@@ -375,7 +385,9 @@ class DetailProductComponent extends Component {
                   <span className="text-success ms-2 ml-1"> In stock</span>
                 </div>
                 <div className="mb-3">
-                  <span className="h2">${this.state.product.price}</span>
+                  <span className="h2">
+                    {convertDollarToVND(this.state.product.price)} VND
+                  </span>
                   <span className="text-muted">/per box</span>
                 </div>
                 <div className="row">
@@ -431,18 +443,6 @@ class DetailProductComponent extends Component {
                       >
                         <i className="fa fa-shopping-cart mr-1" /> Add To Cart
                       </button>
-                      <button
-                        className="btn btn-primary px-3"
-                        onClick={() =>
-                          this.handleAddtoWishlist(
-                            this.state.product.productId,
-                            accountId,
-                            token
-                          )
-                        }
-                      >
-                        <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
-                      </button>
                     </div>
                   </div>
                 ) : (
@@ -450,13 +450,22 @@ class DetailProductComponent extends Component {
                     <p className="note-block-addcart">
                       <span>Note:</span> This product is only sold when
                       prescribed by a doctor, all information on the Website and
-                      App is for reference only. Please confirm that you are a
-                      pharmacist, doctor, or medical staff member who wants to
-                      learn about this product
+                      App is for reference only.
                     </p>
-
                     <button
-                      className="btn btn-primary px-3 mr-3"
+                      className="btn btn-primary mb-2"
+                      onClick={() =>
+                        this.handleAddtoWishlist(
+                          this.state.product.productId,
+                          accountId,
+                          token
+                        )
+                      }
+                    >
+                      <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
+                    </button>
+                    <button
+                      className="btn btn-primary mb-5"
                       onClick={() => {
                         this.createPrescription();
                       }}
@@ -557,8 +566,10 @@ class DetailProductComponent extends Component {
                           />
                         </a>
                         <div className="info ml-3">
-                          <p>{this.state.product.name}</p>
-                          <strong className="text-dark"> $38.90</strong>
+                          <p>{product.name}</p>
+                          <strong className="text-dark">
+                            {convertDollarToVND(product.price)} VND
+                          </strong>
                         </div>
                       </div>
                     ))}
@@ -566,7 +577,7 @@ class DetailProductComponent extends Component {
                 </div>
               </div>
             </div>
-            <div className="container-fluid mb-5 mt-5">
+            <div className="container-fluid mb-5 mt-5 bg-light p-5">
               <h4 style={{ color: "#3D464D" }} className="mb-5 mt-5">
                 Reviews <span>(3 reviews)</span>
               </h4>
@@ -725,11 +736,15 @@ class DetailProductComponent extends Component {
           isOpen={this.state.isModalOpen}
           onRequestClose={this.closeModal}
           contentLabel="Product Type Modal"
+          style={customStyles}
         >
-          <h2>Product Type 0 Modal</h2>
-          <p>This is a modal for products with type 0.</p>
-          {/* Add any additional content for your modal */}
-          <button onClick={this.closeModal}>Close Modal</button>
+          <p>
+            This product is only sold when prescribed by a doctor. All
+            information on the Website is for reference only.
+          </p>
+          <button className="btn btn-primary" onClick={this.closeModal}>
+            Close Modal
+          </button>
         </Modal>
       </>
     );

@@ -10,8 +10,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Modal from "react-modal";
-import { calculateTotalPrice } from "../utils/cartutils";
+import { calculateTotalPrice, convertDollarToVND } from "../utils/cartutils";
 import { useAuth } from "../AuthContext";
+import { useCart } from "../CartProvider";
 
 const SHIPPING_COST = 30000;
 const customStyles = {
@@ -28,28 +29,19 @@ const customStyles = {
 
 const CartComponent = ({ history }) => {
   const [carts, setCarts] = useState([]);
-  const [cartsFromPresciption, setCartsFromPresciption] = useState([]);
-
   const { accountId, token } = useAuth();
-
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
     useState(false);
   const [cartItemToDelete, setCartItemToDelete] = useState(null);
   const [isRemoveAllConfirmationOpen, setIsRemoveAllConfirmationOpen] =
     useState(false);
+  const { updateCartItemCount } = useCart();
+
   useEffect(() => {
     Modal.setAppElement("#root");
     CartServices.getListCartByAccountId(accountId, 0, token)
       .then((res) => {
         setCarts(res.data);
-        console.log("hello data: " + res.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải giỏ hàng:", error);
-      });
-    CartServices.getListCartByAccountIdByPrescription(accountId, token)
-      .then((res) => {
-        setCartsFromPresciption(res.data);
         console.log("hello data: " + res.data);
       })
       .catch((error) => {
@@ -71,6 +63,7 @@ const CartComponent = ({ history }) => {
         setIsDeleteConfirmationOpen(false);
         setCartItemToDelete(null);
         toast.success("Delete product cart successfully!");
+        updateCartItemCount();
       })
       .catch((error) => {
         console.error("Lỗi xóa sản phẩm khỏi giỏ hàng:", error);
@@ -145,6 +138,7 @@ const CartComponent = ({ history }) => {
       .then(() => {
         setCarts([]);
         toast.success("Remove all cart items successfully");
+        updateCartItemCount();
       })
       .catch((error) => {
         console.error("Error removing all items from the cart:", error);
@@ -174,16 +168,6 @@ const CartComponent = ({ history }) => {
   const { subTotal, isEligibleForFreeShipping } = calculateTotalPrice(carts);
   const totalCost = subTotal + (isEligibleForFreeShipping ? 0 : SHIPPING_COST);
 
-  const convertDollarToVND = (soTien) => {
-    if (typeof soTien === "number" && !isNaN(soTien)) {
-      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
-      console.log(soTienDaXuLi);
-      return soTienDaXuLi;
-    } else {
-      console.error("Invalid input for convertDollarToVND:", soTien);
-      return "";
-    }
-  };
   return (
     <>
       <Modal

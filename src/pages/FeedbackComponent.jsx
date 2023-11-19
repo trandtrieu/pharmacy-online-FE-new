@@ -211,9 +211,9 @@ class FeedbackComponent extends Component {
     return (
       <div className="container-fluid mb-5 mt-5">
         <div className="card">
-          <div className="row">
+          <div className="row p-5">
             <h4 className=" mb-1">Feedback Product</h4>
-            <div className="col-md-12">
+            <div className="col-md-12 ">
               <div className="row">
                 <div className="col-md-12">
                   {this.props.feedbacks.map((feedback) => (

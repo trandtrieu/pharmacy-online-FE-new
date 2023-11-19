@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import WishListServices from "../services/WishListServices";
 import ProductServices from "../services/ProductServices";
 import { toast } from "react-toastify";
+import { convertDollarToVND } from "../utils/cartutils";
 
 class CategoryProduct extends Component {
   constructor(props) {
@@ -380,18 +381,7 @@ class CategoryProduct extends Component {
                           ${product.name}
                         </a>
                         <div className="d-flex align-items-center justify-content-center mt-2">
-                          <h5>${product.price}</h5>
-                          <h6 className="text-muted ml-2">
-                            <del>${product.price}</del>
-                          </h6>
-                        </div>
-                        <div className="d-flex align-items-center justify-content-center mb-1">
-                          <small className="fa fa-star text-primary mr-1" />
-                          <small className="fa fa-star text-primary mr-1" />
-                          <small className="fa fa-star text-primary mr-1" />
-                          <small className="far fa-star text-primary mr-1" />
-                          <small className="far fa-star text-primary mr-1" />
-                          <small>(99)</small>
+                          <h5>{convertDollarToVND(product.price)} VND</h5>
                         </div>
                       </div>
                     </div>

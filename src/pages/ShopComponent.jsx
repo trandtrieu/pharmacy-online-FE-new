@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../AuthContext";
 import addProductToCart from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
+import { useCart } from "../CartProvider";
 
 function ShopComponent() {
   const [products, setProducts] = useState([]);
@@ -16,6 +17,7 @@ function ShopComponent() {
   const [productCounts, setProductCounts] = useState({});
   const [selectedPriceRange, setSelectedPriceRange] = useState("price-all"); // Default selected price range
   const { accountId, token } = useAuth(); // Sử dụng AuthContext để truy cập giá trị accountId và token
+  const { updateCartItemCount } = useCart();
 
   useEffect(() => {
     ProductServices.getProducts()
@@ -31,8 +33,9 @@ function ShopComponent() {
   const viewProduct = (productId) => {
     history.push(`/detail-product/${productId}`);
   };
-  const handleAddToCart = (productId) => {
-    addProductToCart(accountId, productId, 1, token);
+  const handleAddToCart = async (productId) => {
+    await addProductToCart(accountId, productId, 1, token);
+    await updateCartItemCount();
   };
   const handleAddtoWishlist = (productId) => {
     addWishListProduct(accountId, productId, token);

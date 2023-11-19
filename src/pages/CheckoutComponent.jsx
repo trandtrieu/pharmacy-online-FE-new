@@ -15,6 +15,7 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
+import { convertDollarToVND } from "../utils/cartutils";
 
 const customStyles = {
   content: {
@@ -61,7 +62,9 @@ const CheckoutComponent = () => {
       .catch((error) => {
         console.error("Error loading carts:", error);
       });
-
+    // if (carts.length === 0) {
+    //   history.push("/404");
+    // }
     CheckoutServices.getTotalQuantity(accountId, 0, token)
       .then((res) => {
         setTotalQuantity(res.data);
@@ -222,16 +225,7 @@ const CheckoutComponent = () => {
     //   state: { data: dataToPass },
     // });
   };
-  const convertDollarToVND = (soTien) => {
-    if (typeof soTien === "number" && !isNaN(soTien)) {
-      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
-      console.log(soTienDaXuLi);
-      return soTienDaXuLi;
-    } else {
-      console.error("Invalid input for convertDollarToVND:", soTien);
-      return "";
-    }
-  };
+
   return (
     <>
       <ReactModal

@@ -11,6 +11,8 @@ import CartServices from "../services/CartServices";
 import { useAuth } from "../AuthContext";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import Modal from "react-modal";
+import { useCart } from "../CartProvider";
+import { convertDollarToVND } from "../utils/cartutils";
 const customStyles = {
   content: {
     top: "35%",
@@ -29,8 +31,10 @@ const WishlistComponent = () => {
   const history = useHistory();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const { updateWishlistItemCount } = useCart();
 
   useEffect(() => {
+    updateWishlistItemCount();
     WishListServices.wishlist(accountId, token)
       .then((res) => {
         setWishlists(res.data);
@@ -38,7 +42,7 @@ const WishlistComponent = () => {
       .catch((error) => {
         console.error("Error loading wishlist:", error);
       });
-  }, [accountId, token]);
+  }, [accountId, token, updateWishlistItemCount]);
   // Other code remains the same
 
   const openModal = (productId) => {
@@ -59,6 +63,7 @@ const WishlistComponent = () => {
           WishListServices.wishlist(accountId, token)
             .then((res) => {
               setWishlists(res.data);
+              updateWishlistItemCount();
             })
             .catch((error) => {
               console.error(
@@ -87,7 +92,7 @@ const WishlistComponent = () => {
   };
 
   const viewProduct = (productId) => {
-    // Code to navigate to product detail page
+    history.push(`/detail-product/${productId}`);
   };
   const toHome = () => history.push(`/home`);
 
@@ -198,10 +203,9 @@ const WishlistComponent = () => {
                             <div className="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
                               <div className="d-flex flex-row align-items-center mb-1">
                                 <h4 className="mb-1 me-1">
-                                  ${wishlistItem.price}
+                                  {convertDollarToVND(wishlistItem.price)} VND
                                 </h4>
                               </div>
-                              <h6 className="text-success">Free shipping</h6>
                               <div className="d-flex flex-column mt-4">
                                 <button
                                   className="btn btn-outline-primary btn-sm"

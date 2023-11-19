@@ -285,6 +285,7 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import ProductServices from "../services/ProductServices";
+import { convertDollarToVND } from "../utils/cartutils";
 
 export const SearchProduct = () => {
   const [keyword, setKeyword] = useState("");
@@ -556,7 +557,7 @@ export const SearchProduct = () => {
                           <div className="d-flex align-items-center justify-content-center mt-2">
                             <h5>${product.price}</h5>
                             <h6 className="text-muted ml-2">
-                              <del>${product.price}</del>
+                              <del>{convertDollarToVND(product.price)}</del>
                             </h6>
                           </div>
                           <div className="d-flex align-items-center justify-content-center mb-1">

@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import CartServices from "../services/CartServices";
 import ProductServices from "../services/ProductServices";
+import { useState } from "react";
 
 export function calculateTotalPrice(carts) {
   let subTotal = 0;
@@ -21,17 +22,15 @@ export function calculateTotalPrice(carts) {
   }
 }
 
-// const addProductToCart = (accountId, productId, quantity, token) => {
-//   return CartServices.addToCart(accountId, productId, quantity, token)
-//     .then((response) => {
-//       console.log("Product added to cart:", response.data);
-//       toast.success("Product added to cart successfully!");
-//     })
-//     .catch((error) => {
-//       toast.error("Please login to use this feature!");
-//       console.error("Error adding product to cart:", error);
-//     });
-// };
+export const convertDollarToVND = (soTien) => {
+  if (typeof soTien === "number" && !isNaN(soTien)) {
+    var soTienDaXuLi = soTien.toLocaleString("vi-VN");
+    return soTienDaXuLi;
+  } else {
+    return "";
+  }
+};
+
 const addProductToCart = async (accountId, productId, quantity, token) => {
   try {
     const productDetails = await ProductServices.getProductById(productId);
@@ -47,6 +46,7 @@ const addProductToCart = async (accountId, productId, quantity, token) => {
       quantity,
       token
     );
+
     console.log("Product added to cart:", response.data);
     toast.success("Product added to cart successfully!");
   } catch (error) {
