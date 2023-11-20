@@ -27,6 +27,7 @@ import ForgotPassword from "./pages/ForgetPassword";
 import SetNewPass from "./pages/SetNewPass";
 import { AuthProvider } from "./AuthContext";
 import HealthService from "./pages/HealthService";
+import FilterCategoryProduct from "./pages/FilterCategoryProduct";
 function App() {
   return (
     <>
@@ -53,6 +54,18 @@ function App() {
                 path="/category/:category_id"
                 component={CategoryProduct}
               />
+
+              <Route
+                path="/category/filterByCategory/:priceFilter/:category_id"
+                component={FilterCategoryProduct}
+              />
+
+              {/* http://localhost:8080/pharmacy-online/products/filterByCategory?priceFilter=price-5&category_id=2 */}
+              {/* <Route
+                path="/filterByCategory"
+                component={FilterCategoryProduct}
+              /> */}
+
               <Route path="/shop/search" component={SearchProduct} />
 
               <Route path="/shop" component={ShopComponent} />

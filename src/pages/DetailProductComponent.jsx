@@ -323,7 +323,7 @@ class DetailProductComponent extends Component {
                     >
                       <img
                         className="w-100 h-100"
-                        src={`../assets/images/${imageUrl}`}
+                        src={imageUrl}
                         alt={`Imagee ${index + 1}`}
                       />
                     </div>
@@ -542,7 +542,7 @@ class DetailProductComponent extends Component {
                         <a href="/" className="me-3">
                           <img
                             className="img-md img-thumbnail"
-                            src={`../assets/images/${product.imageUrls[0]}`}
+                            src={product.imageUrls[0]}
                             alt={`Imagee 0`}
                             style={{ minWidth: "96px", height: "96px" }}
                           />

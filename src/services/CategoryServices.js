@@ -6,8 +6,6 @@ class categoryServices {
   getCategoryType() {
     return axios.get(CATEGORY_API_BASE_URL + "/type");
   }
-
-  
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

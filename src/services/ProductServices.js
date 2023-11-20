@@ -7,6 +7,17 @@ class ProductServices {
     return axios.get(PRODUCT_API_BASE_URL);
   }
 
+  // http://localhost:8080/pharmacy-online/products/filterByCategory?keyword=na&priceFilter=price-all&category_id=1
+  filterByCategoryAndPrice(priceFilter, category_id) {
+    return axios.get(
+      PRODUCT_API_BASE_URL +
+        "/filterByCategory?priceFilter=" +
+        priceFilter +
+        "&categoryId=" +
+        category_id
+    );
+  }
+
   getProductById(productId) {
     return axios.get(PRODUCT_API_BASE_URL + "/" + productId);
   }

@@ -13,6 +13,7 @@ function ShopComponent() {
   const [productCounts, setProductCounts] = useState({});
   const [selectedPriceRange, setSelectedPriceRange] = useState("price-all"); // Default selected price range
   const { accountId, token } = useAuth(); // Sử dụng AuthContext để truy cập giá trị accountId và token
+  const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
     ProductServices.getProducts()
@@ -178,6 +179,13 @@ function ShopComponent() {
     "price-3": { min: 200, max: 500 },
     "price-4": { min: 500, max: 1000 },
     "price-5": { min: 1000, max: 9999999 },
+  };
+
+  const showFilterEmptyNotification = () => {
+    setShowNotification(true);
+    setTimeout(() => {
+      setShowNotification(false);
+    }, 3000);
   };
   const calculateProductCounts = (productData) => {
     const counts = {};
@@ -394,7 +402,7 @@ function ShopComponent() {
                       {product.imageUrls.length > 0 && (
                         <img
                           className="img-fluid w-100"
-                          src={`assets/images/${product.imageUrls[0]}`}
+                          src={product.imageUrls[0]}
                           // src={product.imageUrls[0]}
                           alt={`Imagee 0`}
                         />

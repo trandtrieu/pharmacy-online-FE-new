@@ -72,18 +72,20 @@ export const SearchProduct = () => {
   }, [location.search]);
 
   useEffect(() => {
-    // Handle product search and filtering when keyword or selectedPriceFilter changes
-    if (keyword.trim() === "") {
-      setSelectedPriceFilter("price-all");
-      setPriceFilter("price-all");
-    }
-
     const fetchData = async () => {
       try {
-        const response = await ProductServices.searchProductAndFilter(
-          keyword,
-          priceFilter
-        );
+        let response;
+        if (keyword.trim() === "" && priceFilter === "price-all") {
+          // Fetch all products when no keyword and no price filter is selected
+          response = await ProductServices.getAllProducts();
+        } else {
+          // Fetch products based on keyword and/or price filter
+          response = await ProductServices.searchProductAndFilter(
+            keyword,
+            priceFilter
+          );
+        }
+
         if (response.data) {
           const filteredProducts = response.data;
           setProducts(filteredProducts);
@@ -100,15 +102,15 @@ export const SearchProduct = () => {
     };
 
     fetchData();
-  }, [keyword, priceFilter]);
+  }, [keyword, priceFilter, selectedPriceFilter]);
 
   const handlePriceFilterChange = (newPriceFilter) => {
     if (selectedPriceFilter === newPriceFilter) {
       return;
     }
 
-    // Check if the new price filter is "price-all" or has products
     if (newPriceFilter === "price-all" || productCounts[newPriceFilter] > 0) {
+      // Check if the new price filter is "price-all" or has products
       setSelectedPriceFilter(newPriceFilter);
       history.push(`/shop/search?keyword=${keyword}&price=${newPriceFilter}`);
       setPriceFilter(newPriceFilter);
@@ -175,24 +177,6 @@ export const SearchProduct = () => {
                     I'm sorry! No products found.
                   </h1>
                 </div>
-
-                // <div className="alert alert-warning mt-3 d-flex align-items-center justify-content-center">
-                //   {/* <strong style={{ fontSize: "18px" }}>
-                //     NO PRODUCTS FOUND.
-                //   </strong> */}
-                //   <p
-                //     style={{
-                //       textAlign: "center",
-                //       fontSize: "1.8rem",
-                //       color: "#888",
-                //       paddingTop: "20px",
-                //       paddingLeft: "38%",
-                //       paddingBottom: "20px",
-                //     }}
-                //   >
-                //     NO PRODUCTS FOUND.
-                //   </p>
-                // </div>
               )}
 
               {showNotification || products.length === 0
@@ -212,12 +196,22 @@ export const SearchProduct = () => {
                             />
                           )}
                           <div className="product-action">
-                            <a className="btn btn-outline-dark btn-square" href>
-                              <i className="fa fa-shopping-cart" />
-                            </a>
-                            <a className="btn btn-outlineDark btn-square" href>
-                              <i className="far fa-heart" />
-                            </a>
+                            {product.type === 0 ? (
+                              <>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                >
+                                  <i className="fa fa-shopping-cart" />
+                                </a>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                >
+                                  <i className="far fa-heart" />
+                                </a>
+                              </>
+                            ) : null}
                           </div>
                         </div>
                         <div className="text-center py-4">
