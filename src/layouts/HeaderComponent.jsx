@@ -128,13 +128,10 @@ const HeaderComponent = (props) => {
     //   });
     // updateCartItemCount();
     // updateWishListItemCount();
-<<<<<<< HEAD
     // const cartInterval = setInterval(updateCartItemCount, 108800);
     // const wishlistInterval = setInterval(updateWishListItemCount, 1888000);
-=======
     // const cartInterval = setInterval(updateCartItemCount, 1000);
     // const wishlistInterval = setInterval(updateWishListItemCount, 1000);
->>>>>>> 82a6711 (maitran 20.11.2023)
     // return () => {
     //   clearInterval(cartInterval);
     //   clearInterval(wishlistInterval);
