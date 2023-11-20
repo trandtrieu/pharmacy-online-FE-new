@@ -30,7 +30,6 @@ const HeaderComponent = (props) => {
   const [username, setUsername] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-
   const { accountId, token } = useAuth();
 
   const handleLogout = () => {
@@ -90,6 +89,25 @@ const HeaderComponent = (props) => {
         console.log("Error occurred while searching for products: " + error);
       });
   };
+
+  // const clearTokenOnUnload = () => {
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("id");
+  // };
+
+  // useEffect(() => {
+  //   if (token) {
+  //     setIsLoggedIn(true);
+  //   } else {
+  //     setIsLoggedIn(false);
+  //   }
+
+  //   window.addEventListener("unload", clearTokenOnUnload);
+
+  //   return () => {
+  //     window.removeEventListener("unload", clearTokenOnUnload);
+  //   };
+  // }, [token]);
 
   useEffect(() => {
     if (token) {

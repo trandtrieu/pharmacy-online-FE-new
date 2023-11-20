@@ -2,37 +2,65 @@
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f4f4f4;
+    background-color: #f8f8f8;
     border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 15px;
+    border-bottom:#333;
+    
+  }
+  
+  .content {
+    font-size: 16px;
+    margin-bottom: 10px;
+    margin-left: 10px
+    ;
+  }
+  
+  .btn-return {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    /* Căn giữa nội dung */
-}
+    cursor: pointer;
+    transition: background-color 0.3s;
 
-.title {
-    color: #333;
-    border-bottom: 2px solid #ddd;
-    /* Thêm border cho h1 */
-    padding-bottom: 10px;
-}
-
-.content {
-    margin: 10px 0;
-    color: #666;
-}
-
-.box-container-bill {
-    max-width: 800px;
-    /* Độ rộng tối đa của box-container */
-    margin: 0 auto;
-    /* Căn giữa theo chiều ngang */
-    padding: 20px;
-    /* Khoảng cách giữa nội dung và viền của box-container */
-    border: 2px solid #ddd;
-    /* Viền của box-container */
-    border-radius: 10px;
-    /* Bo tròn góc của box-container */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    /* Đổ bóng cho box-container */
-}
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  .transaction_container {
+     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* border: 2px solid #000; Đổi màu và kích thước border theo ý muốn */
+    padding: 20px; /* Đổi giá trị padding nếu cần thiết */
+    text-align: center; /* Canh giữa nội dung */
+    margin: auto; /* Để giữa theo chiều ngang */
+    max-width: 500px; /* Đối với responsive design, thiết lập giới hạn chiều rộng nếu cần */
+  }
+  
+  /* Thêm style cho các phần tử con */
+  .transaction_failed {
+    color: red; /* Đổi màu chữ theo ý muốn */
+  }
+  
+  .btn_failed {
+    background-color: #ff0000; /* Đổi màu nền button theo ý muốn */
+    color: #fff; /* Đổi màu chữ button theo ý muốn */
+    padding: 10px 20px; /* Đổi giá trị padding nếu cần thiết */
+    text-decoration: none; /* Loại bỏ gạch chân cho liên kết */
+    display: inline-block; /* Để có thể sử dụng padding và margin */
+    margin-top: 10px; /* Đổi giá trị margin nếu cần thiết */
+    border: none; /* Loại bỏ border của button nếu không muốn */
+    border-radius: 5px; /* Đổi giá trị để bo tròn góc nếu muốn */
+  }
+  

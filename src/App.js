@@ -28,65 +28,68 @@ import SetNewPass from "./pages/SetNewPass";
 import { AuthProvider } from "./AuthContext";
 import ReturnPage from "./pages/ReturnPage";
 import HealthService from "./pages/HealthService";
+import { DataProvider } from "./services/DataContext";
 function App() {
   return (
     <>
-      <AuthProvider>
-        <Router>
-          <AppWrapper>
-            <HeaderComponent />
-            <ToastContainer />
-            <Bubble
-              typebot="customer-support-e4ekwgb"
-              theme={{ button: { backgroundColor: "#598E71" } }}
-            />
-            <Switch>
-              <Route path="/" exact component={HomeComponent} />
-              <Route path="/home" component={HomeComponent} />
-              <Route path="/login" component={LoginComponent} />
-              <Route path="/forgotpass" component={ForgotPassword} />
-              <Route path="/setnewpass" component={SetNewPass} />
-              <Route
-                path="/detail-product/:productId"
-                component={DetailProductComponent}
+      <DataProvider>
+        <AuthProvider>
+          <Router>
+            <AppWrapper>
+              <HeaderComponent />
+              <ToastContainer />
+              <Bubble
+                typebot="customer-support-e4ekwgb"
+                theme={{ button: { backgroundColor: "#598E71" } }}
               />
-              <Route
-                path="/category/:category_id"
-                component={CategoryProduct}
-              />
-              <Route path="/shop/search" component={SearchProduct} />
+              <Switch>
+                <Route path="/" exact component={HomeComponent} />
+                <Route path="/home" component={HomeComponent} />
+                <Route path="/login" component={LoginComponent} />
+                <Route path="/forgotpass" component={ForgotPassword} />
+                <Route path="/setnewpass" component={SetNewPass} />
+                <Route
+                  path="/detail-product/:productId"
+                  component={DetailProductComponent}
+                />
+                <Route
+                  path="/category/:category_id"
+                  component={CategoryProduct}
+                />
+                <Route path="/shop/search" component={SearchProduct} />
 
-              <Route path="/shop" component={ShopComponent} />
-              <Route path="/cart" component={CartComponent} />
-              <Route path="/wishlist" component={WishlistComponent} />
-              <Route path="/profile" component={ProfileComponent} />
-              <Route path="/healthService" component={HealthService} />
-              <Route
-                path="/create-prescription"
-                component={CreatePrescriptionComponent}
-              />
-              <Route
-                path="/edit-prescription/:id"
-                component={EditPrescriptionComponent}
-              />
-              <Route
-                path="/update-prescription/:id"
-                component={UpdatePrescriptionComponent}
-              />
-              <Route path="/check-out" component={CheckoutComponent} />
+                <Route path="/shop" component={ShopComponent} />
+                <Route path="/cart" component={CartComponent} />
+                <Route path="/wishlist" component={WishlistComponent} />
+                <Route path="/profile" component={ProfileComponent} />
+                <Route path="/healthService" component={HealthService} />
+                <Route
+                  path="/create-prescription"
+                  component={CreatePrescriptionComponent}
+                />
+                <Route
+                  path="/edit-prescription/:id"
+                  component={EditPrescriptionComponent}
+                />
+                <Route
+                  path="/update-prescription/:id"
+                  component={UpdatePrescriptionComponent}
+                />
+                <Route path="/check-out" component={CheckoutComponent} />
 
-              <Route path="/blog" component={BlogComponent} />
-              <Route path="/bill" component={ReturnPage} />
+                <Route path="/blog" component={BlogComponent} />
+                <Route path="/bill" component={ReturnPage} />
 
-              <Route
-                path="/blog-detail/:blog_id"
-                component={BlogDetailComponent}
-              />
-            </Switch>
-            <FooterComponent />
-          </AppWrapper>
-        </Router>
-      </AuthProvider>
+                <Route
+                  path="/blog-detail/:blog_id"
+                  component={BlogDetailComponent}
+                />
+              </Switch>
+              <FooterComponent />
+            </AppWrapper>
+          </Router>
+        </AuthProvider>
+      </DataProvider>
     </>
   );
 }

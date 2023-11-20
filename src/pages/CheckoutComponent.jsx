@@ -15,7 +15,8 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
-
+import "../style/CheckOutModal.css";
+import { useDataContext } from "../services/DataContext";
 const customStyles = {
   content: {
     top: "35%",
@@ -28,7 +29,19 @@ const customStyles = {
   },
 };
 
+const convertDollarToVND = (soTien) => {
+  if (typeof soTien === "number" && !isNaN(soTien)) {
+    var soTienDaXuLi = soTien.toLocaleString("vi-VN");
+    console.log(soTienDaXuLi);
+    return soTienDaXuLi;
+  } else {
+    console.error("Invalid input for convertDollarToVND:", soTien);
+    return "";
+  }
+};
+
 const CheckoutComponent = () => {
+  const { setOrderData } = useDataContext();
   const history = useHistory();
   const [subTotalCost, setSubTotalCost] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
@@ -45,11 +58,15 @@ const CheckoutComponent = () => {
   const [note, setNote] = useState("");
   const [deliveryAddressStatusDefault, setDeliveryAddressStatusDefault] =
     useState("");
+  const [selectedOptions, setSelectedOptions] = useState("");
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalCostBeforeDiscount, setTotalCostBeforeDiscount] = useState(0);
-
   const { accountId, token } = useAuth();
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
+  const openSuccessModal = () => {
+    setIsSuccessModalOpen(true);
+  };
   useEffect(() => {
     CartServices.getListCartByAccountId(accountId, token)
       .then((res) => {
@@ -74,10 +91,13 @@ const CheckoutComponent = () => {
       });
   }, [accountId, token]);
 
+  const handleRadioChanges = (event) => {
+    setSelectedOptions(event.target.value);
+  };
+
   useEffect(() => {
     loadSubTotalCost();
     loadShippingCost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId, token]);
   useEffect(() => {
     DeliveryAddressServices.getDeliveryAddressByUserid(accountId, token)
@@ -176,53 +196,64 @@ const CheckoutComponent = () => {
     history.push(`/cart`);
   };
   const handlePlaceOrder = () => {
-    const dataToPass = {
-      name: "John Doe",
-      address: "123 Main Street",
-      phoneNumber: "123456789",
-      subTotalCost: subTotalCost,
-      shippingCost: shippingCost,
-    };
-
     localStorage.getItem("token");
-    console.log(token);
-
-    fetch("http://localhost:8080/payment/create_payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        amount: totalCostAfterDiscount.toString(),
-        orderInfo: "",
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        const paymentUrl = data.url;
-
-        window.location.href = paymentUrl;
-
-        console.log(paymentUrl);
+    if (selectedOptions === "cash") {
+      const orderData = {
+        amount: totalCostAfterDiscount,
+        paymentMethod: selectedOptions,
+        deliveryMethod: selectedOption,
+        name: deliveryAddressStatusDefault.recipient_full_name,
+        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        address: deliveryAddressStatusDefault.specific_address,
+        note,
+      };
+      fetch("http://localhost:8080/payment/create_payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
       })
-      .catch((error) => {
-        console.error("Error placing order:", error);
-      });
-    // history.push({
-    //   pathname: "/bill",
-    //   state: { data: dataToPass },
-    // });
-  };
-  const convertDollarToVND = (soTien) => {
-    if (typeof soTien === "number" && !isNaN(soTien)) {
-      var soTienDaXuLi = soTien.toLocaleString("vi-VN");
-      console.log(soTienDaXuLi);
-      return soTienDaXuLi;
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error placing order:", error);
+        });
+      openSuccessModal();
     } else {
-      console.error("Invalid input for convertDollarToVND:", soTien);
-      return "";
+      const orderData = {
+        amount: totalCostAfterDiscount,
+        paymentMethod: selectedOptions,
+        deliveryMethod: selectedOption,
+        name: deliveryAddressStatusDefault.recipient_full_name,
+        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        address: deliveryAddressStatusDefault.specific_address,
+        note,
+      };
+      setOrderData(orderData);
+      console.log(orderData);
+
+      fetch("http://localhost:8080/payment/create_payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          const paymentUrl = data.url;
+
+          window.location.href = paymentUrl;
+        })
+        .catch((error) => {
+          console.error("Error placing order:", error);
+        });
     }
   };
   return (
@@ -482,6 +513,8 @@ const CheckoutComponent = () => {
                       className="custom-control-input"
                       name="payment"
                       id="paypal"
+                      value="cash"
+                      onChange={handleRadioChanges}
                     />
                     <label className="custom-control-label" htmlFor="paypal">
                       <img
@@ -494,29 +527,6 @@ const CheckoutComponent = () => {
                     </label>
                   </div>
                 </div>
-
-                {/* <div className="form-group mb-4">
-                  <div className="custom-control custom-radio">
-                    <input
-                      type="radio"
-                      className="custom-control-input"
-                      name="payment"
-                      id="banktransfer"
-                    />
-                    <label
-                      className="custom-control-label"
-                      htmlFor="banktransfer"
-                    >
-                      <img
-                        src="../assets/images/momo.png"
-                        width={30}
-                        height={30}
-                        alt=""
-                      />
-                      &nbsp; Momo
-                    </label>
-                  </div>
-                </div> */}
                 <div className="form-group mb-4">
                   <div className="custom-control custom-radio">
                     <input
@@ -524,6 +534,8 @@ const CheckoutComponent = () => {
                       className="custom-control-input"
                       name="payment"
                       id="banktransfer1"
+                      value="VNPay"
+                      onChange={handleRadioChanges}
                     />
                     <label
                       className="custom-control-label"
@@ -561,6 +573,17 @@ const CheckoutComponent = () => {
                   >
                     Place Order
                   </button>
+                  <ReactModal
+                    isOpen={isSuccessModalOpen}
+                    onRequestClose={() => setIsSuccessModalOpen(false)}
+                    style={customStyles}
+                  >
+                    <h3>Order Success!</h3>
+                    <p>Please pay after receiving the goods.</p>
+                    <button onClick={() => setIsSuccessModalOpen(false)}>
+                      Close
+                    </button>
+                  </ReactModal>
                 </div>
               </div>
             </div>
