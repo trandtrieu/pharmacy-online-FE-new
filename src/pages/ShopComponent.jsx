@@ -280,8 +280,8 @@ function ShopComponent() {
                       {rangeId === "price-all"
                         ? "Price-all"
                         : index === Object.keys(priceRanges).length - 1
-                        ? "Greater than 1 million (VND)"
-                        : `${priceRanges[rangeId].min} - ${priceRanges[rangeId].max} (VND)`}
+                          ? "Greater than 1 million (VND)"
+                          : `${priceRanges[rangeId].min} - ${priceRanges[rangeId].max} (VND)`}
                     </label>
                     <span className="badge border font-weight-normal">
                       {productCounts[rangeId]}

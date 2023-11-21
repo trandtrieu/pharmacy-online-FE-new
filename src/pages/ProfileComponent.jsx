@@ -46,14 +46,14 @@ const ProfileComponent = () => {
         console.error("Error loading DeliveryAddress:", error);
       });
 
-    fetch("https://vapi.vnappmob.com/api/province/")
+    fetch("https://provinces.open-api.vn/api/p/")
       .then((response) => response.json())
       .then((data) => {
-        let provinces = data.results;
+        let provinces = data;
         provinces.forEach((value) => {
           document.getElementById(
             "provinces"
-          ).innerHTML += `<option value='${value.province_id}'>${value.province_name}</option>`;
+          ).innerHTML += `<option value='${value.code}'>${value.name}</option>`;
         });
       })
       .catch((error) => {
@@ -72,10 +72,10 @@ const ProfileComponent = () => {
   }, [accountId, token]);
 
   const fetchDistricts = (provincesID) => {
-    fetch(`https://vapi.vnappmob.com/api/province/district/${provincesID}`)
+    fetch(`https://provinces.open-api.vn/api/p/${provincesID}/?depth=2`)
       .then((response) => response.json())
       .then((data) => {
-        let districts = data.results;
+        let districts = data.districts;
         document.getElementById(
           "districts"
         ).innerHTML = `<option value=''>Select District</option>`;
@@ -84,7 +84,7 @@ const ProfileComponent = () => {
             (value) =>
             (document.getElementById(
               "districts"
-            ).innerHTML += `<option value='${value.district_id}'>${value.district_name}</option>`)
+            ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
           );
         }
       })
@@ -94,10 +94,10 @@ const ProfileComponent = () => {
   };
 
   const fetchWards = (districtsID) => {
-    fetch(`https://vapi.vnappmob.com/api/province/ward/${districtsID}`)
+    fetch(`https://provinces.open-api.vn/api/d/${districtsID}/?depth=2`)
       .then((response) => response.json())
       .then((data) => {
-        let wards = data.results;
+        let wards = data.wards;
         document.getElementById(
           "wards"
         ).innerHTML = `<option value=''>Select Ward</option>`;
@@ -106,7 +106,7 @@ const ProfileComponent = () => {
             (value) =>
             (document.getElementById(
               "wards"
-            ).innerHTML += `<option value='${value.ward_id}'>${value.ward_name}</option>`)
+            ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
           );
         }
       })
@@ -175,8 +175,8 @@ const ProfileComponent = () => {
       ).then((res) => {
         window.location.reload();
       }, 100000);
+      toast.success("Created new delivery addresss successfully!");
     }
-    toast.success("Created new delivery addresss successfully!");
   };
   const setDefaultAddress = (accountId, address_id) => {
     DeliveryAddressServices.setDefaultDeliveryAddress(

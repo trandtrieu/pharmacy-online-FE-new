@@ -29,6 +29,7 @@ class DetailProductComponent extends Component {
       replies: [],
       quantity: 1,
       isModalOpen: false,
+      countFeedback: ''
     };
     this.openReply = this.openReply.bind(this);
     this.hiddenReply = this.hiddenReply.bind(this);
@@ -91,6 +92,12 @@ class DetailProductComponent extends Component {
         this.setState({ feedbackFiveStar: res.data });
       }
     );
+
+    FeedbackServices.countFeedbackByProductId(this.state.productId).then((res) => {
+      this.setState({
+        countFeedback: res.data
+      })
+    })
 
     FeedbackServices.getFeedbackByProductId(this.state.productId).then(
       (res) => {
@@ -360,17 +367,22 @@ class DetailProductComponent extends Component {
                 <h4 className="title text-dark">{this.state.product.name}</h4>
                 <div className="d-flex flex-row my-3">
                   <div className="text-warning mb-1 me-2">
+                    <span className="mr-1">{this.state.average}</span>
+                    <FontAwesomeIcon icon={faStar} />
+                    {/* <FontAwesomeIcon icon={faStar} />
                     <FontAwesomeIcon icon={faStar} />
                     <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
+                    <FontAwesomeIcon icon={faStar} /> */}
                   </div>
                   <span className="text-muted">
                     <i className="fas fa-shopping-basket fa-sm mx-1 " />
                     {this.state.product.quantity}
                   </span>
-                  <span className="text-success ms-2 ml-1"> In stock</span>
+                  {this.state.product.status === 1 ? (
+                    <span className="text-success ms-2 ml-1"> In stock</span>
+                  ) : (
+                    <span className="text-danger ms-2 ml-1"> Out of Stock</span>
+                  )}
                 </div>
                 <div className="mb-3">
                   <span className="h2">${this.state.product.price}</span>
@@ -566,7 +578,7 @@ class DetailProductComponent extends Component {
             </div>
             <div className="container-fluid mb-5 mt-5">
               <h4 style={{ color: "#3D464D" }} className="mb-5 mt-5">
-                Reviews <span>(3 reviews)</span>
+                Reviews <span>({this.state.countFeedback} reviews)</span>
               </h4>
               <div className="row">
                 <div className="row col-md-10">

@@ -228,7 +228,7 @@ class FeedbackComponent extends Component {
                         <div className="row">
                           <div className="col-8 d-flex">
                             <h5>
-                              <b>{feedback.user_name}</b>
+                              <b className="mr-2">{feedback.user_name}</b>
                               <span>{this.starRating(feedback.rating)}</span>
                             </h5>
                           </div>
