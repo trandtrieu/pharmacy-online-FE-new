@@ -444,6 +444,18 @@ class DetailProductComponent extends Component {
                         <i className="fa fa-shopping-cart mr-1" /> Add To Cart
                       </button>
                     </div>
+                    <button
+                      className="btn btn-primary mb-2"
+                      onClick={() =>
+                        this.handleAddtoWishlist(
+                          this.state.product.productId,
+                          accountId,
+                          token
+                        )
+                      }
+                    >
+                      <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
+                    </button>
                   </div>
                 ) : (
                   <div className="d-flex flex-column align-items-start">

@@ -56,3 +56,4 @@ const useCart = () => {
 };
 
 export { CartProvider, useCart };
+export default CartContext;

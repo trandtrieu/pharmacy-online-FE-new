@@ -81,6 +81,7 @@ function HomeProduct(props) {
     setModalIsOpen(false);
   };
   const handleAddToCart = async (productId) => {
+    console.log("accountId: " + accountId + "token" + token);
     if (!accountId || !token) {
       openModal();
       return;

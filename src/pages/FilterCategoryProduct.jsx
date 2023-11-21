@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import ProductServices from "../services/ProductServices";
-import WishListServices from "../services/WishListServices";
-import { toast } from "react-toastify";
 
-const CategoryProduct = (props) => {
-  const [category_id] = useState(props.match.params.category_id);
+const FilterCategoryProduct = () => {
+  const history = useHistory();
+  const { category_id } = useParams();
+  const [priceFilter, setPriceFilter] = useState("price-all");
   const [products, setProducts] = useState([]);
   const [selectedPriceFilter, setSelectedPriceFilter] = useState("price-all");
-  const [productCounts, setProductCounts] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
   const [showNotification, setShowNotification] = useState(false);
-
-  const showFilterEmptyNotification = () => {
-    console.log("Setting showNotification to true");
-    setShowNotification(true);
-    setTimeout(() => {
-      console.log("Setting showNotification to false");
-      setShowNotification(false);
-    }, 5000);
-  };
+  const [productCounts, setProductCounts] = useState({});
   const priceRanges = {
     "price-all": { min: 0, max: 9999999000 },
     "price-1": { min: 0, max: 100000 },
@@ -27,61 +18,41 @@ const CategoryProduct = (props) => {
     "price-4": { min: 500000, max: 1000000 },
     "price-5": { min: 1000000, max: 9999999000 },
   };
+  const showFilterEmptyNotification = () => {
+    console.log("Setting showNotification to true");
+    setShowNotification(true);
+    setTimeout(() => {
+      console.log("Setting showNotification to false");
+      setShowNotification(false);
+    }, 5000);
+  };
+
+  const viewProduct = (product_id) => {
+    history.push(`/detail-product/${product_id}`);
+  };
+
   const fetchData = async (priceFilter) => {
     try {
-      setIsLoading(true);
-      let response;
-
-      if (priceFilter === "price-all") {
-        response = await ProductServices.getProductsByCategory(category_id);
-      } else {
-        response = await ProductServices.filterByCategoryAndPrice(
-          priceFilter,
-          category_id
-        );
-      }
+      // Fetch data based on the selected price filter and category_id
+      const response =
+        priceFilter === "price-all"
+          ? await ProductServices.getProductsByCategory(category_id)
+          : await ProductServices.filterByCategoryAndPrice(
+              priceFilter,
+              category_id
+            );
 
       if (response.data) {
         setProducts(response.data);
-        calculateProductCounts(response.data);
         console.log("Products loaded successfully:", response.data);
-        setShowNotification(response.data.length === 0); // Show notification if no products found
       } else {
         setProducts([]);
-        setProductCounts({});
-        setShowNotification(true);
+
         console.log("No products found");
       }
     } catch (error) {
       console.error("Error loading products:", error);
-    } finally {
-      setIsLoading(false);
     }
-  };
-
-  const calculateProductCounts = (productData) => {
-    const counts = { ...productCounts };
-
-    if (selectedPriceFilter === "price-all") {
-      counts["price-all"] = productData.length;
-
-      Object.keys(priceRanges).forEach((rangeId) => {
-        if (rangeId !== "price-all") {
-          const { min, max } = priceRanges[rangeId];
-          counts[rangeId] = productData.filter(
-            (product) => product.price > min && product.price <= max
-          ).length;
-        }
-      });
-    } else {
-      const { min, max } = priceRanges[selectedPriceFilter];
-      const count = productData.filter(
-        (product) => product.price > min && product.price <= max
-      ).length;
-      counts[selectedPriceFilter] = count;
-    }
-
-    setProductCounts(counts);
   };
 
   useEffect(() => {
@@ -89,108 +60,29 @@ const CategoryProduct = (props) => {
   }, [selectedPriceFilter, category_id]);
 
   const handlePriceFilterChange = (newPriceFilter) => {
-    setSelectedPriceFilter((prevFilter) => {
-      if (prevFilter === newPriceFilter) {
-        return prevFilter;
-      }
-
-      fetchData(newPriceFilter);
-      return newPriceFilter;
-    });
-    showFilterEmptyNotification(); // Reset the notification state
-  };
-
-  const renderProducts = () => {
-    if (products.length === 0) {
-      return (
-        <div className="col-12 text-center">
-          <p>No products found</p>
-        </div>
-      );
+    if (selectedPriceFilter === newPriceFilter) {
+      return;
     }
 
-    return products.map((product) => (
-      <div className="col-lg-4 col-md-6 col-sm-6 pb-1" key={product.productId}>
-        <div className="product-item bg-light mb-4">
-          <div className="product-img position-relative overflow-hidden">
-            {product.imageUrls.length > 0 && (
-              <img
-                className="img-fluid w-100"
-                src={`${product.imageUrls[0]}`}
-                alt={`Imagee 0`}
-              />
-            )}
-            <div className="product-action">
-              <button
-                className="btn btn-outline-dark btn-square"
-                onClick={() => addProductToCart(product.productId)}
-              >
-                <i className="fa fa-shopping-cart" />
-              </button>
-              <button
-                className="btn btn-outline-dark btn-square"
-                onClick={() => addWishListProduct(product.productId)}
-              >
-                <i className="far fa-heart" />
-              </button>
-            </div>
-          </div>
-          <div className="text-center py-4">
-            <a
-              className="h6 text-decoration-none text-truncate"
-              href
-              onClick={() => viewProduct(product.productId)}
-            >
-              {product.name}
-            </a>
-            <div className="d-flex align-items-center justify-content-center mt-2">
-              <h5>${product.price}</h5>
-              <h6 className="text-muted ml-2">
-                <del>${product.price}</del>
-              </h6>
-            </div>
-            <div className="d-flex align-items-center justify-content-center mb-1">
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="far fa-star text primary mr-1" />
-              <small className="far fa-star text-primary mr-1" />
-              <small>(99)</small>
-            </div>
-          </div>
-        </div>
-      </div>
-    ));
+    // setSelectedPriceFilter(newPriceFilter);
+    if (newPriceFilter === "price-all" || productCounts[newPriceFilter] > 0) {
+      // Check if the new price filter is "price-all" or has products
+      setSelectedPriceFilter(newPriceFilter);
+      history.push(
+        `/category/filterByCategory/${newPriceFilter}${category_id}`
+      );
+      setPriceFilter(newPriceFilter);
+    } else {
+      showFilterEmptyNotification();
+    }
   };
-
-  const addWishListProduct = (product_id) => {
-    const accountId = 5; // Replace with the actual account ID
-    WishListServices.addToWishlist(accountId, product_id)
-      .then((response) => {
-        console.log("Product added to wishlist:", response.data);
-        toast.success("Product added to wishlist successfully!");
-      })
-      .catch((error) => {
-        console.error("Error adding product to wishlist:", error);
-      });
-  };
-
-  const addProductToCart = (product_id) => {
-    const accountId = 5; // Replace with the actual account ID
-    ProductServices.addToCart(accountId, product_id, 1)
-      .then((response) => {
-        console.log("Product added to cart:", response.data);
-        toast.error("Product added to cart successfully!");
-      })
-      .catch((error) => {
-        console.error("Error adding product to cart:", error);
-      });
-  };
-
-  const viewProduct = (productId) => {
-    props.history.push(`/detail-product/${productId}`);
-  };
-
+  // const handleAddToCart = async (productId) => {
+  //   await addProductToCart(accountId, productId, 1, token);
+  //   await updateCartItemCount();
+  // };
+  // const handleAddtoWishlist = (productId) => {
+  //   addWishListProduct(accountId, productId, token);
+  // };
   const renderPriceFilterCheckboxes = () => {
     return Object.keys(priceRanges).map((rangeId, index) => (
       <div
@@ -210,13 +102,33 @@ const CategoryProduct = (props) => {
           {rangeId === "price-all"
             ? "Price-all"
             : index === Object.keys(priceRanges).length - 1
-            ? "Greater than $1000"
+            ? "Greater than 1 million"
             : `$${priceRanges[rangeId].min} - $${priceRanges[rangeId].max}`}
         </label>
-        <span>{productCounts[rangeId] || 0}</span>
       </div>
     ));
   };
+
+  //   return (
+  //     <div className="container">
+  //       <h2>Filtered Category Products</h2>
+  //       <div className="row">
+  //         <div className="col-md-3">
+  //           <h4>Filter by Price</h4>
+  //           <div>{renderPriceFilterCheckboxes()}</div>
+  //         </div>
+  //         <div className="col-md-9">
+  //           {/* Render your products here */}
+  //           {products.map((product) => (
+  //             <div key={product.productId}>
+  //               <h5>{product.name}</h5>
+  //               <p>${product.price}</p>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
 
   return (
     <>
@@ -259,7 +171,8 @@ const CategoryProduct = (props) => {
                           {product.imageUrls.length > 0 && (
                             <img
                               className="img-fluid w-100"
-                              src={`${product.imageUrls[0]}`}
+                              // src={`assets/images/${product.imageUrls[0]}`}
+                              src={product.imageUrls[0]}
                               alt={`Imagee 0`}
                             />
                           )}
@@ -269,17 +182,33 @@ const CategoryProduct = (props) => {
                                 <a
                                   className="btn btn-outline-dark btn-square"
                                   href
+                                  // onClick={() =>
+                                  //   handleAddToCart(product.productId)
+                                  // }
                                 >
                                   <i className="fa fa-shopping-cart" />
                                 </a>
                                 <a
                                   className="btn btn-outline-dark btn-square"
                                   href
+                                  // onClick={() =>
+                                  //   handleAddtoWishlist(product.productId)
+                                  // }
                                 >
                                   <i className="far fa-heart" />
                                 </a>
                               </>
-                            ) : null}
+                            ) : (
+                              <a
+                                className="btn btn-outline-dark btn-square"
+                                href
+                                // onClick={() =>
+                                //   handleAddtoWishlist(product.productId)
+                                // }
+                              >
+                                <i className="far fa-heart" />
+                              </a>
+                            )}
                           </div>
                         </div>
                         <div className="text-center py-4">
@@ -349,4 +278,4 @@ const CategoryProduct = (props) => {
   );
 };
 
-export default CategoryProduct;
+export default FilterCategoryProduct;

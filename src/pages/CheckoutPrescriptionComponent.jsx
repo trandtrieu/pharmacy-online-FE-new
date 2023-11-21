@@ -16,7 +16,8 @@ import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
 import { convertDollarToVND } from "../utils/cartutils";
-
+import { useDataContext } from "../services/DataContext";
+import "../style/CheckOutModal.css";
 const customStyles = {
   content: {
     top: "35%",
@@ -29,9 +30,9 @@ const customStyles = {
   },
 };
 
-const CheckoutPrescriptionComponent = () => {
+const CheckoutComponent = () => {
   const history = useHistory();
-
+  const { setOrderData } = useDataContext();
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   const [deliveryAddress, setDeliveryAddress] = useState([]);
@@ -44,7 +45,8 @@ const CheckoutPrescriptionComponent = () => {
   const [note, setNote] = useState("");
   const [deliveryAddressStatusDefault, setDeliveryAddressStatusDefault] =
     useState("");
-
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState("");
   const [totalQuantityPrescription, setTotalQuantityPrescription] = useState(0);
 
   const [subTotalCostPrescription, setSubTotalCostPrescription] = useState(0);
@@ -57,18 +59,66 @@ const CheckoutPrescriptionComponent = () => {
     totalCostBeforeDiscountPrescription,
     setTotalCostBeforeDiscountPrescription,
   ] = useState(0);
-
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const { accountId, token } = useAuth();
 
+  const openSuccessModal = () => {
+    setIsSuccessModalOpen(true);
+  };
+
+  const handleRadioChanges = (event) => {
+    setSelectedOptions(event.target.value);
+  };
+
+  const handleCouponAction = () => {
+    if (isCouponApplied) {
+      cancelCoupon();
+    } else {
+      setCheckingCoupon(true);
+
+      setTimeout(() => {
+        CheckoutServices.applyCode(accountId, 2, couponCode, token)
+          .then((res) => {
+            if (res && res.discountAmount !== undefined) {
+              setCouponDiscount(res.discountAmount);
+              setTotalCostBeforeDiscountPrescription(
+                res.totalCostAfterDiscount
+              );
+
+              setAppliedCoupon(couponCode);
+              setIsCouponApplied(true);
+              toast.success("Apply coupon successfully");
+            } else {
+              console.error(
+                "Invalid response format for applying coupon:",
+                res
+              );
+              toast.error("Apply coupon failed");
+            }
+          })
+          .catch((error) => {
+            console.error("Error applying the coupon:", error);
+            toast.error("Apply coupon failed");
+          })
+          .finally(() => {
+            // Chuyển nút Checking thành trạng thái Apply
+            setCheckingCoupon(false);
+          });
+      }, 3000); // Thời gian chờ 3 giây
+    }
+  };
   useEffect(() => {
-    CartServices.getListCartByAccountIdByPrescription(accountId, 2, token)
+    CartServices.getListCartByAccountId(accountId, 2, token)
       .then((res) => {
         setCartsFromPresciption(res.data);
       })
       .catch((error) => {
         console.error("Error loading carts:", error);
       });
-
+    // if (carts.length === 0) {
+    //   history.push("/404");
+    // }
     CheckoutServices.getTotalQuantity(accountId, 2, token)
       .then((res) => {
         setTotalQuantityPrescription(res.data);
@@ -76,7 +126,6 @@ const CheckoutPrescriptionComponent = () => {
       .catch((error) => {
         console.error("Error fetching total quantity:", error);
       });
-
     CheckoutServices.getSubtotalAndShippingCost(accountId, 2, token)
       .then((res) => {
         setTotalCostBeforeDiscountPrescription(res.data);
@@ -95,6 +144,7 @@ const CheckoutPrescriptionComponent = () => {
     DeliveryAddressServices.getDeliveryAddressByUserid(accountId, token)
       .then((res) => {
         setDeliveryAddress(res.data);
+        console.log("delivery-address: " + res.data);
       })
       .catch((error) => {
         console.error("Error loading delivery-address:", error);
@@ -105,12 +155,12 @@ const CheckoutPrescriptionComponent = () => {
     DeliveryAddressServices.getDeliveryAddressByStatusDefault(accountId, token)
       .then((res) => {
         setDeliveryAddressStatusDefault(res.data);
+        console.log("delivery-address status: " + res.data);
       })
       .catch((error) => {
         console.error("Error loading delivery-address status default:", error);
       });
   }, [accountId, token]);
-
   const loadSubTotalCostPrescription = () => {
     CheckoutServices.getSubTotalCart(accountId, 2, token)
       .then((res) => {
@@ -136,6 +186,7 @@ const CheckoutPrescriptionComponent = () => {
   };
 
   const applyCoupon = () => {
+    // Chuyển nút Apply thành trạng thái Checking
     setCheckingCoupon(true);
 
     setTimeout(() => {
@@ -144,9 +195,8 @@ const CheckoutPrescriptionComponent = () => {
           if (res && res.discountAmount !== undefined) {
             setCouponDiscount(res.discountAmount);
             setTotalCostBeforeDiscountPrescription(res.totalCostAfterDiscount);
-            console.log(res.totalCostAfterDiscountPrescription);
-
             setAppliedCoupon(couponCode);
+            setIsCouponApplied(true); // Set the state to indicate that a coupon is applied
             toast.success("Apply coupon successfully");
           } else {
             console.error("Invalid response format for applying coupon:", res);
@@ -162,6 +212,17 @@ const CheckoutPrescriptionComponent = () => {
           setCheckingCoupon(false);
         });
     }, 3000); // Thời gian chờ 3 giây
+  };
+  const cancelCoupon = () => {
+    // Reset the coupon-related state variables
+    setCouponDiscount(0);
+    setTotalCostBeforeDiscountPrescription(
+      subTotalCostPrescription + shippingCost
+    );
+    setAppliedCoupon("");
+    setIsCouponApplied(false); // Set the state to indicate that the coupon is canceled
+    setCouponCode(""); // Clear the coupon code input
+    toast.info("Coupon canceled");
   };
 
   const handleRadioChange = (event) => {
@@ -184,50 +245,92 @@ const CheckoutPrescriptionComponent = () => {
     setNote(event.target.value);
   };
 
+  const toCart = () => {
+    history.push(`/cart`);
+  };
   const toCartPrescription = () => {
     history.push(`/cart-prescription`);
   };
   const handlePlaceOrder = () => {
-    const dataToPass = {
-      name: "John Doe",
-      address: "123 Main Street",
-      phoneNumber: "123456789",
-      subTotalCost: subTotalCostPrescription,
-      shippingCost: shippingCost,
-    };
-
     localStorage.getItem("token");
-    console.log(token);
+    if (selectedOptions === "cash") {
+      const orderData = {
+        amount: totalCostAfterDiscountPrescription,
+        paymentMethod: selectedOptions,
+        deliveryMethod: selectedOption,
+        name: deliveryAddressStatusDefault.recipient_full_name,
+        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        address: deliveryAddressStatusDefault.specific_address,
+        note,
+      };
+      fetch("http://localhost:8080/payment/create_payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error placing order:", error);
+        });
+      openSuccessModal();
+    } else {
+      const orderData = {
+        amount: totalCostBeforeDiscountPrescription,
+        paymentMethod: selectedOptions,
+        deliveryMethod: selectedOption,
+        name: deliveryAddressStatusDefault.recipient_full_name,
+        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        address: deliveryAddressStatusDefault.specific_address,
+        note,
+      };
+      setOrderData(orderData);
 
-    fetch("http://localhost:8080/payment/create_payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        amount: totalCostAfterDiscountPrescription.toString(),
-        orderInfo: "",
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        const paymentUrl = data.url;
+      fetch("http://localhost:8080/payment/create_payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          const paymentUrl = data.url;
 
-        window.location.href = paymentUrl;
-
-        console.log(paymentUrl);
+          window.location.href = paymentUrl;
+        })
+        .catch((error) => {
+          console.error("Error placing order:", error);
+        });
+    }
+  };
+  const handleAddressClick = (addressId) => {
+    // Đặt địa chỉ được chọn khi click vào đó
+    setSelectedAddressId(addressId);
+    console.log(addressId);
+  };
+  const setDefaultAddress = (accountId, address_id) => {
+    DeliveryAddressServices.setDefaultDeliveryAddress(
+      accountId,
+      address_id,
+      token
+    )
+      .then((res) => {
+        window.location.reload();
+        toast.success("Set default delivery address successfully!");
       })
       .catch((error) => {
-        console.error("Error placing order:", error);
+        console.log(token);
+        toast.error("Error setting default delivery address:", error);
       });
-    // history.push({
-    //   pathname: "/bill",
-    //   state: { data: dataToPass },
-    // });
   };
-
   return (
     <>
       <ReactModal
@@ -252,16 +355,15 @@ const CheckoutPrescriptionComponent = () => {
             <h5 className="section-title position-relative text-uppercase mb-3">
               <span className="bg-secondary pr-3">Checkout</span>
             </h5>
-
             <div className="bg-light p-30 mb-3">
               <div className="row">
                 <div className="table-header pb-4">
                   <h6>
-                    Cart Prescription({totalQuantityPrescription} products) -{" "}
+                    Cart ({totalQuantityPrescription} products) -{" "}
                     {convertDollarToVND(subTotalCostPrescription)} VND
                     <span
                       className="click-to-change pl-3 "
-                      onClick={() => toCartPrescription()}
+                      onClick={() => toCart()}
                     >
                       Click to change
                     </span>
@@ -314,6 +416,7 @@ const CheckoutPrescriptionComponent = () => {
                 </div>
               </div>
             </div>
+
             <div className="container">
               <div className="d-flex justify-content-center">
                 <div className="radio-button-container">
@@ -351,40 +454,79 @@ const CheckoutPrescriptionComponent = () => {
               </div>
             </div>
             {selectedOption === "delivery" && (
-              <div className="bg-light p-3 mb-3">
-                <div className="row">
-                  <div className="col-md-11 d-flex align-items-center">
-                    <div className="card bg-transparent">
-                      <div className="card-body p-0">
-                        <blockquote className="d-flex flex-column m-0">
-                          <p className="m-0">
-                            <FontAwesomeIcon icon={faPhone} />{" "}
-                            {
-                              deliveryAddressStatusDefault.recipient_phone_number
-                            }{" "}
-                            &bull;{" "}
-                            <span>
-                              {deliveryAddressStatusDefault.recipient_full_name}
-                            </span>
-                          </p>
-                          <hr />
-                          <p className="m-0">
-                            <FontAwesomeIcon icon={faLocationDot} />
-                            <span style={{ marginLeft: "9px" }}>
-                              {deliveryAddressStatusDefault.specific_address}
-                            </span>
-                          </p>
-                        </blockquote>
+              <>
+                {deliveryAddressStatusDefault === "" ? (
+                  <div
+                    style={{ backgroundColor: "#fff" }}
+                    className="container-fluid"
+                  >
+                    <div className="row">
+                      <div className="col-md-12 d-flex flex-column align-items-center">
+                        <div
+                          className="empty-img mt-4"
+                          style={{ width: "150px", height: "100px" }}
+                        >
+                          <img
+                            src="../assets/images/empty-image.png"
+                            alt=""
+                            className="w-100 h-100"
+                          />
+                        </div>
+                        <h6 className="mb-2">
+                          I'm sorry! DrugMart couldn't find any delivery
+                          addresses in your cart.
+                        </h6>
+                        <button className="btn btn-primary mb-4">
+                          Create a New Address
+                        </button>
                       </div>
                     </div>
                   </div>
-                  <div className="col-md-1 d-flex align-items-center">
-                    <button className="btn">
-                      <FontAwesomeIcon icon={faChevronRight} />
-                    </button>
+                ) : (
+                  <div className="bg-light p-3 mb-3">
+                    <div className="row">
+                      <div className="col-md-11 d-flex align-items-center">
+                        <div className="card bg-transparent">
+                          <div className="card-body p-0">
+                            <blockquote className="d-flex flex-column m-0">
+                              <p className="m-0">
+                                <FontAwesomeIcon icon={faPhone} />{" "}
+                                {
+                                  deliveryAddressStatusDefault.recipient_phone_number
+                                }{" "}
+                                &bull;{" "}
+                                <span>
+                                  {
+                                    deliveryAddressStatusDefault.recipient_full_name
+                                  }
+                                </span>
+                              </p>
+                              <hr />
+                              <p className="m-0">
+                                <FontAwesomeIcon icon={faLocationDot} />
+                                <span style={{ marginLeft: "9px" }}>
+                                  {
+                                    deliveryAddressStatusDefault.specific_address
+                                  }
+                                </span>
+                              </p>
+                            </blockquote>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-1 d-flex align-items-center">
+                        <button
+                          className="btn"
+                          data-toggle="modal"
+                          data-target="#setDefault"
+                        >
+                          <FontAwesomeIcon icon={faChevronRight} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                )}
+              </>
             )}
             {selectedOption === "pharmacy" && (
               <div className="bg-light p-3 mb-3">
@@ -416,29 +558,45 @@ const CheckoutPrescriptionComponent = () => {
             )}
           </div>
           <div className="col-lg-4">
-            <div className="form-group mb-1">
-              <div className="input-group">
-                <input
-                  type="text"
-                  className="form-control border-0 p-1"
-                  placeholder=" Coupon Code"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                />
-                <button
-                  className="btn btn-primary p-1"
-                  onClick={applyCoupon}
-                  disabled={checkingCoupon}
-                >
-                  {checkingCoupon ? "Checking..." : "Apply Coupon"}
-                </button>
+            {!isCouponApplied && (
+              <div className="form-group mb-1">
+                <div className="input-group">
+                  <input
+                    type="text"
+                    className="form-control border-0 p-1"
+                    placeholder=" Coupon Code"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-primary p-1"
+                    onClick={handleCouponAction}
+                    disabled={checkingCoupon}
+                  >
+                    {checkingCoupon ? "Checking..." : "Apply Coupon"}
+                  </button>
+                </div>
               </div>
-            </div>{" "}
-            {appliedCoupon && (
-              <p className="text-success ml-1" style={{ fontSize: "15px" }}>
-                Applied coupon: {appliedCoupon}
-              </p>
             )}
+            {isCouponApplied && appliedCoupon && (
+              <div className="form-group">
+                <div className="input-group">
+                  <p className="text-success border-0 p-1 form-control">
+                    Applied coupon: {appliedCoupon}
+                  </p>
+                  <button
+                    className="btn btn-danger p-1"
+                    onClick={handleCouponAction}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+            <p className="ml-1" style={{ fontSize: "13px" }}>
+              <span className="text-danger">(*) </span>Only one voucher per
+              order
+            </p>
             <h5 className="section-title position-relative text-uppercase mb-3 mt-4">
               <span className="bg-secondary pr-3">Order Total</span>
             </h5>
@@ -489,6 +647,8 @@ const CheckoutPrescriptionComponent = () => {
                       className="custom-control-input"
                       name="payment"
                       id="paypal"
+                      value="cash"
+                      onChange={handleRadioChanges}
                     />
                     <label className="custom-control-label" htmlFor="paypal">
                       <img
@@ -502,28 +662,6 @@ const CheckoutPrescriptionComponent = () => {
                   </div>
                 </div>
 
-                {/* <div className="form-group mb-4">
-                  <div className="custom-control custom-radio">
-                    <input
-                      type="radio"
-                      className="custom-control-input"
-                      name="payment"
-                      id="banktransfer"
-                    />
-                    <label
-                      className="custom-control-label"
-                      htmlFor="banktransfer"
-                    >
-                      <img
-                        src="../assets/images/momo.png"
-                        width={30}
-                        height={30}
-                        alt=""
-                      />
-                      &nbsp; Momo
-                    </label>
-                  </div>
-                </div> */}
                 <div className="form-group mb-4">
                   <div className="custom-control custom-radio">
                     <input
@@ -531,6 +669,8 @@ const CheckoutPrescriptionComponent = () => {
                       className="custom-control-input"
                       name="payment"
                       id="banktransfer1"
+                      value="VNPay"
+                      onChange={handleRadioChanges}
                     />
                     <label
                       className="custom-control-label"
@@ -568,6 +708,107 @@ const CheckoutPrescriptionComponent = () => {
                   >
                     Place Order
                   </button>
+                  <ReactModal
+                    isOpen={isSuccessModalOpen}
+                    onRequestClose={() => setIsSuccessModalOpen(false)}
+                    style={customStyles}
+                  >
+                    <h3>Order Success!</h3>
+                    <p>Please pay after receiving the goods.</p>
+                    <button onClick={() => setIsSuccessModalOpen(false)}>
+                      Close
+                    </button>
+                  </ReactModal>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div
+          class="modal fade modal-lg rounded "
+          style={{
+            maxWidth: "10000px",
+            margin: "0 auto",
+            marginTop: "",
+            paddingRight: "0",
+          }}
+          id={`setDefault`}
+          role="dialog"
+        >
+          <div
+            style={{
+              maxWidth: "700px",
+              overflowY: "auto",
+              maxHeight: "86%",
+            }}
+            class="modal-dialog rounded "
+          >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 style={{ textAlign: "center" }} class="modal-title">
+                  Set Default Delivery Address <b></b>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">
+                  &times;
+                </button>
+              </div>
+              <div className=" container mt-3">
+                {deliveryAddress.map((delivery) => (
+                  <div
+                    style={{
+                      border: "1px solid #ccc",
+                      position: "relative",
+                      backgroundColor:
+                        selectedAddressId === delivery.address_id
+                          ? "#d7ffcb"
+                          : "#f2f6fe",
+                      cursor: "pointer",
+                      marginRight: "15px",
+                      marginLeft: "15px",
+                    }}
+                    className="row mt-3 mb-3 rounded p-3"
+                    onClick={() => handleAddressClick(delivery.address_id)}
+                  >
+                    <div className="col-md-1">
+                      <div
+                        className="text-center  pt-1 pb-1"
+                        style={{
+                          width: "100%",
+                          backgroundColor: "#d7ffcb",
+                          borderRadius: "50%",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          style={{ color: "" }}
+                          icon={faLocationDot}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-10">
+                      <p>
+                        <strong>{delivery.recipient_full_name}</strong>{" "}
+                        <span className="ml-2 mr-2"> | </span>{" "}
+                        <span>{delivery.recipient_phone_number}</span>
+                      </p>
+                      <p>{delivery.specific_address}</p>
+                    </div>
+                  </div>
+                ))}
+                <div class="modal-body">
+                  <div className="btn btn-info rounded">
+                    <button
+                      onClick={() =>
+                        setDefaultAddress(accountId, selectedAddressId)
+                      }
+                      style={{ color: "#fff" }}
+                      type="submit"
+                      className="btn submit"
+                    >
+                      Set
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -578,4 +819,4 @@ const CheckoutPrescriptionComponent = () => {
   );
 };
 
-export default CheckoutPrescriptionComponent;
+export default CheckoutComponent;

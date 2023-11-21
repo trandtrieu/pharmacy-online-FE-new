@@ -77,32 +77,6 @@ class CheckoutServiceServices {
       throw error;
     }
   }
-  async applyCodePrescription(accountId, cart_type, code, authToken) {
-    try {
-      const response = await axios.post(
-        CART_API_BASE_URL +
-          "/apply-discount?accountId=" +
-          accountId +
-          "&cartType=" +
-          cart_type +
-          "&discountCode=" +
-          code,
-        {},
-        {
-          headers: {
-            Authorization: "Bearer " + authToken,
-          },
-        }
-      );
-      const discountAmount = response.data.discountAmount;
-      const totalCostAfterDiscountPrescription =
-        response.data.totalCostAfterDiscountPrescription;
-      return { discountAmount, totalCostAfterDiscountPrescription };
-    } catch (error) {
-      console.error("Lỗi:", error);
-      throw error;
-    }
-  }
 
   getTotalQuantity(accountId, cart_type, token) {
     const config = {

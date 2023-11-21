@@ -134,7 +134,7 @@ const CartComponent = ({ history }) => {
   };
 
   const handleRemoveAllCart = () => {
-    CartServices.removeAllCart(accountId, token)
+    CartServices.removeAllCart(accountId, 0, token)
       .then(() => {
         setCarts([]);
         toast.success("Remove all cart items successfully");

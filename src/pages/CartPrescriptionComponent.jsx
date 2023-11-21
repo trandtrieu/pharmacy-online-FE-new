@@ -133,7 +133,7 @@ const CartPrescriptionComponent = ({ history }) => {
   };
 
   const handleRemoveAllCart = () => {
-    CartServices.removeAllCart(accountId, token)
+    CartServices.removeAllCart(accountId, 2, token)
       .then(() => {
         setCartsFromPresciption([]);
         toast.success("Remove all cart items successfully");

@@ -15,8 +15,8 @@ function ShopComponent() {
   const [products, setProducts] = useState([]);
   const history = useHistory();
   const [productCounts, setProductCounts] = useState({});
-  const [selectedPriceRange, setSelectedPriceRange] = useState("price-all"); // Default selected price range
-  const { accountId, token } = useAuth(); // Sử dụng AuthContext để truy cập giá trị accountId và token
+  const [selectedPriceRange, setSelectedPriceRange] = useState("price-all");
+  const { accountId, token } = useAuth();
   const { updateCartItemCount } = useCart();
 
   useEffect(() => {
@@ -284,7 +284,11 @@ function ShopComponent() {
                         ? "Price-all"
                         : index === Object.keys(priceRanges).length - 1
                         ? "Greater than 1 million (VND)"
-                        : `${priceRanges[rangeId].min} - ${priceRanges[rangeId].max} (VND)`}
+                        : `${convertDollarToVND(
+                            priceRanges[rangeId].min
+                          )} - ${convertDollarToVND(
+                            priceRanges[rangeId].max
+                          )} (VND)`}
                     </label>
                     <span className="badge border font-weight-normal">
                       {productCounts[rangeId]}
@@ -420,7 +424,17 @@ function ShopComponent() {
                               <i className="far fa-heart" />
                             </a>
                           </>
-                        ) : null}
+                        ) : (
+                          <a
+                            className="btn btn-outline-dark btn-square"
+                            href
+                            onClick={() =>
+                              handleAddtoWishlist(product.productId)
+                            }
+                          >
+                            <i className="far fa-heart" />
+                          </a>
+                        )}
                       </div>
                     </div>
 
@@ -441,37 +455,6 @@ function ShopComponent() {
                   </div>
                 </div>
               ))}
-              <div className="col-12">
-                <nav>
-                  <ul className="pagination justify-content-center">
-                    <li className="page-item disabled">
-                      <a className="page-link" href="/">
-                        Previous
-                      </a>
-                    </li>
-                    <li className="page-item active">
-                      <a className="page-link" href="/">
-                        1
-                      </a>
-                    </li>
-                    <li className="page-item">
-                      <a className="page-link" href="/">
-                        2
-                      </a>
-                    </li>
-                    <li className="page-item">
-                      <a className="page-link" href="/">
-                        3
-                      </a>
-                    </li>
-                    <li className="page-item">
-                      <a className="page-link" href="/">
-                        Next
-                      </a>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
             </div>
           </div>
           {/* Shop Product End */}

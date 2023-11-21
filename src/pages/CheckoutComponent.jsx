@@ -16,7 +16,8 @@ import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
 import { convertDollarToVND } from "../utils/cartutils";
-
+import { useDataContext } from "../services/DataContext";
+import "../style/CheckOutModal.css";
 const customStyles = {
   content: {
     top: "35%",
@@ -31,7 +32,7 @@ const customStyles = {
 
 const CheckoutComponent = () => {
   const history = useHistory();
-
+  const { setOrderData } = useDataContext();
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   const [deliveryAddress, setDeliveryAddress] = useState([]);
@@ -44,16 +45,59 @@ const CheckoutComponent = () => {
   const [note, setNote] = useState("");
   const [deliveryAddressStatusDefault, setDeliveryAddressStatusDefault] =
     useState("");
-
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState("");
   const [totalQuantity, setTotalQuantity] = useState(0);
-
   const [subTotalCost, setSubTotalCost] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
   const [totalCostAfterDiscount, setTotalCostAfterDiscount] = useState(0);
   const [totalCostBeforeDiscount, setTotalCostBeforeDiscount] = useState(0);
-
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const { accountId, token } = useAuth();
 
+  const openSuccessModal = () => {
+    setIsSuccessModalOpen(true);
+  };
+
+  const handleRadioChanges = (event) => {
+    setSelectedOptions(event.target.value);
+  };
+
+  const handleCouponAction = () => {
+    if (isCouponApplied) {
+      cancelCoupon();
+    } else {
+      setCheckingCoupon(true);
+
+      setTimeout(() => {
+        CheckoutServices.applyCode(accountId, 0, couponCode, token)
+          .then((res) => {
+            if (res && res.discountAmount !== undefined) {
+              setCouponDiscount(res.discountAmount);
+              setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
+              setAppliedCoupon(couponCode);
+              setIsCouponApplied(true);
+              toast.success("Apply coupon successfully");
+            } else {
+              console.error(
+                "Invalid response format for applying coupon:",
+                res
+              );
+              toast.error("Apply coupon failed");
+            }
+          })
+          .catch((error) => {
+            console.error("Error applying the coupon:", error);
+            toast.error("Apply coupon failed");
+          })
+          .finally(() => {
+            // Chuyển nút Checking thành trạng thái Apply
+            setCheckingCoupon(false);
+          });
+      }, 3000); // Thời gian chờ 3 giây
+    }
+  };
   useEffect(() => {
     CartServices.getListCartByAccountId(accountId, 0, token)
       .then((res) => {
@@ -142,6 +186,7 @@ const CheckoutComponent = () => {
             setCouponDiscount(res.discountAmount);
             setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
             setAppliedCoupon(couponCode);
+            setIsCouponApplied(true); // Set the state to indicate that a coupon is applied
             toast.success("Apply coupon successfully");
           } else {
             console.error("Invalid response format for applying coupon:", res);
@@ -157,6 +202,15 @@ const CheckoutComponent = () => {
           setCheckingCoupon(false);
         });
     }, 3000); // Thời gian chờ 3 giây
+  };
+  const cancelCoupon = () => {
+    // Reset the coupon-related state variables
+    setCouponDiscount(0);
+    setTotalCostBeforeDiscount(subTotalCost + shippingCost);
+    setAppliedCoupon("");
+    setIsCouponApplied(false); // Set the state to indicate that the coupon is canceled
+    setCouponCode(""); // Clear the coupon code input
+    toast.info("Coupon canceled");
   };
 
   const handleRadioChange = (event) => {
@@ -186,46 +240,85 @@ const CheckoutComponent = () => {
     history.push(`/cart-prescription`);
   };
   const handlePlaceOrder = () => {
-    const dataToPass = {
-      name: "John Doe",
-      address: "123 Main Street",
-      phoneNumber: "123456789",
-      subTotalCost: subTotalCost,
-      shippingCost: shippingCost,
-    };
-
     localStorage.getItem("token");
-    console.log(token);
+    if (selectedOptions === "cash") {
+      const orderData = {
+        amount: totalCostAfterDiscount,
+        paymentMethod: selectedOptions,
+        deliveryMethod: selectedOption,
+        name: deliveryAddressStatusDefault.recipient_full_name,
+        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        address: deliveryAddressStatusDefault.specific_address,
+        note,
+      };
+      fetch("http://localhost:8080/payment/create_payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error placing order:", error);
+        });
+      openSuccessModal();
+    } else {
+      const orderData = {
+        amount: totalCostBeforeDiscount,
+        paymentMethod: selectedOptions,
+        deliveryMethod: selectedOption,
+        name: deliveryAddressStatusDefault.recipient_full_name,
+        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        address: deliveryAddressStatusDefault.specific_address,
+        note,
+      };
+      setOrderData(orderData);
 
-    fetch("http://localhost:8080/payment/create_payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        amount: totalCostAfterDiscount.toString(),
-        orderInfo: "",
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        const paymentUrl = data.url;
+      fetch("http://localhost:8080/payment/create_payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          const paymentUrl = data.url;
 
-        window.location.href = paymentUrl;
-
-        console.log(paymentUrl);
+          window.location.href = paymentUrl;
+        })
+        .catch((error) => {
+          console.error("Error placing order:", error);
+        });
+    }
+  };
+  const handleAddressClick = (addressId) => {
+    // Đặt địa chỉ được chọn khi click vào đó
+    setSelectedAddressId(addressId);
+    console.log(addressId);
+  };
+  const setDefaultAddress = (accountId, address_id) => {
+    DeliveryAddressServices.setDefaultDeliveryAddress(
+      accountId,
+      address_id,
+      token
+    )
+      .then((res) => {
+        window.location.reload();
+        toast.success("Set default delivery address successfully!");
       })
       .catch((error) => {
-        console.error("Error placing order:", error);
+        console.log(token);
+        toast.error("Error setting default delivery address:", error);
       });
-    // history.push({
-    //   pathname: "/bill",
-    //   state: { data: dataToPass },
-    // });
   };
-
   return (
     <>
       <ReactModal
@@ -349,40 +442,79 @@ const CheckoutComponent = () => {
               </div>
             </div>
             {selectedOption === "delivery" && (
-              <div className="bg-light p-3 mb-3">
-                <div className="row">
-                  <div className="col-md-11 d-flex align-items-center">
-                    <div className="card bg-transparent">
-                      <div className="card-body p-0">
-                        <blockquote className="d-flex flex-column m-0">
-                          <p className="m-0">
-                            <FontAwesomeIcon icon={faPhone} />{" "}
-                            {
-                              deliveryAddressStatusDefault.recipient_phone_number
-                            }{" "}
-                            &bull;{" "}
-                            <span>
-                              {deliveryAddressStatusDefault.recipient_full_name}
-                            </span>
-                          </p>
-                          <hr />
-                          <p className="m-0">
-                            <FontAwesomeIcon icon={faLocationDot} />
-                            <span style={{ marginLeft: "9px" }}>
-                              {deliveryAddressStatusDefault.specific_address}
-                            </span>
-                          </p>
-                        </blockquote>
+              <>
+                {deliveryAddressStatusDefault === "" ? (
+                  <div
+                    style={{ backgroundColor: "#fff" }}
+                    className="container-fluid"
+                  >
+                    <div className="row">
+                      <div className="col-md-12 d-flex flex-column align-items-center">
+                        <div
+                          className="empty-img mt-4"
+                          style={{ width: "150px", height: "100px" }}
+                        >
+                          <img
+                            src="../assets/images/empty-image.png"
+                            alt=""
+                            className="w-100 h-100"
+                          />
+                        </div>
+                        <h6 className="mb-2">
+                          I'm sorry! DrugMart couldn't find any delivery
+                          addresses in your cart.
+                        </h6>
+                        <button className="btn btn-primary mb-4">
+                          Create a New Address
+                        </button>
                       </div>
                     </div>
                   </div>
-                  <div className="col-md-1 d-flex align-items-center">
-                    <button className="btn">
-                      <FontAwesomeIcon icon={faChevronRight} />
-                    </button>
+                ) : (
+                  <div className="bg-light p-3 mb-3">
+                    <div className="row">
+                      <div className="col-md-11 d-flex align-items-center">
+                        <div className="card bg-transparent">
+                          <div className="card-body p-0">
+                            <blockquote className="d-flex flex-column m-0">
+                              <p className="m-0">
+                                <FontAwesomeIcon icon={faPhone} />{" "}
+                                {
+                                  deliveryAddressStatusDefault.recipient_phone_number
+                                }{" "}
+                                &bull;{" "}
+                                <span>
+                                  {
+                                    deliveryAddressStatusDefault.recipient_full_name
+                                  }
+                                </span>
+                              </p>
+                              <hr />
+                              <p className="m-0">
+                                <FontAwesomeIcon icon={faLocationDot} />
+                                <span style={{ marginLeft: "9px" }}>
+                                  {
+                                    deliveryAddressStatusDefault.specific_address
+                                  }
+                                </span>
+                              </p>
+                            </blockquote>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-1 d-flex align-items-center">
+                        <button
+                          className="btn"
+                          data-toggle="modal"
+                          data-target="#setDefault"
+                        >
+                          <FontAwesomeIcon icon={faChevronRight} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                )}
+              </>
             )}
             {selectedOption === "pharmacy" && (
               <div className="bg-light p-3 mb-3">
@@ -414,29 +546,45 @@ const CheckoutComponent = () => {
             )}
           </div>
           <div className="col-lg-4">
-            <div className="form-group mb-1">
-              <div className="input-group">
-                <input
-                  type="text"
-                  className="form-control border-0 p-1"
-                  placeholder=" Coupon Code"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                />
-                <button
-                  className="btn btn-primary p-1"
-                  onClick={applyCoupon}
-                  disabled={checkingCoupon}
-                >
-                  {checkingCoupon ? "Checking..." : "Apply Coupon"}
-                </button>
+            {!isCouponApplied && (
+              <div className="form-group mb-1">
+                <div className="input-group">
+                  <input
+                    type="text"
+                    className="form-control border-0 p-1"
+                    placeholder=" Coupon Code"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-primary p-1"
+                    onClick={handleCouponAction}
+                    disabled={checkingCoupon}
+                  >
+                    {checkingCoupon ? "Checking..." : "Apply Coupon"}
+                  </button>
+                </div>
               </div>
-            </div>{" "}
-            {appliedCoupon && (
-              <p className="text-success ml-1" style={{ fontSize: "15px" }}>
-                Applied coupon: {appliedCoupon}
-              </p>
             )}
+            {isCouponApplied && appliedCoupon && (
+              <div className="form-group">
+                <div className="input-group">
+                  <p className="text-success border-0 p-1 form-control">
+                    Applied coupon: {appliedCoupon}
+                  </p>
+                  <button
+                    className="btn btn-danger p-1"
+                    onClick={handleCouponAction}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+            <p className="ml-1" style={{ fontSize: "13px" }}>
+              <span className="text-danger">(*) </span>Only one voucher per
+              order
+            </p>
             <h5 className="section-title position-relative text-uppercase mb-3 mt-4">
               <span className="bg-secondary pr-3">Order Total</span>
             </h5>
@@ -484,6 +632,8 @@ const CheckoutComponent = () => {
                       className="custom-control-input"
                       name="payment"
                       id="paypal"
+                      value="cash"
+                      onChange={handleRadioChanges}
                     />
                     <label className="custom-control-label" htmlFor="paypal">
                       <img
@@ -497,28 +647,6 @@ const CheckoutComponent = () => {
                   </div>
                 </div>
 
-                {/* <div className="form-group mb-4">
-                  <div className="custom-control custom-radio">
-                    <input
-                      type="radio"
-                      className="custom-control-input"
-                      name="payment"
-                      id="banktransfer"
-                    />
-                    <label
-                      className="custom-control-label"
-                      htmlFor="banktransfer"
-                    >
-                      <img
-                        src="../assets/images/momo.png"
-                        width={30}
-                        height={30}
-                        alt=""
-                      />
-                      &nbsp; Momo
-                    </label>
-                  </div>
-                </div> */}
                 <div className="form-group mb-4">
                   <div className="custom-control custom-radio">
                     <input
@@ -526,6 +654,8 @@ const CheckoutComponent = () => {
                       className="custom-control-input"
                       name="payment"
                       id="banktransfer1"
+                      value="VNPay"
+                      onChange={handleRadioChanges}
                     />
                     <label
                       className="custom-control-label"
@@ -563,6 +693,107 @@ const CheckoutComponent = () => {
                   >
                     Place Order
                   </button>
+                  <ReactModal
+                    isOpen={isSuccessModalOpen}
+                    onRequestClose={() => setIsSuccessModalOpen(false)}
+                    style={customStyles}
+                  >
+                    <h3>Order Success!</h3>
+                    <p>Please pay after receiving the goods.</p>
+                    <button onClick={() => setIsSuccessModalOpen(false)}>
+                      Close
+                    </button>
+                  </ReactModal>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div
+          class="modal fade modal-lg rounded "
+          style={{
+            maxWidth: "10000px",
+            margin: "0 auto",
+            marginTop: "",
+            paddingRight: "0",
+          }}
+          id={`setDefault`}
+          role="dialog"
+        >
+          <div
+            style={{
+              maxWidth: "700px",
+              overflowY: "auto",
+              maxHeight: "86%",
+            }}
+            class="modal-dialog rounded "
+          >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 style={{ textAlign: "center" }} class="modal-title">
+                  Set Default Delivery Address <b></b>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">
+                  &times;
+                </button>
+              </div>
+              <div className=" container mt-3">
+                {deliveryAddress.map((delivery) => (
+                  <div
+                    style={{
+                      border: "1px solid #ccc",
+                      position: "relative",
+                      backgroundColor:
+                        selectedAddressId === delivery.address_id
+                          ? "#d7ffcb"
+                          : "#f2f6fe",
+                      cursor: "pointer",
+                      marginRight: "15px",
+                      marginLeft: "15px",
+                    }}
+                    className="row mt-3 mb-3 rounded p-3"
+                    onClick={() => handleAddressClick(delivery.address_id)}
+                  >
+                    <div className="col-md-1">
+                      <div
+                        className="text-center  pt-1 pb-1"
+                        style={{
+                          width: "100%",
+                          backgroundColor: "#d7ffcb",
+                          borderRadius: "50%",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          style={{ color: "" }}
+                          icon={faLocationDot}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-10">
+                      <p>
+                        <strong>{delivery.recipient_full_name}</strong>{" "}
+                        <span className="ml-2 mr-2"> | </span>{" "}
+                        <span>{delivery.recipient_phone_number}</span>
+                      </p>
+                      <p>{delivery.specific_address}</p>
+                    </div>
+                  </div>
+                ))}
+                <div class="modal-body">
+                  <div className="btn btn-info rounded">
+                    <button
+                      onClick={() =>
+                        setDefaultAddress(accountId, selectedAddressId)
+                      }
+                      style={{ color: "#fff" }}
+                      type="submit"
+                      className="btn submit"
+                    >
+                      Set
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

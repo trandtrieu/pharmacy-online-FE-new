@@ -32,87 +32,96 @@ import CartPrescriptionComponent from "./pages/CartPrescriptionComponent";
 import CheckoutPrescriptionComponent from "./pages/CheckoutPrescriptionComponent";
 import ErrorPageComponent from "./layouts/ErrorPage";
 import { CartProvider } from "./CartProvider";
+import { DataProvider } from "./services/DataContext";
+import FilterCategoryProduct from "./pages/FilterCategoryProduct";
+
 function App() {
   return (
     <>
-      <AuthProvider>
-        <CartProvider>
-          <Router>
-            <AppWrapper>
-              <HeaderComponent />
-              <ToastContainer
-                position="top-left"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-              />
-              <Bubble
-                typebot="customer-support-e4ekwgb"
-                theme={{ button: { backgroundColor: "#598E71" } }}
-              />
-              <Switch>
-                <Route path="/" exact component={HomeComponent} />
-                <Route path="/home" component={HomeComponent} />
-                <Route path="/login" component={LoginComponent} />
-                <Route path="/forgotpass" component={ForgotPassword} />
-                <Route path="/setnewpass" component={SetNewPass} />
-                <Route
-                  path="/detail-product/:productId"
-                  component={DetailProductComponent}
+      <DataProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Router>
+              <AppWrapper>
+                <HeaderComponent />
+                <ToastContainer
+                  position="top-left"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="light"
                 />
-                <Route
-                  path="/category/:category_id"
-                  component={CategoryProduct}
+                <Bubble
+                  typebot="customer-support-e4ekwgb"
+                  theme={{ button: { backgroundColor: "#598E71" } }}
                 />
-                <Route path="/shop/search" component={SearchProduct} />
+                <Switch>
+                  <Route path="/" exact component={HomeComponent} />
+                  <Route path="/home" component={HomeComponent} />
+                  <Route path="/login" component={LoginComponent} />
+                  <Route path="/forgotpass" component={ForgotPassword} />
+                  <Route path="/setnewpass" component={SetNewPass} />
+                  <Route
+                    path="/detail-product/:productId"
+                    component={DetailProductComponent}
+                  />
+                  <Route
+                    path="/category/:category_id"
+                    component={CategoryProduct}
+                  />
+                  <Route
+                    path="/category/filterByCategory/:priceFilter/:category_id"
+                    component={FilterCategoryProduct}
+                  />
+                  <Route path="/shop/search" component={SearchProduct} />
 
-                <Route path="/shop" component={ShopComponent} />
-                <Route
-                  path="/cart-prescription"
-                  component={CartPrescriptionComponent}
-                />
-                <Route path="/cart" component={CartComponent} />
-                <Route path="/wishlist" component={WishlistComponent} />
-                <Route path="/profile" component={ProfileComponent} />
-                <Route path="/healthService" component={HealthService} />
-                <Route
-                  path="/create-prescription"
-                  component={CreatePrescriptionComponent}
-                />
-                <Route
-                  path="/edit-prescription/:id"
-                  component={EditPrescriptionComponent}
-                />
-                <Route
-                  path="/update-prescription/:id"
-                  component={UpdatePrescriptionComponent}
-                />
-                <Route path="/check-out" component={CheckoutComponent} />
-                <Route
-                  path="/check-out-prescription"
-                  component={CheckoutPrescriptionComponent}
-                />
+                  <Route path="/shop" component={ShopComponent} />
+                  <Route
+                    path="/cart-prescription"
+                    component={CartPrescriptionComponent}
+                  />
+                  <Route path="/cart" component={CartComponent} />
+                  <Route path="/wishlist" component={WishlistComponent} />
+                  <Route path="/profile" component={ProfileComponent} />
+                  <Route path="/healthService" component={HealthService} />
+                  <Route
+                    path="/create-prescription"
+                    component={CreatePrescriptionComponent}
+                  />
+                  <Route
+                    path="/edit-prescription/:id"
+                    component={EditPrescriptionComponent}
+                  />
+                  <Route
+                    path="/update-prescription/:id"
+                    component={UpdatePrescriptionComponent}
+                  />
+                  <Route path="/check-out" component={CheckoutComponent} />
+                  <Route
+                    path="/check-out-prescription"
+                    component={CheckoutPrescriptionComponent}
+                  />
 
-                <Route path="/blog" component={BlogComponent} />
-                <Route path="/bill" component={ReturnPage} />
-                <Route path="/404" component={ErrorPageComponent} />
+                  <Route path="/blog" component={BlogComponent} />
+                  <Route path="/bill" component={ReturnPage} />
+                  <Route path="/404" component={ErrorPageComponent} />
 
-                <Route
-                  path="/blog-detail/:blog_id"
-                  component={BlogDetailComponent}
-                />
-              </Switch>
-              <FooterComponent />
-            </AppWrapper>
-          </Router>
-        </CartProvider>
-      </AuthProvider>
+                  <Route
+                    path="/blog-detail/:blog_id"
+                    component={BlogDetailComponent}
+                  />
+                </Switch>
+                <FooterComponent />
+              </AppWrapper>
+            </Router>
+          </CartProvider>
+        </AuthProvider>
+      </DataProvider>
     </>
   );
 }

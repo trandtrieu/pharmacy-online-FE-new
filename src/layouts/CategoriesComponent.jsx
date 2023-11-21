@@ -61,7 +61,7 @@ class CategoriesComponent extends Component {
           src="https://cdn.nhathuoclongchau.com.vn/unsafe/301x173/filters:quality(90)/https://cms-prod.s3-sgn09.fptcloud.com/icon_noi_dung_san_pham_doi_tuong_4f5363c4ef.png"
           alt=""
         /> */}
-        <div className="container-fluid cover-category pt-5 mb-5">
+        <div className="container-fluid cover-category pt-5 ">
           <h2
             className="section-title position-relative text-uppercase mx-xl-5 mb-4"
             style={{ fontSize: "27px", paddingLeft: "2%" }}

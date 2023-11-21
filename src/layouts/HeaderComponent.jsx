@@ -39,9 +39,9 @@ const HeaderComponent = (props) => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("id");
+    localStorage.removeItem("accountId");
     setIsLoggedIn(false);
     setUsername(null);
-
     window.location.reload();
     window.location.href = "/home";
   };
@@ -138,13 +138,12 @@ const HeaderComponent = (props) => {
             style={{ marginRight: "0px" }}
           >
             <div className="col-lg-3 text-left">
-              <a className="text-decoration-none">
-                <img
-                  src={`assets/images/logoSite.png?${new Date().getTime()}`}
-                  alt=""
-                  style={{ width: "66%", height: "75px" }}
-                />
-              </a>
+              <span className="h1 text-uppercase text-primary px-2 bg-dark">
+                DRUG
+              </span>
+              <span className="h1 text-uppercase text-dark bg-primary px-2 ml-n1">
+                MART
+              </span>
             </div>
 
             <div className="col-lg-6 text-center">

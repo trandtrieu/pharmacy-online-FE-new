@@ -60,7 +60,7 @@ class CartServices {
     );
   } //http://localhost:8080/pharmacy-online/cart/remove-from-cart?cartId=8
 
-  removeAllCart(accountId, accessToken) {
+  removeAllCart(accountId, cart_type, accessToken) {
     const config = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -68,7 +68,7 @@ class CartServices {
     };
 
     return axios.delete(
-      `${CART_API_BASE_URL}/clear-cart?accountId=${accountId}&cartType=0`,
+      `${CART_API_BASE_URL}/clear-cart?accountId=${accountId}&cartType=${cart_type}`,
       config
     );
   }

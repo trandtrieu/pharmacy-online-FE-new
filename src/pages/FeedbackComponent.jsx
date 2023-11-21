@@ -13,7 +13,7 @@ class FeedbackComponent extends Component {
     this.state = {
       productId: props.productId,
       products: [],
-      // feedbacks: props.feedbacks,
+      feedbacks: props.feedbacks,
       star: "",
       replies: props.replies,
       rating: 0,
@@ -41,13 +41,20 @@ class FeedbackComponent extends Component {
     });
   }
   deleteFeedback(id) {
-    FeedbackServices.deleteFeedback(id).then((res) => {
-      this.setState({
-        feedbacks: this.state.feedbacks.filter(
-          (feedback) => feedback.feedback_id !== id
-        ),
+    const { accountId, token } = this.context;
+
+    FeedbackServices.deleteFeedback(id, accountId, token)
+      .then((res) => {
+        this.setState({
+          feedbacks: this.state.feedbacks.filter(
+            (feedback) => feedback.feedback_id !== id
+          ),
+        });
+        toast.success("Delete feedback successfully");
+      })
+      .catch((err) => {
+        toast.error("delete fail", err);
       });
-    });
   }
 
   calculateStarRatingPercentage(starRating) {
@@ -208,6 +215,8 @@ class FeedbackComponent extends Component {
   };
 
   render() {
+    const { accountId, token } = this.context;
+
     return (
       <div className="container-fluid mb-5 mt-5">
         <div className="card">
@@ -221,7 +230,7 @@ class FeedbackComponent extends Component {
                       <img
                         className="mr-3 rounded-circle"
                         alt="Bootstrap Media Preview"
-                        src="https://tse1.mm.bing.net/th?id=OIP.a1qV9wx2tjVVv86EW-lZaAHaE8&pid=Api&P=0&h=220"
+                        src={`../assets/images/${feedback.avatar}`}
                       />
 
                       <div className="media-body">
@@ -247,7 +256,7 @@ class FeedbackComponent extends Component {
                                 >
                                   <FontAwesomeIcon icon={faReply} /> Reply
                                 </span>
-                                {feedback.user_id === 3 && (
+                                {feedback.user_id === accountId && (
                                   <span
                                     className="m-1"
                                     onClick={() =>
@@ -279,11 +288,11 @@ class FeedbackComponent extends Component {
                             <form style={{ width: "80%" }} action="">
                               <div className="bg-light p-2">
                                 <div className="d-flex flex-row align-items-start">
-                                  <img
+                                  {/* <img
                                     alt=""
                                     className="rounded-circle mr-3 "
-                                    src="https://scontent.xx.fbcdn.net/v/t1.15752-9/396643098_1499022063974040_6274169702054090360_n.jpg?stp=dst-jpg_s206x206&_nc_cat=101&ccb=1-7&_nc_sid=510075&_nc_ohc=D5IR0pjWX8AAX-3e1p1&_nc_oc=AQlze1JL0dPlVA6q8X__lZrwqW59WXORB-6wWvS0WqGuxjMbhD7nsErQPomniGxzUx1-JAAejyWqyGjT-0tgYGHl&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdTxfLI6tXHQ4Wl3HDm0xqqn_gMq5ee9SqlKuKEeukBhXg&oe=6567E054"
-                                  />
+                                    src={`../assets/images/${feedback.avatar}`}
+                                  /> */}
                                   <textarea
                                     className="form-control ml-1 shadow-none textarea rounded"
                                     defaultValue={""}
@@ -319,7 +328,7 @@ class FeedbackComponent extends Component {
                                 <img
                                   className="rounded-circle mr-3"
                                   alt="Bootstrap Media Another Preview"
-                                  src="https://tse3.mm.bing.net/th?id=OIP.-eS1RlYwKg5bUqgPtV_WYAHaHa&pid=Api&P=0&h=220"
+                                  src={`../assets/images/${reply.avatar}`}
                                 />
                                 <div className="media-body">
                                   <div className="row">
@@ -377,14 +386,14 @@ class FeedbackComponent extends Component {
                             <div className="col-md-3 col-sm-3 ">
                               <img
                                 style={{ width: "100%", height: "100%" }}
-                                src={`../assets/images/${this.state.product.imageUrls}`}
+                                src={this.state.product.imageUrls}
                                 alt="loi"
                                 srcSet=""
                                 width={100}
                               />
                             </div>
                             <div className="col-md-9 col-sm-9 d-flex align-items-center ">
-                              {/* <h4>{this.state.product.name}</h4> */}
+                              <h4>{this.state.product.name}</h4>
                             </div>
                           </div>
                           <div class="modal-body">

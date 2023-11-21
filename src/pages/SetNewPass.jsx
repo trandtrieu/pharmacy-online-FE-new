@@ -81,7 +81,13 @@ class SetNewPass extends Component {
         newPassword: this.state.newPassword,
       }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 200) {
+          toast.success("Change password successfully");
+          this.props.history.push("/");
+        }
+        return response.json();
+      })
       .then((data) => {
         if (data.success) {
           console.log("change password successfully");
