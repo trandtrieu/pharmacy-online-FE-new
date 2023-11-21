@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import ProductServices from "../services/ProductServices";
+import { convertDollarToVND } from "../utils/cartutils";
 
 const FilterCategoryProduct = () => {
   const history = useHistory();
@@ -103,7 +104,9 @@ const FilterCategoryProduct = () => {
             ? "Price-all"
             : index === Object.keys(priceRanges).length - 1
             ? "Greater than 1 million"
-            : `$${priceRanges[rangeId].min} - $${priceRanges[rangeId].max}`}
+            : `${convertDollarToVND(
+                priceRanges[rangeId].min
+              )} VND- ${convertDollarToVND(priceRanges[rangeId].max)} VND`}
         </label>
       </div>
     ));
@@ -220,18 +223,7 @@ const FilterCategoryProduct = () => {
                             {product.name}
                           </a>
                           <div className="d-flex align-items-center justify-content-center mt-2">
-                            <h5>${product.price}</h5>
-                            <h6 className="text-muted ml-2">
-                              <del>${product.price}</del>
-                            </h6>
-                          </div>
-                          <div className="d-flex align-items-center justify-content-center mb-1">
-                            <small className="fa fa-star text-primary mr-1" />
-                            <small className="fa fa-star text-primary mr-1" />
-                            <small className="fa fa-star text-primary mr-1" />
-                            <small className="far fa-star text primary mr-1" />
-                            <small className="far fa-star text-primary mr-1" />
-                            <small>(99)</small>
+                            <h5>{convertDollarToVND(product.price)} VND</h5>
                           </div>
                         </div>
                       </div>

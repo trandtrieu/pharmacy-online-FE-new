@@ -600,7 +600,7 @@ const CheckoutComponent = () => {
                     {" "}
                     {shippingCost === 0
                       ? "Free"
-                      : `+ $ ${convertDollarToVND(shippingCost)}`}
+                      : `+  ${convertDollarToVND(shippingCost)} VND`}
                   </h6>
                 </div>
                 {couponDiscount !== 0 && (

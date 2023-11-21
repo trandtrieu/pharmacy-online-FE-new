@@ -378,7 +378,9 @@ const CartComponent = ({ history }) => {
                   </div>
                   <div className="d-flex justify-content-between mt-2">
                     <h6>Shipping Cost</h6>
-                    <h5>{isEligibleForFreeShipping ? "Free" : " 30.000"}</h5>
+                    <h5>
+                      {isEligibleForFreeShipping ? "Free" : " 30.000 VND"}
+                    </h5>
                   </div>
                   <div className="d-flex justify-content-between mt-2">
                     <h6>Total Cost</h6>

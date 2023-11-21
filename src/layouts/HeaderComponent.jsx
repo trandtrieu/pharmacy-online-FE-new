@@ -87,6 +87,9 @@ const HeaderComponent = (props) => {
   };
 
   useEffect(() => {
+    CategoryServices.getCategoryType().then((res) => {
+      setCategories(res.data);
+    });
     if (token) {
       setIsLoggedIn(true);
     } else {

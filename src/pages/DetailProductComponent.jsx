@@ -7,7 +7,6 @@ import {
   faHeart,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
-import WishListServices from "../services/WishListServices";
 import FeedbackServices from "../services/FeedbackServices";
 import ReplyServices from "../services/ReplyServices";
 import FeedbackComponent from "./FeedbackComponent";

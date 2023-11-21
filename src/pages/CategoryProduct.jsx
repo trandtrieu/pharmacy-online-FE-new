@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import ProductServices from "../services/ProductServices";
 import WishListServices from "../services/WishListServices";
 import { toast } from "react-toastify";
+import { convertDollarToVND } from "../utils/cartutils";
 
 const CategoryProduct = (props) => {
   const [category_id] = useState(props.match.params.category_id);
@@ -86,7 +88,7 @@ const CategoryProduct = (props) => {
 
   useEffect(() => {
     fetchData(selectedPriceFilter);
-  }, [selectedPriceFilter, category_id]);
+  }, [selectedPriceFilter, category_id, fetchData]);
 
   const handlePriceFilterChange = (newPriceFilter) => {
     setSelectedPriceFilter((prevFilter) => {
@@ -144,18 +146,7 @@ const CategoryProduct = (props) => {
               {product.name}
             </a>
             <div className="d-flex align-items-center justify-content-center mt-2">
-              <h5>${product.price}</h5>
-              <h6 className="text-muted ml-2">
-                <del>${product.price}</del>
-              </h6>
-            </div>
-            <div className="d-flex align-items-center justify-content-center mb-1">
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="far fa-star text primary mr-1" />
-              <small className="far fa-star text-primary mr-1" />
-              <small>(99)</small>
+              <h5>{convertDollarToVND(product.price)} VND</h5>
             </div>
           </div>
         </div>
@@ -211,7 +202,9 @@ const CategoryProduct = (props) => {
             ? "Price-all"
             : index === Object.keys(priceRanges).length - 1
             ? "Greater than $1000"
-            : `$${priceRanges[rangeId].min} - $${priceRanges[rangeId].max}`}
+            : `${convertDollarToVND(
+                priceRanges[rangeId].min
+              )}  - ${convertDollarToVND(priceRanges[rangeId].max)} VND`}
         </label>
         <span>{productCounts[rangeId] || 0}</span>
       </div>
@@ -291,18 +284,7 @@ const CategoryProduct = (props) => {
                             {product.name}
                           </a>
                           <div className="d-flex align-items-center justify-content-center mt-2">
-                            <h5>${product.price}</h5>
-                            <h6 className="text-muted ml-2">
-                              <del>${product.price}</del>
-                            </h6>
-                          </div>
-                          <div className="d-flex align-items-center justify-content-center mb-1">
-                            <small className="fa fa-star text-primary mr-1" />
-                            <small className="fa fa-star text-primary mr-1" />
-                            <small className="fa fa-star text-primary mr-1" />
-                            <small className="far fa-star text primary mr-1" />
-                            <small className="far fa-star text-primary mr-1" />
-                            <small>(99)</small>
+                            <h5>{convertDollarToVND(product.price)} VND</h5>
                           </div>
                         </div>
                       </div>
