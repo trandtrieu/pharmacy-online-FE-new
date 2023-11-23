@@ -20,6 +20,7 @@ import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
 import { useCart } from "../CartProvider";
 import Modal from "react-modal";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 const customStyles = {
   content: {
     top: "35%",
@@ -165,7 +166,7 @@ function HomeProduct(props) {
 
             <div
               className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex align-items-center justify-content-center"
-              // onClick={handleOnlineCounselingClick}
+            // onClick={handleOnlineCounselingClick}
             >
               <div className="option-carousel-item text-center">
                 <img
@@ -181,12 +182,16 @@ function HomeProduct(props) {
 
             <div className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex align-items-center justify-content-center">
               <div className="option-carousel-item text-center">
-                <img
-                  src="https://data-service.pharmacity.io/pmc-upload-media/production/pmc-ecm-asm/home/homeservices/my-coupon.webp"
-                  alt=""
-                  className="img-fluid"
-                />
+                <Link to="/voucher">
+                  <img
+                    src="https://data-service.pharmacity.io/pmc-upload-media/production/pmc-ecm-asm/home/homeservices/my-coupon.webp"
+                    alt=""
+                    className="img-fluid"
+                  />
+                </Link>
+
                 <h5 className="option-carousel-text mt-2">
+
                   <span>Discount code</span>
                 </h5>
               </div>
@@ -254,9 +259,8 @@ function HomeProduct(props) {
                       .slice(currentIndex, currentIndex + 6)
                       .map((product, index) => (
                         <div
-                          className={`carousel-item${
-                            index === 0 ? " active" : ""
-                          }`}
+                          className={`carousel-item${index === 0 ? " active" : ""
+                            }`}
                           key={product.product_id}
                         >
                           <div

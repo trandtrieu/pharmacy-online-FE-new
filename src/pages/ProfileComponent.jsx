@@ -13,7 +13,7 @@ import {
   updateImage,
 } from "../services/AccountService";
 
-const imagePath = "../assets/images/";
+const imagePath = "../assets/img/avatar";
 
 const ProfileComponent = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -85,7 +85,7 @@ const ProfileComponent = () => {
       districtDropdown.removeEventListener("change", getDistricts);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId, token]);
+  }, [accountId, token, r]);
 
   const fetchDistricts = (provincesID) => {
     fetch(`https://provinces.open-api.vn/api/p/${provincesID}/?depth=2`)

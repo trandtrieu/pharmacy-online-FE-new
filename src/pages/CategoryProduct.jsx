@@ -88,7 +88,7 @@ const CategoryProduct = (props) => {
 
   useEffect(() => {
     fetchData(selectedPriceFilter);
-  }, [selectedPriceFilter, category_id, fetchData]);
+  }, [selectedPriceFilter, category_id]);
 
   const handlePriceFilterChange = (newPriceFilter) => {
     setSelectedPriceFilter((prevFilter) => {
