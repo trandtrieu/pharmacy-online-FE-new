@@ -1,68 +1,100 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../AuthContext";
+import { getAllDiscountCodeById, getAllDiscountCode, addDiscountToAccount } from "../services/VoucherService";
+import { toast } from "react-toastify";
+
 const VoucherComponent = () => {
     const VOUCHER_IMGS_URL = "../assets/img/voucher"
+    const { accountId, token } = useAuth();
+    const [discounts, setDiscounts] = useState([])
+
+    useEffect(
+        () => {
+            getAllDiscountCode(token).then(
+                res => {
+                    setDiscounts(
+                        res.data
+                    )
+                }
+            )
+                .catch(
+                    (err) => console.log(err)
+                )
+        },
+        []
+    )
+
+    const saveToAccount = (id) => {
+        addDiscountToAccount(token, accountId, id).then(
+            toast.success("Saved, shop now?")
+        )
+            .then(
+                error =>
+                    console.log(error)
+            )
+    }
+
+
+
     return (
         <div className="container text-center">
-            {/* <img width='70%' src={`${VOUCHER_IMGS_URL}/isac.png`} alt="anhquangcao" />
-                 */}
 
-            <div className="row">
-                <div class="col-md-4 dropdown">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                        Dropdown button
-                    </button>
-                    <div class="dropdown-menu">
-                        <img src="https://static.thenounproject.com/png/159033-200.png" alt="" />
-                        <a class="dropdown-item" href="#">Link 2</a>
-                        <a class="dropdown-item" href="#">Link 3</a>
+            <div id="demo" class="carousel slide" data-ride="carousel">
+
+
+                <ul class="carousel-indicators">
+                    <li data-target="#demo" data-slide-to="0" class="active"></li>
+                    <li data-target="#demo" data-slide-to="1"></li>
+                </ul>
+
+
+                <div class="carousel-inner">
+                    <div class="carousel-item active" onClick={() => console.log("Hello")} >
+                        <img className="rounded" src={VOUCHER_IMGS_URL + '/blackfriday.png'} style={{ width: '70%', height: 'auto' }} alt="Los Angeles" />
                     </div>
-                </div>
-                <div class="col-md-4 dropdown">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                        Dropdown button
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Link 1</a>
-                        <a class="dropdown-item" href="#">Link 2</a>
-                        <a class="dropdown-item" href="#">Link 3</a>
-                    </div>
-                </div>
-                <div class="col-md-4 dropdown">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                        Dropdown button
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Link 1</a>
-                        <a class="dropdown-item" href="#">Link 2</a>
-                        <a class="dropdown-item" href="#">Link 3</a>
-                    </div>
-                </div>
-            </div>
-
-
-            <p>Special Discount</p>
-
-            <img src={`${VOUCHER_IMGS_URL}/voucherBg.png`} alt="" />
-            <div className="row" style={{ marginTop: "20px" }}>
-
-                <div className="row col-md-6">
-                    <img className="" style={{ borderRadius: "5%", marginLeft: "15px" }} src="https://static.thenounproject.com/png/159033-200.png" alt="" />
-                    <div className="col-md-7" style={{ borderRadius: "3%", border: "2px solid g" }}>
-                        <h4 className="text-dark">Giảm 30k</h4>
-                        <button className="btn btn-danger">Save</button>
+                    <div class="carousel-item">
+                        <img className="rounded" src={`${VOUCHER_IMGS_URL}/voucherBg.png`} style={{ width: '80%', height: 'auto' }} alt="Chicago" />
                     </div>
                 </div>
 
-                <div className="row col-md-6">
-                    <img className="" style={{ borderRadius: "5%", marginLeft: "15px" }} src="https://static.thenounproject.com/png/4727320-200.png" alt="" />
-                    <div className="col-md-7" style={{ borderRadius: "3%", border: "2px solid g" }}>
-                        <h4 className="text-dark">Giảm 30k</h4>
-                        <button className="btn btn-danger">Save</button>
-                    </div>
-                </div>
+
+                <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </a>
+                <a class="carousel-control-next" href="#demo" data-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </a>
 
             </div>
 
 
+            <h1 className="mt-5 mb-5">Special Discount</h1>
+
+            <div className="row mt-5 bg-primary">
+
+                {
+                    discounts.map(
+                        d => (
+                            <div key={d.id} className="row col-md-6" style={{ borderRight: "2px solid black" }}>
+                                <img className="" style={{ borderRadius: "5%", marginLeft: "15px" }} src="https://static.thenounproject.com/png/4727320-200.png" alt="" />
+                                <div className="col-md-7 mt-5">
+                                    <h3>{d.id}</h3>
+                                    <h4 className="text-dark">Sale {d.discountPercentage}%</h4>
+                                    <h5>Đơn tối thiểu {d.condition}k</h5>
+                                    <button className="btn btn-danger" onClick={() => saveToAccount(d.id)}>Save</button>
+                                </div>
+                            </div>
+                        )
+                    )
+                }
+            </div>
+
+
+            <h1 className="mt-5 mb-5">Daily</h1>
+
+            <div>
+
+            </div>
 
         </div>
     )
