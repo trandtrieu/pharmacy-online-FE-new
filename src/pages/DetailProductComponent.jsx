@@ -34,7 +34,7 @@ class DetailProductComponent extends Component {
     this.openReply = this.openReply.bind(this);
     this.hiddenReply = this.hiddenReply.bind(this);
     this.starRating = this.starRating.bind(this);
-    this.deleteFeedback = this.deleteFeedback.bind(this);
+    // this.deleteFeedback = this.deleteFeedback.bind(this);
     this.handleRatingChange = this.handleRatingChange.bind(this);
     this.changeOpinion = this.changeOpinion.bind(this);
     this.changeReply = this.changeReply.bind(this);
@@ -131,15 +131,15 @@ class DetailProductComponent extends Component {
   closeModal = () => {
     this.setState({ isModalOpen: false });
   };
-  deleteFeedback(id) {
-    FeedbackServices.deleteFeedback(id).then((res) => {
-      this.setState({
-        feedbacks: this.state.feedbacks.filter(
-          (feedback) => feedback.feedback_id !== id
-        ),
-      });
-    });
-  }
+  // deleteFeedback(id) {
+  //   FeedbackServices.deleteFeedback(id).then((res) => {
+  //     this.setState({
+  //       feedbacks: this.state.feedbacks.filter(
+  //         (feedback) => feedback.feedback_id !== id
+  //       ),
+  //     });
+  //   });
+  // }
 
   calculateStarRatingPercentage(starRating) {
     const {
@@ -378,7 +378,7 @@ class DetailProductComponent extends Component {
                     <i className="fas fa-shopping-basket fa-sm mx-1 " />
                     {this.state.product.quantity}
                   </span>
-                  {this.state.product.status === 1 ? (
+                  {this.state.product.quantity !== 0 ? (
                     <span className="text-success ms-2 ml-1"> In stock</span>
                   ) : (
                     <span className="text-danger ms-2 ml-1"> Out of Stock</span>
@@ -401,7 +401,7 @@ class DetailProductComponent extends Component {
                 <hr />
                 {this.state.product.type === 0 ? (
                   <div className="d-flex flex-column align-items-start mb-4 pt-2">
-                    <div
+                    {this.state.product.quantity !== 0 ? (<div
                       className="input-group quantity mb-3"
                       style={{ width: "130px" }}
                     >
@@ -426,9 +426,10 @@ class DetailProductComponent extends Component {
                           <i className="fa fa-plus" />
                         </button>
                       </div>
-                    </div>
+                    </div>) : null}
+
                     <div className="d-flex flex-column">
-                      <button
+                      {this.state.product.quantity !== 0 ? (<button
                         className="btn btn-primary px-3 mb-3"
                         onClick={() =>
                           this.handleAddToCart(
@@ -440,7 +441,7 @@ class DetailProductComponent extends Component {
                         }
                       >
                         <i className="fa fa-shopping-cart mr-1" /> Add To Cart
-                      </button>
+                      </button>) : null}
                       <button
                         className="btn btn-primary px-3"
                         onClick={() =>

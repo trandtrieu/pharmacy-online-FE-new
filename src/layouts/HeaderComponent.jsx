@@ -189,7 +189,7 @@ const HeaderComponent = (props) => {
             <div className="col-lg-3 text-left">
               <a className="text-decoration-none">
                 <img
-                  src="assets/images/logoSite.png"
+                  src="../assets/images/logoSite.png"
                   alt=""
                   style={{ width: "66%", height: "75px" }}
                 />
