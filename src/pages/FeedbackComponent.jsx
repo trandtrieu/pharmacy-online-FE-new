@@ -30,6 +30,7 @@ class FeedbackComponent extends Component {
       product: "",
       imageUrls: [],
     };
+    this.deleteFeedback = this.deleteFeedback.bind(this);
   }
   static contextType = AuthContext;
 
@@ -40,22 +41,28 @@ class FeedbackComponent extends Component {
       this.setState({ product: productData, imageUrls });
     });
   }
-  deleteFeedback(id) {
-    const { accountId, token } = this.context;
-
-    FeedbackServices.deleteFeedback(id, accountId, token)
-      .then((res) => {
-        this.setState({
-          feedbacks: this.state.feedbacks.filter(
-            (feedback) => feedback.feedback_id !== id
-          ),
+  deleteFeedback = (id, user_id) => {
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this feedback?"
+    );
+    if (shouldDelete) {
+      FeedbackServices.deleteFeedback(id, user_id)
+        .then((res) => {
+          this.setState({
+            feedbacks: this.state.feedbacks.filter(
+              (feedback) => feedback.feedback_id !== id
+            ),
+          });
+          toast.success("Feedback deleted successfully!");
+          setTimeout(() => {
+            window.location.reload();
+          });
+        })
+        .catch((err) => {
+          toast.error("Error deleting feedback. Please try again.");
         });
-        toast.success("Delete feedback successfully");
-      })
-      .catch((err) => {
-        toast.error("delete fail", err);
-      });
-  }
+    }
+  };
 
   calculateStarRatingPercentage(starRating) {
     const {
@@ -151,17 +158,22 @@ class FeedbackComponent extends Component {
         comment: this.state.opinion,
         rating: this.state.rating,
       };
+
       FeedbackServices.addFeedback(
         this.state.productId,
         accountId,
         feedback,
         token
-      ).then((res) => {
-        toast.success("Feedback submitted successfully");
-      });
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+      )
+        .then((res) => {
+          toast.success("Feedback submitted successfully");
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        })
+        .catch((error) => {
+          toast.error("Error submitting feedback. Please try again.");
+        });
     }
   };
 
@@ -216,267 +228,299 @@ class FeedbackComponent extends Component {
 
   render() {
     const { accountId, token } = this.context;
-
     return (
       <div className="container-fluid mb-5 mt-5">
-        <div className="card">
-          <div className="row p-5">
-            <h4 className=" mb-1">Feedback Product</h4>
-            <div className="col-md-12 ">
-              <div className="row">
-                <div className="col-md-12">
-                  {this.props.feedbacks.map((feedback) => (
-                    <div className="media mt-5 mb-5">
-                      <img
-                        className="mr-3 rounded-circle"
-                        alt="Bootstrap Media Preview"
-                        src={`../assets/images/${feedback.avatar}`}
-                      />
-
-                      <div className="media-body">
-                        <div className="row">
-                          <div className="col-8 d-flex">
-                            <h5>
-                              <b>{feedback.user_name}</b>
-                              <span>{this.starRating(feedback.rating)}</span>
-                            </h5>
-                          </div>
-                          <div className="col-4">
-                            <div className="pull-right reply">
-                              <button
-                                className="btn  btn-sm shadow-none"
-                                style={{ color: "#003973" }}
-                                href=""
-                              >
-                                <span
-                                  onClick={() =>
-                                    this.openReply(feedback.feedback_id)
-                                  }
-                                  className="m-1"
-                                >
-                                  <FontAwesomeIcon icon={faReply} /> Reply
-                                </span>
-                                {feedback.user_id === accountId && (
-                                  <span
-                                    className="m-1"
-                                    onClick={() =>
-                                      this.deleteFeedback(feedback.feedback_id)
-                                    }
-                                  >
-                                    <FontAwesomeIcon
-                                      style={{ color: "#dc3545" }}
-                                      icon={faTrash}
-                                    />{" "}
-                                    Delete
-                                  </span>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        {feedback.comment}
-                        <br></br>
-                        {feedback.created_at_time} - {feedback.created_date}
-                        {/* reply form */}
-                        <div className="wrap">
-                          <div
-                            key={feedback.feedback_id}
-                            id={`replyDiv${feedback.feedback_id}`}
-                            style={{ display: "none" }}
-                            className="media mt-4"
-                          >
-                            <form style={{ width: "80%" }} action="">
-                              <div className="bg-light p-2">
-                                <div className="d-flex flex-row align-items-start">
-                                  {/* <img
-                                    alt=""
-                                    className="rounded-circle mr-3 "
-                                    src={`../assets/images/${feedback.avatar}`}
-                                  /> */}
-                                  <textarea
-                                    className="form-control ml-1 shadow-none textarea rounded"
-                                    defaultValue={""}
-                                    onChange={this.changeReply}
-                                  />
-                                </div>
-                                <div className="mt-2 text-right">
-                                  <button
-                                    className="btn btn-info btn-sm shadow-none rounded"
-                                    type="button"
-                                    onClick={() =>
-                                      this.postReply(feedback.feedback_id)
-                                    }
-                                  >
-                                    Reply
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      this.hiddenReply(feedback.feedback_id)
-                                    }
-                                    className="btn btn-danger btn-sm ml-1 shadow-none rounded"
-                                    type="button"
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            </form>
-                          </div>
-                          {feedback.replies &&
-                            feedback.replies.map((reply) => (
-                              <div key={reply.reply_id} className="media mt-4 ">
-                                <img
-                                  className="rounded-circle mr-3"
-                                  alt="Bootstrap Media Another Preview"
-                                  src={`../assets/images/${reply.avatar}`}
-                                />
-                                <div className="media-body">
-                                  <div className="row">
-                                    <div className="col-12 d-flex">
-                                      <h5>
-                                        <b>{reply.user_name}</b>
-                                        {/* <span style={{ opacity: '0.7' }}></span> */}
-                                      </h5>
-                                    </div>
-                                  </div>
-                                  {reply.reply_feedback} <br></br>
-                                  <span>
-                                    {reply.created_at_time} {reply.created_date}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {/* //model send reviews */}
-                  <div class="container">
-                    <div
-                      class="modal fade modal-lg "
-                      style={{
-                        maxWidth: "10000px",
-                        width: "100p0x",
-                        margin: "0 auto",
-                        marginTop: "",
-                        paddingRight: "0",
-                      }}
-                      id={`myModal`}
-                      role="dialog"
-                    >
-                      <div style={{ maxWidth: "700px" }} class="modal-dialog">
-                        {/* <!-- Modal content--> */}
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h4
-                              style={{ textAlign: "center" }}
-                              class="modal-title"
-                            >
-                              Review Product <b></b>
-                            </h4>
-                            <button
-                              type="button"
-                              class="close"
-                              data-dismiss="modal"
-                            >
-                              &times;
-                            </button>
-                          </div>
-                          <div className=" container row mt-3">
-                            <div className="col-md-3 col-sm-3 ">
-                              <img
-                                style={{ width: "100%", height: "100%" }}
-                                src={this.state.product.imageUrls}
-                                alt="loi"
-                                srcSet=""
-                                width={100}
-                              />
-                            </div>
-                            <div className="col-md-9 col-sm-9 d-flex align-items-center ">
-                              <h4>{this.state.product.name}</h4>
-                            </div>
-                          </div>
-                          <div class="modal-body">
-                            <form action="">
-                              <div
-                                style={{
-                                  height: "30px",
-                                  marginBottom: "0.5rem",
-                                  fontSize: "1.3rem",
-                                }}
-                                className="rating mt-3 mb-3"
-                              >
-                                <input type="number" name="rating" hidden />
-                                <select
-                                  required
-                                  value={this.state.rating}
-                                  style={{
-                                    width: "20%",
-                                    textAlign: "center",
-                                    outline: "none",
-                                  }}
-                                  className="form-select rounded"
-                                  name=""
-                                  id=""
-                                  onChange={this.handleRatingChange}
-                                >
-                                  <option value="0" selected>
-                                    Star
-                                  </option>
-                                  <option value="1"> 1 Star </option>
-                                  <option value="2"> 2 Star </option>
-                                  <option value="3"> 3 Star </option>
-                                  <option value="4"> 4 Star </option>
-                                  <option value="5"> 5 Star </option>
-                                </select>
-                                <div
-                                  style={{
-                                    width: "30%",
-                                    marginLeft: "7%",
-                                  }}
-                                >
-                                  {this.starRating(this.state.rating)}
-                                </div>
-                                <div>
-                                  <p
-                                    style={{
-                                      marginBottom: "0.5rem",
-                                      marginTop: "12px",
-                                      color: "#FFBD13",
-                                    }}
-                                    id="ratingText"
-                                  >
-                                    {this.state.ratingText}
-                                  </p>
-                                </div>
-                              </div>
-                              <textarea
-                                onChange={this.changeOpinion}
-                                name="opinion"
-                                cols="30"
-                                rows="5"
-                                placeholder="Your opinion..."
-                                required
-                              ></textarea>
-                              <div className="btn btn-info rounded">
-                                <button
-                                  onClick={this.postFeedback}
-                                  style={{ color: "#fff" }}
-                                  type="submit"
-                                  className="btn submit"
-                                >
-                                  Submit
-                                </button>
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+        {/* model send review */}
+        <div class="container">
+          <div
+            class="modal fade modal-lg "
+            style={{
+              maxWidth: "10000px",
+              width: "100p0x",
+              margin: "0 auto",
+              marginTop: "",
+              paddingRight: "0",
+            }}
+            id={`myModal`}
+            role="dialog"
+          >
+            <div style={{ maxWidth: "700px" }} class="modal-dialog">
+              {/* <!-- Modal content--> */}
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 style={{ textAlign: "center" }} class="modal-title">
+                    Review Product <b></b>
+                  </h4>
+                  <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                  </button>
+                </div>
+                <div className=" container row mt-3">
+                  <div className="col-md-3 col-sm-3 ">
+                    <img
+                      style={{ width: "100%", height: "100%" }}
+                      src={`../assets/images/${this.state.product.imageUrls}`}
+                      alt="loi"
+                      srcSet=""
+                      width={100}
+                    />
                   </div>
+                  <div className="col-md-9 col-sm-9 d-flex align-items-center ">
+                    {/* <h4>{this.state.product.name}</h4> */}
+                  </div>
+                </div>
+                <div class="modal-body">
+                  <form action="">
+                    <div
+                      style={{
+                        height: "30px",
+                        marginBottom: "0.5rem",
+                        fontSize: "1.3rem",
+                      }}
+                      className="rating mt-3 mb-3"
+                    >
+                      <input type="number" name="rating" hidden />
+                      <select
+                        required
+                        value={this.state.rating}
+                        style={{
+                          width: "20%",
+                          textAlign: "center",
+                          outline: "none",
+                        }}
+                        className="form-select rounded"
+                        name=""
+                        id=""
+                        onChange={this.handleRatingChange}
+                      >
+                        <option value="0" selected>
+                          Star
+                        </option>
+                        <option value="1"> 1 Star </option>
+                        <option value="2"> 2 Star </option>
+                        <option value="3"> 3 Star </option>
+                        <option value="4"> 4 Star </option>
+                        <option value="5"> 5 Star </option>
+                      </select>
+                      <div
+                        style={{
+                          width: "30%",
+                          marginLeft: "7%",
+                        }}
+                      >
+                        {this.starRating(this.state.rating)}
+                      </div>
+                      <div>
+                        <p
+                          style={{
+                            marginBottom: "0.5rem",
+                            marginTop: "12px",
+                            color: "#FFBD13",
+                          }}
+                          id="ratingText"
+                        >
+                          {this.state.ratingText}
+                        </p>
+                      </div>
+                    </div>
+                    <textarea
+                      onChange={this.changeOpinion}
+                      name="opinion"
+                      cols="30"
+                      rows="5"
+                      placeholder="Your opinion..."
+                      required
+                    ></textarea>
+                    <div className="btn btn-info rounded">
+                      <button
+                        onClick={this.postFeedback}
+                        style={{ color: "#fff" }}
+                        type="submit"
+                        className="btn submit"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div className="card">
+          <div className="row">
+            {!this.props.feedbacks || this.props.feedbacks.length === 0 ? (
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-md-12 d-flex flex-column align-items-center">
+                    <div
+                      className="empty-img mt-4"
+                      style={{ width: "150px", height: "100px" }}
+                    >
+                      <img
+                        src="../assets/images/empty-image.png"
+                        alt=""
+                        className="w-100 h-100"
+                      />
+                    </div>
+                    <h6 className="mb-2">
+                      I'm sorry! DrugMart couldn't find any feedback in this
+                      product.
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="col-md-12">
+                <h4 className=" mb-1">Feedback Product</h4>
+                <div className="row">
+                  <div className="col-md-12">
+                    {this.props.feedbacks.map((feedback) => (
+                      <div className="media mt-5 mb-5">
+                        <img
+                          className="mr-3 rounded-circle"
+                          alt="Bootstrap Media Preview"
+                          src="https://tse1.mm.bing.net/th?id=OIP.a1qV9wx2tjVVv86EW-lZaAHaE8&pid=Api&P=0&h=220"
+                        />
+
+                        <div className="media-body">
+                          <div className="row">
+                            <div className="col-8 d-flex">
+                              <h5>
+                                <b className="mr-2">{feedback.user_name}</b>
+                                <b className="mr-2"></b>
+                                <span>{this.starRating(feedback.rating)}</span>
+                              </h5>
+                            </div>
+                            <div className="col-4">
+                              <div className="pull-right reply">
+                                <button
+                                  className="btn  btn-sm shadow-none"
+                                  style={{ color: "#003973" }}
+                                  href=""
+                                >
+                                  <span
+                                    onClick={() =>
+                                      this.openReply(feedback.feedback_id)
+                                    }
+                                    className="m-1"
+                                  >
+                                    <FontAwesomeIcon
+                                      style={{
+                                        fontSize: "16px",
+                                        color: "blue",
+                                      }}
+                                      icon={faReply}
+                                    />
+                                  </span>
+                                  {feedback.user_id == accountId && (
+                                    <span
+                                      className="m-3"
+                                      onClick={() =>
+                                        this.deleteFeedback(
+                                          feedback.feedback_id,
+                                          accountId
+                                        )
+                                      }
+                                    >
+                                      <FontAwesomeIcon
+                                        style={{
+                                          fontSize: "16px",
+                                          color: "	#B22222",
+                                        }}
+                                        icon={faTrash}
+                                      />{" "}
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          {feedback.comment}
+                          <br></br>
+                          {feedback.created_at_time} - {feedback.created_date}
+                          {/* reply form */}
+                          <div className="wrap">
+                            <div
+                              key={feedback.feedback_id}
+                              id={`replyDiv${feedback.feedback_id}`}
+                              style={{ display: "none" }}
+                              className="media mt-4"
+                            >
+                              <form style={{ width: "80%" }} action="">
+                                <div className="bg-light p-2">
+                                  <div className="d-flex flex-row align-items-start">
+                                    <img
+                                      alt=""
+                                      className="rounded-circle mr-3 "
+                                      src="https://scontent.xx.fbcdn.net/v/t1.15752-9/396643098_1499022063974040_6274169702054090360_n.jpg?stp=dst-jpg_s206x206&_nc_cat=101&ccb=1-7&_nc_sid=510075&_nc_ohc=D5IR0pjWX8AAX-3e1p1&_nc_oc=AQlze1JL0dPlVA6q8X__lZrwqW59WXORB-6wWvS0WqGuxjMbhD7nsErQPomniGxzUx1-JAAejyWqyGjT-0tgYGHl&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdTxfLI6tXHQ4Wl3HDm0xqqn_gMq5ee9SqlKuKEeukBhXg&oe=6567E054"
+                                    />
+                                    <textarea
+                                      className="form-control ml-1 shadow-none textarea rounded"
+                                      defaultValue={""}
+                                      onChange={this.changeReply}
+                                    />
+                                  </div>
+                                  <div className="mt-2 text-right">
+                                    <button
+                                      className="btn btn-info btn-sm shadow-none rounded"
+                                      type="button"
+                                      onClick={() =>
+                                        this.postReply(feedback.feedback_id)
+                                      }
+                                    >
+                                      Reply
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        this.hiddenReply(feedback.feedback_id)
+                                      }
+                                      className="btn btn-danger btn-sm ml-1 shadow-none rounded"
+                                      type="button"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                            {feedback.replies &&
+                              feedback.replies.map((reply) => (
+                                <div
+                                  key={reply.reply_id}
+                                  className="media mt-4 "
+                                >
+                                  <img
+                                    className="rounded-circle mr-3"
+                                    alt="Bootstrap Media Another Preview"
+                                    src="https://tse3.mm.bing.net/th?id=OIP.-eS1RlYwKg5bUqgPtV_WYAHaHa&pid=Api&P=0&h=220"
+                                  />
+                                  <div className="media-body">
+                                    <div className="row">
+                                      <div className="col-12 d-flex">
+                                        <h5>
+                                          <b>{reply.user_name}</b>
+                                          {/* <span style={{ opacity: '0.7' }}></span> */}
+                                        </h5>
+                                      </div>
+                                    </div>
+                                    {reply.reply_feedback} <br></br>
+                                    <span>
+                                      {reply.created_at_time}{" "}
+                                      {reply.created_date}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {/* //model send reviews */}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

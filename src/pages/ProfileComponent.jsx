@@ -493,6 +493,22 @@ const ProfileComponent = () => {
                   createNewDeliveryAddress={createNewDeliveryAddress}
                   accountId={accountId}
                 />
+                <div className="tab-pane fade" id="account-orders">
+                  <div className="card-body pb-2">
+                    <div className="form-group">
+                      <label className="form-label">cc password</label>
+                      {/* <input type="password" className="form-control" /> */}
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">New password</label>
+                      {/* <input type="password" className="form-control" /> */}
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Repeat new password</label>
+                    </div>{" "}
+                    {/* <input type="password" className="form-control" /> */}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

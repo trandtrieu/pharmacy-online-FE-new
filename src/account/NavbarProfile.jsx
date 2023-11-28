@@ -34,6 +34,13 @@ class NavbarProfile extends Component {
             >
               My delivery address
             </a>
+            <a
+              className="list-group-item list-group-item-action"
+              data-toggle="list"
+              href="#account-orders"
+            >
+              My Orders
+            </a>
           </div>
         </div>
       </>

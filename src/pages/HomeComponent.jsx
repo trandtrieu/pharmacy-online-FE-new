@@ -6,16 +6,12 @@ import CategoriesComponent from "../layouts/CategoriesComponent";
 import ProductServices from "../services/ProductServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faStar } from "@fortawesome/free-solid-svg-icons";
-import { toast } from "react-toastify";
-import WishListServices from "../services/WishListServices";
-import CartServices from "../services/CartServices";
 import PrescriptionBanner from "../layouts/PrescriptionBanner";
 import Loading from "react-loading";
 import { useAuth } from "../AuthContext"; // Import AuthContext
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import FavouriteBrand from "../layouts/FavouriteBrand";
 import FeatureCategory from "../layouts/FeatureCategory";
-import ScrollToTop from "../layouts/ScrollToTop";
 import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
 import { useCart } from "../CartProvider";
@@ -38,7 +34,6 @@ function HomeProduct(props) {
   const [loading, setLoading] = useState(true);
   const { accountId, token } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const [cartItemCount, setCartItemCount] = useState(0);
   const { updateCartItemCount } = useCart();
   const { updateWishlistItemCount } = useCart();
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -273,7 +268,13 @@ function HomeProduct(props) {
                                     <img
                                       className="card-img-top img-fluid w-100 h-100"
                                       style={{ borderRadius: "10px" }}
-                                      src={product.imageUrls[0]}
+                                      src={
+                                        product.imageUrls[0]?.startsWith(
+                                          "https"
+                                        )
+                                          ? product.imageUrls[0]
+                                          : `assets/images/${product.imageUrls[0]}`
+                                      }
                                       alt={`Image3 0`}
                                     />
                                   </div>

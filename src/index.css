@@ -444,3 +444,30 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 .dropzone.active {
   border-color: green;
 }
+
+.coupon {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+}
+
+.coupon h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.coupon p {
+  margin-bottom: 0px;
+  font-size: 12px;
+}
+
+.btn-detail {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.coupon-list-detail p {
+  margin-bottom: 0px;
+}

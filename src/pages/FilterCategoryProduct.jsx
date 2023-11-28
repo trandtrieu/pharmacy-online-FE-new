@@ -1,7 +1,14 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import ProductServices from "../services/ProductServices";
-import { convertDollarToVND } from "../utils/cartutils";
+import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
+import { useCart } from "../CartProvider";
+import addWishListProduct from "../utils/wishlistutils";
+import { useAuth } from "../AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
 const FilterCategoryProduct = () => {
   const history = useHistory();
@@ -27,7 +34,8 @@ const FilterCategoryProduct = () => {
       setShowNotification(false);
     }, 5000);
   };
-
+  const { updateCartItemCount } = useCart();
+  const { accountId, token } = useAuth();
   const viewProduct = (product_id) => {
     history.push(`/detail-product/${product_id}`);
   };
@@ -77,13 +85,13 @@ const FilterCategoryProduct = () => {
       showFilterEmptyNotification();
     }
   };
-  // const handleAddToCart = async (productId) => {
-  //   await addProductToCart(accountId, productId, 1, token);
-  //   await updateCartItemCount();
-  // };
-  // const handleAddtoWishlist = (productId) => {
-  //   addWishListProduct(accountId, productId, token);
-  // };
+  const handleAddToCart = async (productId) => {
+    await addProductToCart(accountId, productId, 1, token);
+    await updateCartItemCount();
+  };
+  const handleAddtoWishlist = (productId) => {
+    addWishListProduct(accountId, productId, token);
+  };
   const renderPriceFilterCheckboxes = () => {
     return Object.keys(priceRanges).map((rangeId, index) => (
       <div
@@ -111,28 +119,6 @@ const FilterCategoryProduct = () => {
       </div>
     ));
   };
-
-  //   return (
-  //     <div className="container">
-  //       <h2>Filtered Category Products</h2>
-  //       <div className="row">
-  //         <div className="col-md-3">
-  //           <h4>Filter by Price</h4>
-  //           <div>{renderPriceFilterCheckboxes()}</div>
-  //         </div>
-  //         <div className="col-md-9">
-  //           {/* Render your products here */}
-  //           {products.map((product) => (
-  //             <div key={product.productId}>
-  //               <h5>{product.name}</h5>
-  //               <p>${product.price}</p>
-  //             </div>
-  //           ))}
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-
   return (
     <>
       <div className="container-fluid">
@@ -185,32 +171,48 @@ const FilterCategoryProduct = () => {
                                 <a
                                   className="btn btn-outline-dark btn-square"
                                   href
-                                  // onClick={() =>
-                                  //   handleAddToCart(product.productId)
-                                  // }
+                                  onClick={() =>
+                                    handleAddToCart(product.productId)
+                                  }
                                 >
                                   <i className="fa fa-shopping-cart" />
                                 </a>
                                 <a
                                   className="btn btn-outline-dark btn-square"
                                   href
-                                  // onClick={() =>
-                                  //   handleAddtoWishlist(product.productId)
-                                  // }
+                                  onClick={() =>
+                                    handleAddtoWishlist(product.productId)
+                                  }
                                 >
                                   <i className="far fa-heart" />
+                                </a>{" "}
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() => viewProduct(product.productId)}
+                                >
+                                  <FontAwesomeIcon icon={faCircleInfo} />
                                 </a>
                               </>
                             ) : (
-                              <a
-                                className="btn btn-outline-dark btn-square"
-                                href
-                                // onClick={() =>
-                                //   handleAddtoWishlist(product.productId)
-                                // }
-                              >
-                                <i className="far fa-heart" />
-                              </a>
+                              <>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() =>
+                                    handleAddtoWishlist(product.productId)
+                                  }
+                                >
+                                  <i className="far fa-heart" />
+                                </a>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() => viewProduct(product.productId)}
+                                >
+                                  <FontAwesomeIcon icon={faCircleInfo} />
+                                </a>
+                              </>
                             )}
                           </div>
                         </div>

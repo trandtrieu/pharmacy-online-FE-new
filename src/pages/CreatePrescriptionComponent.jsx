@@ -1,7 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { faCamera, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCamera,
+  faCircleXmark,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PrescriptionServices from "../services/PrescriptionServices";
 import { toast } from "react-toastify";
@@ -131,7 +135,16 @@ const CreatePrescriptionComponent = ({ history }) => {
       }));
     }
   };
-
+  const openImageModal = () => {
+    window.open(state.droppedImage, "_blank");
+  };
+  const deleteImage = () => {
+    setState((prevState) => ({
+      ...prevState,
+      imageFile: null,
+      droppedImage: null,
+    }));
+  };
   return (
     <>
       <ReactModal
@@ -164,7 +177,6 @@ const CreatePrescriptionComponent = ({ history }) => {
                 <span className="label-require">*</span>
               </p>
               <div className="mb-3">
-                {/* Use the Dropzone component here */}
                 <Dropzone onDrop={onDrop} multiple={false}>
                   {({ getRootProps, getInputProps, isDragActive }) => (
                     <div
@@ -175,13 +187,40 @@ const CreatePrescriptionComponent = ({ history }) => {
                       }}
                     >
                       <input {...getInputProps()} accept="image/*" />
-                      {state.droppedImage ? ( // Check if a dropped image exists
-                        <div>
-                          <img
-                            src={state.droppedImage}
-                            alt="Dropped Imagee"
-                            style={{ maxWidth: "20%" }}
-                          />
+                      {state.droppedImage ? (
+                        // Check if a dropped image exists
+                        <div style={{ position: "relative" }}>
+                          <div
+                            onClick={openImageModal}
+                            style={{
+                              cursor: "pointer",
+                              position: "relative",
+                              maxWidth: "20%",
+                            }}
+                          >
+                            {/* Add onClick to open the image in a larger view */}
+                            <img
+                              src={state.droppedImage}
+                              alt="Dropped Imagee"
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                          <button
+                            onClick={deleteImage}
+                            style={{
+                              position: "absolute",
+                              top: "0",
+                              right: "0",
+                              background: "transparent",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <FontAwesomeIcon
+                              icon={faCircleXmark}
+                              className="text-danger"
+                            />
+                          </button>
                         </div>
                       ) : isDragActive ? (
                         <p>Drop the image here ...</p>

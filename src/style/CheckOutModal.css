@@ -30,9 +30,9 @@
     color: #4caf50;
 }
 
-.ReactModal__Content p {
-    margin-bottom: 20px;
-}
+/* .ReactModal__Content p {
+        margin-bottom: 20px;
+    } */
 
 .ReactModal__Content button {
     color: #fff;

@@ -83,7 +83,14 @@ class CategoriesComponent extends Component {
                 onClick={() => this.viewProductByCategory(category.category_id)}
               >
                 <div className="category-image">
-                  <img src={category.category_image} alt="" />
+                  <img
+                    src={
+                      category.category_image?.startsWith("https")
+                        ? category.category_image
+                        : `assets/images/${category.category_image}`
+                    }
+                    alt=""
+                  />
                 </div>
                 <div className="category-name">
                   <h6>{category.category_name}</h6>
@@ -102,7 +109,15 @@ class CategoriesComponent extends Component {
                   }
                 >
                   <div className="category-image">
-                    <img src={category.category_image} alt="" />
+                    <img
+                      // src={category.category_image}
+                      src={
+                        category.category_image?.startsWith("https")
+                          ? category.category_image
+                          : `assets/images/${category.category_image}`
+                      }
+                      alt=""
+                    />
                   </div>
                   <div className="category-name">
                     <h6>{category.category_name}</h6>

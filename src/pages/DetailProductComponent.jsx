@@ -7,24 +7,15 @@ import {
   faHeart,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
+import WishListServices from "../services/WishListServices";
 import FeedbackServices from "../services/FeedbackServices";
 import ReplyServices from "../services/ReplyServices";
 import FeedbackComponent from "./FeedbackComponent";
 import { AuthContext } from "../AuthContext";
 import Modal from "react-modal";
-import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
+import addProductToCart from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
-const customStyles = {
-  content: {
-    top: "35%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    width: "30%",
-    transform: "translate(-40%, -10%)",
-  },
-};
+
 class DetailProductComponent extends Component {
   constructor(props) {
     super(props);
@@ -38,11 +29,12 @@ class DetailProductComponent extends Component {
       replies: [],
       quantity: 1,
       isModalOpen: false,
+      countFeedback: "",
     };
     this.openReply = this.openReply.bind(this);
     this.hiddenReply = this.hiddenReply.bind(this);
     this.starRating = this.starRating.bind(this);
-    this.deleteFeedback = this.deleteFeedback.bind(this);
+    // this.deleteFeedback = this.deleteFeedback.bind(this);
     this.handleRatingChange = this.handleRatingChange.bind(this);
     this.changeOpinion = this.changeOpinion.bind(this);
     this.changeReply = this.changeReply.bind(this);
@@ -53,15 +45,17 @@ class DetailProductComponent extends Component {
   componentDidMount() {
     Modal.setAppElement("#root"); // Replace "#root" with the root element of your React application
 
-    ProductServices.getProductById(this.state.productId).then((res) => {
-      const productData = res.data;
-      const imageUrls = productData.imageUrls || []; // Replace 'imageUrls' with the correct field from your API data
-      this.setState({ product: productData, imageUrls });
-      if (productData.type === 1) {
-        this.openModal();
-        console.log("check type: " + productData.type);
-      }
-    });
+    ProductServices.getProductById(this.state.productId)
+      .then((res) => {
+        const productData = res.data;
+        const imageUrls = productData.imageUrls || [];
+        this.setState({ product: productData, imageUrls });
+      })
+      .catch((error) => {
+        // Handle the error here
+        console.error("Error fetching product:", error);
+        this.props.history.push("/home");
+      });
 
     ProductServices.get5ProductsRandom()
       .then((res) => {
@@ -105,6 +99,14 @@ class DetailProductComponent extends Component {
       }
     );
 
+    FeedbackServices.countFeedbackByProductId(this.state.productId).then(
+      (res) => {
+        this.setState({
+          countFeedback: res.data,
+        });
+      }
+    );
+
     FeedbackServices.getFeedbackByProductId(this.state.productId).then(
       (res) => {
         this.setState({
@@ -125,6 +127,10 @@ class DetailProductComponent extends Component {
         });
       }
     );
+    if (this.state.product.type === 0) {
+      this.openModal();
+      console.log("check type: " + this.state.product.type);
+    }
   }
   openModal = () => {
     this.setState({ isModalOpen: true });
@@ -133,15 +139,15 @@ class DetailProductComponent extends Component {
   closeModal = () => {
     this.setState({ isModalOpen: false });
   };
-  deleteFeedback(id) {
-    FeedbackServices.deleteFeedback(id).then((res) => {
-      this.setState({
-        feedbacks: this.state.feedbacks.filter(
-          (feedback) => feedback.feedback_id !== id
-        ),
-      });
-    });
-  }
+  // deleteFeedback(id) {
+  //   FeedbackServices.deleteFeedback(id).then((res) => {
+  //     this.setState({
+  //       feedbacks: this.state.feedbacks.filter(
+  //         (feedback) => feedback.feedback_id !== id
+  //       ),
+  //     });
+  //   });
+  // }
 
   calculateStarRatingPercentage(starRating) {
     const {
@@ -304,12 +310,10 @@ class DetailProductComponent extends Component {
     const { accountId, token } = this.context;
     addProductToCart(accountId, productId, quantity, token);
   };
-
   handleAddtoWishlist = (productId) => {
     const { accountId, token } = this.context;
     addWishListProduct(accountId, productId, token);
   };
-
   createPrescription = () => {
     const { accountId, token } = this.context;
 
@@ -341,7 +345,17 @@ class DetailProductComponent extends Component {
                     >
                       <img
                         className="w-100 h-100"
-                        src={imageUrl}
+                        // src={imageUrl}
+                        // src={
+                        //   imageUrl?.startsWith("https")
+                        //     ? imageUrl
+                        //     : `../assets/images/${imageUrl}`
+                        // }
+                        src={
+                          imageUrl?.startsWith("https")
+                            ? imageUrl
+                            : `../assets/images/${imageUrl}`
+                        }
                         alt={`Imagee ${index + 1}`}
                       />
                     </div>
@@ -371,22 +385,25 @@ class DetailProductComponent extends Component {
                 <h4 className="title text-dark">{this.state.product.name}</h4>
                 <div className="d-flex flex-row my-3">
                   <div className="text-warning mb-1 me-2">
+                    <span className="mr-1">{this.state.average}</span>
+                    <FontAwesomeIcon icon={faStar} />
+                    {/* <FontAwesomeIcon icon={faStar} />
                     <FontAwesomeIcon icon={faStar} />
                     <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
+                    <FontAwesomeIcon icon={faStar} /> */}
                   </div>
                   <span className="text-muted">
                     <i className="fas fa-shopping-basket fa-sm mx-1 " />
                     {this.state.product.quantity}
                   </span>
-                  <span className="text-success ms-2 ml-1"> In stock</span>
+                  {this.state.product.quantity !== 0 ? (
+                    <span className="text-success ms-2 ml-1"> In stock</span>
+                  ) : (
+                    <span className="text-danger ms-2 ml-1"> Out of Stock</span>
+                  )}
                 </div>
                 <div className="mb-3">
-                  <span className="h2">
-                    {convertDollarToVND(this.state.product.price)} VND
-                  </span>
+                  <span className="h2">${this.state.product.price}</span>
                   <span className="text-muted">/per box</span>
                 </div>
                 <div className="row">
@@ -402,81 +419,77 @@ class DetailProductComponent extends Component {
                 <hr />
                 {this.state.product.type === 0 ? (
                   <div className="d-flex flex-column align-items-start mb-4 pt-2">
-                    <div
-                      className="input-group quantity mb-3"
-                      style={{ width: "130px" }}
-                    >
-                      <div className="input-group-btn">
-                        <button
-                          className="btn btn-primary btn-minus"
-                          onClick={() => this.handleQuantityChange(-1)}
-                        >
-                          <i className="fa fa-minus" />
-                        </button>
+                    {this.state.product.quantity !== 0 ? (
+                      <div
+                        className="input-group quantity mb-3"
+                        style={{ width: "130px" }}
+                      >
+                        <div className="input-group-btn">
+                          <button
+                            className="btn btn-primary btn-minus"
+                            onClick={() => this.handleQuantityChange(-1)}
+                          >
+                            <i className="fa fa-minus" />
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          className="form-control bg-secondary border-0 text-center"
+                          value={this.state.quantity}
+                        />
+                        <div className="input-group-btn">
+                          <button
+                            className="btn btn-primary btn-plus"
+                            onClick={() => this.handleQuantityChange(1)}
+                          >
+                            <i className="fa fa-plus" />
+                          </button>
+                        </div>
                       </div>
-                      <input
-                        type="text"
-                        className="form-control bg-secondary border-0 text-center"
-                        value={this.state.quantity}
-                      />
-                      <div className="input-group-btn">
-                        <button
-                          className="btn btn-primary btn-plus"
-                          onClick={() => this.handleQuantityChange(1)}
-                        >
-                          <i className="fa fa-plus" />
-                        </button>
-                      </div>
-                    </div>
+                    ) : null}
+
                     <div className="d-flex flex-column">
+                      {this.state.product.quantity !== 0 ? (
+                        <button
+                          className="btn btn-primary px-3 mb-3"
+                          onClick={() =>
+                            this.handleAddToCart(
+                              this.state.product.productId,
+                              this.state.quantity,
+                              accountId,
+                              token
+                            )
+                          }
+                        >
+                          <i className="fa fa-shopping-cart mr-1" /> Add To Cart
+                        </button>
+                      ) : null}
                       <button
-                        className="btn btn-primary px-3 mb-3"
+                        className="btn btn-primary px-3"
                         onClick={() =>
-                          this.handleAddToCart(
+                          this.handleAddtoWishlist(
                             this.state.product.productId,
-                            this.state.quantity,
                             accountId,
                             token
                           )
                         }
                       >
-                        <i className="fa fa-shopping-cart mr-1" /> Add To Cart
+                        <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
                       </button>
                     </div>
-                    <button
-                      className="btn btn-primary mb-2"
-                      onClick={() =>
-                        this.handleAddtoWishlist(
-                          this.state.product.productId,
-                          accountId,
-                          token
-                        )
-                      }
-                    >
-                      <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
-                    </button>
                   </div>
                 ) : (
                   <div className="d-flex flex-column align-items-start">
                     <p className="note-block-addcart">
                       <span>Note:</span> This product is only sold when
                       prescribed by a doctor, all information on the Website and
-                      App is for reference only.
+                      App is for reference only. Please confirm that you are a
+                      pharmacist, doctor, or medical staff member who wants to
+                      learn about this product
                     </p>
+
                     <button
-                      className="btn btn-primary mb-2"
-                      onClick={() =>
-                        this.handleAddtoWishlist(
-                          this.state.product.productId,
-                          accountId,
-                          token
-                        )
-                      }
-                    >
-                      <FontAwesomeIcon icon={faHeart} /> Add To Wishlist
-                    </button>
-                    <button
-                      className="btn btn-primary mb-5"
+                      className="btn btn-primary px-3 mr-3"
                       onClick={() => {
                         this.createPrescription();
                       }}
@@ -577,10 +590,8 @@ class DetailProductComponent extends Component {
                           />
                         </a>
                         <div className="info ml-3">
-                          <p>{product.name}</p>
-                          <strong className="text-dark">
-                            {convertDollarToVND(product.price)} VND
-                          </strong>
+                          <p>{this.state.product.name}</p>
+                          <strong className="text-dark"> $38.90</strong>
                         </div>
                       </div>
                     ))}
@@ -588,9 +599,9 @@ class DetailProductComponent extends Component {
                 </div>
               </div>
             </div>
-            <div className="container-fluid mb-5 mt-5 bg-light p-5">
+            <div className="container-fluid mb-5 mt-5">
               <h4 style={{ color: "#3D464D" }} className="mb-5 mt-5">
-                Reviews <span>(3 reviews)</span>
+                Reviews <span>({this.state.countFeedback} reviews)</span>
               </h4>
               <div className="row">
                 <div className="row col-md-10">
@@ -747,15 +758,11 @@ class DetailProductComponent extends Component {
           isOpen={this.state.isModalOpen}
           onRequestClose={this.closeModal}
           contentLabel="Product Type Modal"
-          style={customStyles}
         >
-          <p>
-            This product is only sold when prescribed by a doctor. All
-            information on the Website is for reference only.
-          </p>
-          <button className="btn btn-primary" onClick={this.closeModal}>
-            Close Modal
-          </button>
+          <h2>Product Type 0 Modal</h2>
+          <p>This is a modal for products with type 0.</p>
+          {/* Add any additional content for your modal */}
+          <button onClick={this.closeModal}>Close Modal</button>
         </Modal>
       </>
     );

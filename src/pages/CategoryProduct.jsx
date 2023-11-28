@@ -1,9 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import ProductServices from "../services/ProductServices";
 import WishListServices from "../services/WishListServices";
 import { toast } from "react-toastify";
-import { convertDollarToVND } from "../utils/cartutils";
+import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
+import { useAuth } from "../AuthContext";
+import { useCart } from "../CartProvider";
+import addWishListProduct from "../utils/wishlistutils";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const CategoryProduct = (props) => {
   const [category_id] = useState(props.match.params.category_id);
@@ -12,6 +18,8 @@ const CategoryProduct = (props) => {
   const [productCounts, setProductCounts] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [showNotification, setShowNotification] = useState(false);
+  const { accountId, token } = useAuth();
+  const { updateCartItemCount } = useCart();
 
   const showFilterEmptyNotification = () => {
     console.log("Setting showNotification to true");
@@ -88,7 +96,7 @@ const CategoryProduct = (props) => {
 
   useEffect(() => {
     fetchData(selectedPriceFilter);
-  }, [selectedPriceFilter, category_id, fetchData]);
+  }, [selectedPriceFilter, category_id]);
 
   const handlePriceFilterChange = (newPriceFilter) => {
     setSelectedPriceFilter((prevFilter) => {
@@ -118,7 +126,11 @@ const CategoryProduct = (props) => {
             {product.imageUrls.length > 0 && (
               <img
                 className="img-fluid w-100"
-                src={`${product.imageUrls[0]}`}
+                src={
+                  product.imageUrls[0]?.startsWith("https")
+                    ? product.imageUrls[0]
+                    : `../assets/images/${product.imageUrls[0]}`
+                }
                 alt={`Imagee 0`}
               />
             )}
@@ -154,28 +166,12 @@ const CategoryProduct = (props) => {
     ));
   };
 
-  const addWishListProduct = (product_id) => {
-    const accountId = 5; // Replace with the actual account ID
-    WishListServices.addToWishlist(accountId, product_id)
-      .then((response) => {
-        console.log("Product added to wishlist:", response.data);
-        toast.success("Product added to wishlist successfully!");
-      })
-      .catch((error) => {
-        console.error("Error adding product to wishlist:", error);
-      });
+  const handleAddToCart = async (productId) => {
+    await addProductToCart(accountId, productId, 1, token);
+    await updateCartItemCount();
   };
-
-  const addProductToCart = (product_id) => {
-    const accountId = 5; // Replace with the actual account ID
-    ProductServices.addToCart(accountId, product_id, 1)
-      .then((response) => {
-        console.log("Product added to cart:", response.data);
-        toast.error("Product added to cart successfully!");
-      })
-      .catch((error) => {
-        console.error("Error adding product to cart:", error);
-      });
+  const handleAddtoWishlist = (productId) => {
+    addWishListProduct(accountId, productId, token);
   };
 
   const viewProduct = (productId) => {
@@ -262,17 +258,49 @@ const CategoryProduct = (props) => {
                                 <a
                                   className="btn btn-outline-dark btn-square"
                                   href
+                                  onClick={() =>
+                                    handleAddToCart(product.productId)
+                                  }
                                 >
                                   <i className="fa fa-shopping-cart" />
                                 </a>
                                 <a
                                   className="btn btn-outline-dark btn-square"
                                   href
+                                  onClick={() =>
+                                    handleAddtoWishlist(product.productId)
+                                  }
+                                >
+                                  <i className="far fa-heart" />
+                                </a>{" "}
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() => viewProduct(product.productId)}
+                                >
+                                  <FontAwesomeIcon icon={faCircleInfo} />
+                                </a>
+                              </>
+                            ) : (
+                              <>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() =>
+                                    handleAddtoWishlist(product.productId)
+                                  }
                                 >
                                   <i className="far fa-heart" />
                                 </a>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() => viewProduct(product.productId)}
+                                >
+                                  <FontAwesomeIcon icon={faCircleInfo} />
+                                </a>
                               </>
-                            ) : null}
+                            )}
                           </div>
                         </div>
                         <div className="text-center py-4">

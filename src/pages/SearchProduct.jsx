@@ -2,7 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import ProductServices from "../services/ProductServices";
-import { convertDollarToVND } from "../utils/cartutils";
+import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import addWishListProduct from "../utils/wishlistutils";
+import { useAuth } from "../AuthContext";
+import { useCart } from "../CartProvider";
 
 export const SearchProduct = () => {
   const [keyword, setKeyword] = useState("");
@@ -13,7 +18,8 @@ export const SearchProduct = () => {
   const [selectedPriceFilter, setSelectedPriceFilter] = useState("price-all");
   const [productCounts, setProductCounts] = useState({});
   const [showNotification, setShowNotification] = useState(false);
-
+  const { updateCartItemCount } = useCart();
+  const { accountId, token } = useAuth();
   const priceRanges = {
     "price-all": { min: 0, max: 9999999000 },
     "price-1": { min: 0, max: 100000 },
@@ -72,37 +78,6 @@ export const SearchProduct = () => {
       setSelectedPriceFilter("price-all");
     }
   }, [location.search]);
-
-  // useEffect(() => {
-  //   // Handle product search and filtering when keyword or selectedPriceFilter changes
-  //   if (keyword.trim() === "") {
-  //     setSelectedPriceFilter("price-all");
-  //     setPriceFilter("price-all");
-  //   }
-
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await ProductServices.searchProductAndFilter(
-  //         keyword,
-  //         priceFilter
-  //       );
-  //       if (response.data) {
-  //         const filteredProducts = response.data;
-  //         setProducts(filteredProducts);
-  //         calculateProductCounts(filteredProducts);
-  //       } else {
-  //         setProducts([]);
-  //         setProductCounts({});
-  //       }
-  //     } catch (error) {
-  //       console.error("Error searching for products:", error);
-  //       setProducts([]);
-  //       setProductCounts({});
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [keyword, priceFilter]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -179,7 +154,13 @@ export const SearchProduct = () => {
       </div>
     ));
   };
-
+  const handleAddToCart = async (productId) => {
+    await addProductToCart(accountId, productId, 1, token);
+    await updateCartItemCount();
+  };
+  const handleAddtoWishlist = (productId) => {
+    addWishListProduct(accountId, productId, token);
+  };
   const viewProduct = (product_id) => {
     history.push(`/detail-product/${product_id}`);
   };
@@ -211,24 +192,6 @@ export const SearchProduct = () => {
                     I'm sorry! No products found.
                   </h1>
                 </div>
-
-                // <div className="alert alert-warning mt-3 d-flex align-items-center justify-content-center">
-                //   {/* <strong style={{ fontSize: "18px" }}>
-                //     NO PRODUCTS FOUND.
-                //   </strong> */}
-                //   <p
-                //     style={{
-                //       textAlign: "center",
-                //       fontSize: "1.8rem",
-                //       color: "#888",
-                //       paddingTop: "20px",
-                //       paddingLeft: "38%",
-                //       paddingBottom: "20px",
-                //     }}
-                //   >
-                //     NO PRODUCTS FOUND.
-                //   </p>
-                // </div>
               )}
 
               {showNotification || products.length === 0
@@ -243,7 +206,11 @@ export const SearchProduct = () => {
                           {product.imageUrls.length > 0 && (
                             <img
                               className="img-fluid w-100"
-                              src={`${product.imageUrls[0]}`}
+                              src={
+                                product.imageUrls[0]?.startsWith("https")
+                                  ? product.imageUrls[0]
+                                  : `../assets/images/${product.imageUrls[0]}`
+                              }
                               alt={`Imagee 0`}
                             />
                           )}
@@ -253,17 +220,49 @@ export const SearchProduct = () => {
                                 <a
                                   className="btn btn-outline-dark btn-square"
                                   href
+                                  onClick={() =>
+                                    handleAddToCart(product.productId)
+                                  }
                                 >
                                   <i className="fa fa-shopping-cart" />
                                 </a>
                                 <a
                                   className="btn btn-outline-dark btn-square"
                                   href
+                                  onClick={() =>
+                                    handleAddtoWishlist(product.productId)
+                                  }
+                                >
+                                  <i className="far fa-heart" />
+                                </a>{" "}
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() => viewProduct(product.productId)}
+                                >
+                                  <FontAwesomeIcon icon={faCircleInfo} />
+                                </a>
+                              </>
+                            ) : (
+                              <>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() =>
+                                    handleAddtoWishlist(product.productId)
+                                  }
                                 >
                                   <i className="far fa-heart" />
                                 </a>
+                                <a
+                                  className="btn btn-outline-dark btn-square"
+                                  href
+                                  onClick={() => viewProduct(product.productId)}
+                                >
+                                  <FontAwesomeIcon icon={faCircleInfo} />
+                                </a>
                               </>
-                            ) : null}
+                            )}
                           </div>
                         </div>
                         <div className="text-center py-4">

@@ -37,6 +37,9 @@ class FeedbackServices {
   getTotalFeedbackbyRating(productId, rating) {
     return axios.get(FEEDBACK_API_BASE_URL + productId + "/" + rating);
   }
+  countFeedbackByProductId(productId) {
+    return axios.get(FEEDBACK_API_BASE_URL + productId + "/countFeedback");
+  }
 }
 
 export default new FeedbackServices();

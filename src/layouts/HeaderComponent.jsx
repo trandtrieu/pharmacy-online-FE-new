@@ -87,9 +87,9 @@ const HeaderComponent = (props) => {
   };
 
   useEffect(() => {
-    CategoryServices.getCategoryType().then((res) => {
-      setCategories(res.data);
-    });
+    // CategoryServices.getCategoryType().then((res) => {
+    //   setCategories(res.data);
+    // });
     if (token) {
       setIsLoggedIn(true);
     } else {
@@ -141,14 +141,14 @@ const HeaderComponent = (props) => {
             style={{ marginRight: "0px" }}
           >
             <div className="col-lg-3 text-left">
-              <span className="h1 text-uppercase text-primary px-2 bg-dark">
-                DRUG
-              </span>
-              <span className="h1 text-uppercase text-dark bg-primary px-2 ml-n1">
-                MART
-              </span>
+              <a className="text-decoration-none">
+                <img
+                  src="../assets/images/logoSite.png"
+                  alt=""
+                  style={{ width: "66%", height: "75px" }}
+                />
+              </a>
             </div>
-
             <div className="col-lg-6 text-center">
               <form
                 action="/shop/search"

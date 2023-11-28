@@ -3,13 +3,12 @@
 import React, { useState, useEffect } from "react";
 import ProductServices from "../services/ProductServices";
 import { useHistory } from "react-router-dom";
-import CartServices from "../services/CartServices";
-import WishListServices from "../services/WishListServices";
-import { toast } from "react-toastify";
 import { useAuth } from "../AuthContext";
 import addProductToCart from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
 import { useCart } from "../CartProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
 function ShopComponent() {
   const [products, setProducts] = useState([]);
@@ -399,8 +398,11 @@ function ShopComponent() {
                       {product.imageUrls.length > 0 && (
                         <img
                           className="img-fluid w-100"
-                          // src={`assets/images/${product.imageUrls[0]}`}
-                          src={product.imageUrls[0]}
+                          src={
+                            product.imageUrls[0]?.startsWith("https")
+                              ? product.imageUrls[0]
+                              : `assets/images/${product.imageUrls[0]}`
+                          }
                           alt={`Imagee 0`}
                         />
                       )}
@@ -422,18 +424,34 @@ function ShopComponent() {
                               }
                             >
                               <i className="far fa-heart" />
+                            </a>{" "}
+                            <a
+                              className="btn btn-outline-dark btn-square"
+                              href
+                              onClick={() => viewProduct(product.productId)}
+                            >
+                              <FontAwesomeIcon icon={faCircleInfo} />
                             </a>
                           </>
                         ) : (
-                          <a
-                            className="btn btn-outline-dark btn-square"
-                            href
-                            onClick={() =>
-                              handleAddtoWishlist(product.productId)
-                            }
-                          >
-                            <i className="far fa-heart" />
-                          </a>
+                          <>
+                            <a
+                              className="btn btn-outline-dark btn-square"
+                              href
+                              onClick={() =>
+                                handleAddtoWishlist(product.productId)
+                              }
+                            >
+                              <i className="far fa-heart" />
+                            </a>
+                            <a
+                              className="btn btn-outline-dark btn-square"
+                              href
+                              onClick={() => viewProduct(product.productId)}
+                            >
+                              <FontAwesomeIcon icon={faCircleInfo} />
+                            </a>
+                          </>
                         )}
                       </div>
                     </div>
