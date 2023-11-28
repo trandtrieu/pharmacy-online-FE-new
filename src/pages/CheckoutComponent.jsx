@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
 import { convertDollarToVND } from "../utils/cartutils";
 import { useDataContext } from "../services/DataContext";
+
 import "../style/CheckOutModal.css";
 const customStyles = {
   content: {
@@ -32,6 +33,7 @@ const customStyles = {
 
 const CheckoutComponent = () => {
   const history = useHistory();
+  const [cartItemsInfo, setCartItemsInfo] = useState([]);
   const { setOrderData } = useDataContext();
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [checkingCoupon, setCheckingCoupon] = useState(false);
@@ -55,7 +57,6 @@ const CheckoutComponent = () => {
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const { accountId, token } = useAuth();
-
   const openSuccessModal = () => {
     setIsSuccessModalOpen(true);
   };
@@ -98,10 +99,17 @@ const CheckoutComponent = () => {
       }, 3000); // Thời gian chờ 3 giây
     }
   };
+
   useEffect(() => {
     CartServices.getListCartByAccountId(accountId, 0, token)
       .then((res) => {
         setCarts(res.data);
+
+        const itemsInfo = res.data.map((cartItem) => ({
+          nameproduct: cartItem.productDetail.name,
+          quantity: cartItem.quantity,
+        }));
+        setCartItemsInfo(itemsInfo);
       })
       .catch((error) => {
         console.error("Error loading carts:", error);
@@ -241,16 +249,21 @@ const CheckoutComponent = () => {
   };
   const handlePlaceOrder = () => {
     localStorage.getItem("token");
+    localStorage.getItem("account id");
+    console.log("account Id: ", accountId);
     if (selectedOptions === "cash") {
       const orderData = {
-        amount: totalCostAfterDiscount,
+        amount: totalCostBeforeDiscount,
         paymentMethod: selectedOptions,
         deliveryMethod: selectedOption,
         name: deliveryAddressStatusDefault.recipient_full_name,
         phone: deliveryAddressStatusDefault.recipient_phone_number,
         address: deliveryAddressStatusDefault.specific_address,
         note,
+        products: cartItemsInfo,
+        accountId: accountId,
       };
+      console.log("Order Data", orderData);
       fetch("http://localhost:8080/payment/create_payment", {
         method: "POST",
         headers: {
@@ -276,8 +289,11 @@ const CheckoutComponent = () => {
         phone: deliveryAddressStatusDefault.recipient_phone_number,
         address: deliveryAddressStatusDefault.specific_address,
         note,
+        products: cartItemsInfo,
+        accountId: accountId,
       };
       setOrderData(orderData);
+      console.log("Order Data", orderData);
 
       fetch("http://localhost:8080/payment/create_payment", {
         method: "POST",
@@ -376,6 +392,7 @@ const CheckoutComponent = () => {
                           {convertDollarToVND(cartItem.productDetail.price)} VND
                         </td>
                         <td className="">{cartItem.quantity}</td>
+
                         <td className=" text-danger">
                           {convertDollarToVND(
                             cartItem.productDetail.price * cartItem.quantity
