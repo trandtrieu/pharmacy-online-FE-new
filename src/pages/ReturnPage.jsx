@@ -76,26 +76,26 @@ const ReturnPage = () => {
   };
 
   if (responseCode == "00") {
-    if (!orderData) {
-      return <h1 className="loading">Loading...</h1>;
-    }
-    return (
-      <div className="return-page">
-        <h1 className="title">Bill Payment</h1>
-        <div>
-          <p className="content">
-            Amount: {formatCurrency(orderData.amount)} VND
-          </p>
-          <p className="content">Name: {orderData.name}</p>
-          <p className="content">Address: {orderData.address}</p>
-          <p className="content">Phone: {orderData.phone}</p>
-        </div>
-        <button onClick={handleReturnToHomePage} className="btn-return">
-          Return to home page
-        </button>
-      </div>
-    );
-  } else {
+    // if (!orderData) {
+    //   return <h1 className="loading">Loading...</h1>;
+    // }
+    //   return (
+    //     <div className="return-page">
+    //       <h1 className="title">Bill Payment</h1>
+    //       <div>
+    //         <p className="content">
+    //           Amount: {formatCurrency(orderData.amount)} VND
+    //         </p>
+    //         <p className="content">Name: {orderData.name}</p>
+    //         <p className="content">Address: {orderData.address}</p>
+    //         <p className="content">Phone: {orderData.phone}</p>
+    //       </div>
+    //       <button onClick={handleReturnToHomePage} className="btn-return">
+    //         Return to home page
+    //       </button>
+    //     </div>
+    //   );
+    // } else {
     return (
       <div className="transaction_container">
         <h1 className="transaction_failed">Transaction failed</h1>;
