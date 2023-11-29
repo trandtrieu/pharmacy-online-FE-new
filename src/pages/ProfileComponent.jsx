@@ -14,6 +14,8 @@ import {
 } from "../services/AccountService";
 import OrderServices from "../services/OrderServices";
 import OrderAccount from "../account/OrderAccount";
+import { Route, Switch } from "react-router-dom/cjs/react-router-dom";
+import Test from "../account/Test";
 
 const imagePath = "../assets/images/";
 
@@ -41,6 +43,7 @@ const ProfileComponent = () => {
   const [order_delivering, setOrder_delivering] = useState([]);
   const [order_delivered, setOrder_delivered] = useState([]);
   const [order_cancel, setOrder_cancel] = useState([]);
+
   useEffect(() => {
     getAccountById(accountId, token)
       .then((response) => {

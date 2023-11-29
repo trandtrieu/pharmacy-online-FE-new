@@ -34,6 +34,7 @@ import ErrorPageComponent from "./layouts/ErrorPage";
 import { CartProvider } from "./CartProvider";
 import { DataProvider } from "./services/DataContext";
 import FilterCategoryProduct from "./pages/FilterCategoryProduct";
+import VoucherComponent from "./pages/VoucherComponent";
 
 function App() {
   return (
@@ -115,6 +116,8 @@ function App() {
                     path="/blog-detail/:blog_id"
                     component={BlogDetailComponent}
                   />
+
+                  <Route path="/voucher" component={VoucherComponent} />
                 </Switch>
                 <FooterComponent />
               </AppWrapper>

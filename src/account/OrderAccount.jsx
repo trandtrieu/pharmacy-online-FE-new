@@ -20,15 +20,13 @@ const OrderAccount = ({
 }) => {
   const cancelOrder = async (orderId) => {
     try {
-      // Call your API to update the order status to "cancel"
       await OrderServices.updateOrderStatus(orderId, token);
-      // Display a success toast notification
       toast.success("Order canceled successfully");
     } catch (error) {
-      // Display an error toast notification
       toast.error("Failed to cancel order");
     }
   };
+
   return (
     <>
       <div className="tab-pane fade" id="account-orders">
@@ -107,6 +105,8 @@ const OrderAccount = ({
                   <div className="row">
                     <div style={{ fontSize: "14px" }} className="col-md-9 ml-2">
                       <p>
+                        {" "}
+                        <strong>ID order: </strong> {order.id}{" "}
                         <strong>Name:</strong> {order.name}{" "}
                         <span className="ml-2 mr-2"> | </span>{" "}
                         <strong>Phone:</strong> {order.phone}
@@ -134,6 +134,16 @@ const OrderAccount = ({
                         </button>
                       </div>
                     </div>
+                    <div className="col-md-2 d-flex align-items-center justify-content-center ">
+                      <div className="">
+                        <button
+                          className="btn btn-danger rounded"
+                          // onClick={() => viewDetailOrder(order.id)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))
@@ -141,6 +151,7 @@ const OrderAccount = ({
               <p>No processing orders available.</p>
             )}
           </div>
+
           <div id="order-confirmed" class="tab-pane fade">
             {order_confirmed.length > 0 ? (
               order_confirmed.map((confirmed, index) => (
@@ -193,9 +204,10 @@ const OrderAccount = ({
                 </div>
               ))
             ) : (
-              <p>No processing orders available.</p>
+              <p>No confirmed orders available.</p>
             )}
           </div>
+
           <div id="order-delievering" class="tab-pane fade">
             {order_delivering.length > 0 ? (
               order_delivering.map((delivering, index) => (
@@ -263,9 +275,10 @@ const OrderAccount = ({
                 </div>
               ))
             ) : (
-              <p>No processing orders available.</p>
+              <p>No delivering orders available.</p>
             )}
           </div>
+
           <div id="order-delivered" class="tab-pane fade">
             {order_delivered.length > 0 ? (
               order_delivered.map((delivered, index) => (
@@ -332,9 +345,10 @@ const OrderAccount = ({
                 </div>
               ))
             ) : (
-              <p>No processing orders available.</p>
+              <p>No delivered orders available.</p>
             )}
           </div>
+
           <div id="order-cancel" class="tab-pane fade">
             {order_cancel.length > 0 ? (
               order_cancel.map((order, index) => (
@@ -399,7 +413,7 @@ const OrderAccount = ({
                 </div>
               ))
             ) : (
-              <p>No processing orders available.</p>
+              <p>No cancel orders available.</p>
             )}
           </div>
         </div>

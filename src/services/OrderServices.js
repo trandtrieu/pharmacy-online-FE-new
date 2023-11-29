@@ -4,6 +4,16 @@ import axios from "axios";
 const Order_API_BASE_URL = "http://localhost:8080/pharmacy-online/order/";
 
 class OrderServices {
+  getListProductByOrderId(orderId, token) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    return axios.get(Order_API_BASE_URL + "/" + orderId + "/products", config);
+  }
+
   //wait for confirmation
   getOrderUserIdByWaitForConfirmation(user_id, accessToken) {
     const config = {

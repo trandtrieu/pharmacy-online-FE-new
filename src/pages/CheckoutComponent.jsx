@@ -391,6 +391,7 @@ const CheckoutComponent = () => {
   };
   const createDelivery = () => {
     history.push("/profile");
+    // history.push("/profile?tab=order");
   };
 
   return (

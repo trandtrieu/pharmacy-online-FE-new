@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 class NavbarProfile extends Component {
   render() {

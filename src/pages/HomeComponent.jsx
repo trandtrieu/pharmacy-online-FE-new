@@ -16,6 +16,7 @@ import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
 import { useCart } from "../CartProvider";
 import Modal from "react-modal";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 const customStyles = {
   content: {
     top: "35%",
@@ -147,40 +148,14 @@ function HomeProduct(props) {
 
             <div className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex align-items-center justify-content-center">
               <div className="option-carousel-item text-center">
-                <img
-                  src="https://data-service.pharmacity.io/pmc-upload-media/production/pmc-ecm-asm/home/homeservices/lich-su-thanh-vien2.webp"
-                  alt=""
-                  className="img-fluid"
-                />
-                <h5 className="option-carousel-text mt-2">
-                  <span> P-Coin Gold</span>
-                </h5>
-              </div>
-            </div>
+                <Link to="/voucher">
+                  <img
+                    src="https://data-service.pharmacity.io/pmc-upload-media/production/pmc-ecm-asm/home/homeservices/my-coupon.webp"
+                    alt=""
+                    className="img-fluid"
+                  />
+                </Link>
 
-            <div
-              className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex align-items-center justify-content-center"
-              // onClick={handleOnlineCounselingClick}
-            >
-              <div className="option-carousel-item text-center">
-                <img
-                  src="https://data-service.pharmacity.io/pmc-upload-media/production/pmc-ecm-asm/home/homeservices/duoc-si-truc-tuyen-2.webp"
-                  alt=""
-                  className="img-fluid"
-                />
-                <h5 className="option-carousel-text mt-2">
-                  <span>Online counseling</span>
-                </h5>
-              </div>
-            </div>
-
-            <div className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex align-items-center justify-content-center">
-              <div className="option-carousel-item text-center">
-                <img
-                  src="https://data-service.pharmacity.io/pmc-upload-media/production/pmc-ecm-asm/home/homeservices/my-coupon.webp"
-                  alt=""
-                  className="img-fluid"
-                />
                 <h5 className="option-carousel-text mt-2">
                   <span>Discount code</span>
                 </h5>
@@ -345,7 +320,7 @@ function HomeProduct(props) {
             )}
           </div>
         </div>
-        <FavouriteBrand />
+        {/* <FavouriteBrand /> */}
         <FeatureCategory />
         <PrescriptionBanner />
         <div className="container-fluid pt-5 pb-3">
