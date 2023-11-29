@@ -361,20 +361,24 @@ class DetailProductComponent extends Component {
                     </div>
                   ))}
                 </div>
-                <a
-                  className="carousel-control-prev"
-                  href="#product-carousel"
-                  data-slide="prev"
-                >
-                  <i className="fa fa-2x fa-angle-left text-dark" />
-                </a>
-                <a
-                  className="carousel-control-next"
-                  href="#product-carousel"
-                  data-slide="next"
-                >
-                  <i className="fa fa-2x fa-angle-right text-dark" />
-                </a>
+                {this.state.imageUrls.length === 1 ? null : (
+                  <>
+                    <a
+                      className="carousel-control-prev"
+                      href="#product-carousel"
+                      data-slide="prev"
+                    >
+                      <i className="fa fa-2x fa-angle-left text-dark" />
+                    </a>
+                    <a
+                      className="carousel-control-next"
+                      href="#product-carousel"
+                      data-slide="next"
+                    >
+                      <i className="fa fa-2x fa-angle-right text-dark" />
+                    </a>
+                  </>
+                )}
               </div>
             </div>
 
