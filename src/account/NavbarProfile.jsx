@@ -21,7 +21,7 @@ class NavbarProfile extends Component {
               Change password
             </a>
             <a
-              className="list-group-item list-group-item-action active "
+              className="list-group-item list-group-item-action  "
               data-toggle="list"
               href="#account-prescripitons"
             >

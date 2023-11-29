@@ -12,6 +12,8 @@ import {
   updateAccount,
   updateImage,
 } from "../services/AccountService";
+import OrderAccount from "../account/OrderAccount";
+import OrderServices from "../services/OrderServices";
 
 const imagePath = "../assets/images/";
 
@@ -34,6 +36,12 @@ const ProfileComponent = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [r, setR] = useState(null);
   const { accountId, token } = useAuth();
+
+  const [order_wait, setOrder_wait] = useState([]);
+  const [order_confirmed, setOrder_confirmed] = useState([]);
+  const [order_delivering, setOrder_delivering] = useState([]);
+  const [order_delivered, setOrder_delivered] = useState([]);
+  const [order_cancel, setOrder_cancel] = useState([]);
   useEffect(() => {
     getAccountById(accountId, token)
       .then((response) => {
@@ -61,6 +69,52 @@ const ProfileComponent = () => {
       .catch((error) => {
         console.error("Error loading DeliveryAddress:", error);
       });
+    //order-wait-for-confirmation
+    OrderServices.getOrderUserIdByWaitForConfirmation(accountId, token)
+      .then((res) => {
+        setOrder_wait(res.data);
+        console.log("Order-wait loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+    //confirmed
+    OrderServices.getOrderUserIdByConfirmed(accountId, token)
+      .then((res) => {
+        setOrder_confirmed(res.data);
+        console.log("Order-confirmed loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+    //delivering
+    OrderServices.getOrderUserIdByDelivering(accountId, token)
+      .then((res) => {
+        setOrder_delivering(res.data);
+        console.log("Order-delivering loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+    //delivered
+    OrderServices.getOrderUserIdByDelivered(accountId, token)
+      .then((res) => {
+        setOrder_delivered(res.data);
+        console.log("Order-delivered loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+    //cancel
+    OrderServices.getOrderUserIdByCancel(accountId, token)
+      .then((res) => {
+        setOrder_cancel(res.data);
+        console.log("Order-cancel loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+
 
     fetch("https://provinces.open-api.vn/api/p/")
       .then((response) => response.json())
@@ -98,9 +152,9 @@ const ProfileComponent = () => {
         if (districts !== undefined) {
           districts.map(
             (value) =>
-              (document.getElementById(
-                "districts"
-              ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
+            (document.getElementById(
+              "districts"
+            ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
           );
         }
       })
@@ -120,9 +174,9 @@ const ProfileComponent = () => {
         if (wards !== undefined) {
           wards.map(
             (value) =>
-              (document.getElementById(
-                "wards"
-              ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
+            (document.getElementById(
+              "wards"
+            ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
           );
         }
       })
@@ -214,19 +268,25 @@ const ProfileComponent = () => {
       });
   };
   const deleteDeliveryAddress = (user_id, address_id) => {
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this delivery-address?"
+    );
     console.log("token" + token);
-    DeliveryAddressServices.deleteDeliveryAddress(user_id, address_id, token)
-      .then((res) => {
-        setDeliveryAddress(
-          deliveryAddress.filter(
-            (delivery) => delivery.address_id !== address_id
-          )
-        );
-        toast.success("Delete Address successfully!");
-      })
-      .catch((err) => {
-        toast.error("Error deleting Address!");
-      });
+    if (shouldDelete) {
+
+      DeliveryAddressServices.deleteDeliveryAddress(user_id, address_id, token)
+        .then((res) => {
+          setDeliveryAddress(
+            deliveryAddress.filter(
+              (delivery) => delivery.address_id !== address_id
+            )
+          );
+          toast.success("Delete Address successfully!");
+        })
+        .catch((err) => {
+          toast.error("Error deleting Address!");
+        });
+    }
     // .catch((error) => {
     //   console.error("Error deleting Address:", error);
     // });
@@ -338,7 +398,7 @@ const ProfileComponent = () => {
     });
   };
 
-  const handleMailChange = (e) => {};
+  const handleMailChange = (e) => { };
   return (
     <>
       <div className="container light-style flex-grow-1 container-p-y">
@@ -493,22 +553,15 @@ const ProfileComponent = () => {
                   createNewDeliveryAddress={createNewDeliveryAddress}
                   accountId={accountId}
                 />
-                <div className="tab-pane fade" id="account-orders">
-                  <div className="card-body pb-2">
-                    <div className="form-group">
-                      <label className="form-label">cc password</label>
-                      {/* <input type="password" className="form-control" /> */}
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">New password</label>
-                      {/* <input type="password" className="form-control" /> */}
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Repeat new password</label>
-                    </div>{" "}
-                    {/* <input type="password" className="form-control" /> */}
-                  </div>
-                </div>
+
+                <OrderAccount
+                  order_wait={order_wait}
+                  order_confirmed={order_confirmed}
+                  order_delivering={order_delivering}
+                  order_delivered={order_delivered}
+                  order_cancel={order_cancel}
+                  accountId={accountId}
+                />
               </div>
             </div>
           </div>

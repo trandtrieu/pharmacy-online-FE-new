@@ -35,9 +35,9 @@
 
 }
 
-button:hover {
+/* button:hover {
     background-color: #0056b3;
-}
+} */
 
 .transaction_container {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

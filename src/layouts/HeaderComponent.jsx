@@ -87,9 +87,9 @@ const HeaderComponent = (props) => {
   };
 
   useEffect(() => {
-    // CategoryServices.getCategoryType().then((res) => {
-    //   setCategories(res.data);
-    // });
+    CategoryServices.getCategoryType().then((res) => {
+      setCategories(res.data);
+    });
     if (token) {
       setIsLoggedIn(true);
     } else {
@@ -262,10 +262,10 @@ const HeaderComponent = (props) => {
         >
           <div
             className="row px-xl-5"
-            style={{ zIndex: "1000", marginRight: "0px" }}
+            style={{ marginRight: "0px" }}
           >
             <div className="col-lg-3 d-none d-lg-block">
-              <a
+              {/* <a
                 className="btn d-flex align-items-center justify-content-between bg-primary w-100"
                 data-toggle="collapse"
                 href="#navbar-vertical"
@@ -276,14 +276,13 @@ const HeaderComponent = (props) => {
                   Categories
                 </h6>
                 <i className="fa fa-angle-down text-dark" />
-              </a>
+              </a> */}
 
-              <nav
+              {/* <nav
                 className="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
                 id="navbar-vertical"
-                style={{ width: "calc(100% - 30px)" }}
               >
-                <div className="navbar-nav w-100">
+                <div style={{ overflowY: 'hidden' }} className="navbar-nav w-100">
                   {categories.map((category) => (
                     <li key={category.category_id}>
                       <button
@@ -297,7 +296,41 @@ const HeaderComponent = (props) => {
                     </li>
                   ))}
                 </div>
-              </nav>
+              </nav> */}
+              <div style={{ zIndex: 1000 }} class="dropdown btn d-flex align-items-center justify-content-between ">
+                <button style={{ backgroundColor: "transparent", border: 'none' }} class="btn  dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <div style={{}}>
+                    <h6 className="text-white m-0">
+                      <i className="fa fa-bars mr-2" />
+                      Categories
+                    </h6>
+                  </div>
+
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  {categories.map((category) => (
+
+                    <div key={category.category_id} className="row align-items-center">
+                      <img
+                        src={`../assets/images/${category.category_image}`}
+                        alt={category.category_name}
+                        className="img-fluid col-lg-3"
+                      />
+                      <a
+                        onClick={() =>
+                          viewProductByCategory(category.category_id)
+                        }
+                        className="dropdown-item btn col-lg-8"
+                        href=""
+                      >
+                        {category.category_name}
+                      </a>
+
+                    </div>
+                  ))}
+                </div>
+
+              </div>
             </div>
 
             <div className="col-lg-9">

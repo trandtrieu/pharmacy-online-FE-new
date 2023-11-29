@@ -33,7 +33,7 @@ const DeliveryAddressAccount = ({
         <div className="card-body pb-2">
           <div className="form-group d-flex align-items-center justify-content-between">
             <div>Manage Delivery Address</div>
-            <div>
+            {deliveryAddress.length !== 0 ? (<div>
               <button
                 data-toggle="modal"
                 data-target={`#setDefault`}
@@ -41,7 +41,8 @@ const DeliveryAddressAccount = ({
               >
                 Set Default Delivery Address
               </button>
-            </div>
+            </div>) : null}
+
             <div>
               <button
                 data-toggle="modal"

@@ -20,6 +20,8 @@ import { convertDollarToVND } from "../utils/cartutils";
 import { useDataContext } from "../services/DataContext";
 import "../style/CheckOutModal.css";
 import DiscountServices from "../services/DiscountServices";
+import { getAccountById } from "../services/AccountService";
+import { useCart } from "../CartProvider";
 const customStyles = {
   content: {
     top: "35%",
@@ -46,6 +48,8 @@ const customStyles1 = {
 
 const CheckoutComponent = () => {
   const history = useHistory();
+  const [cartItemsInfo, setCartItemsInfo] = useState([]);
+
   const { setOrderData } = useDataContext();
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [checkingCoupon, setCheckingCoupon] = useState(false);
@@ -74,6 +78,8 @@ const CheckoutComponent = () => {
   const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
 
   const { accountId, token } = useAuth();
+  const [account, setAccount] = useState({});
+  const { updateCartItemCount } = useCart();
 
   const openSuccessModal = () => {
     setIsSuccessModalOpen(true);
@@ -147,6 +153,13 @@ const CheckoutComponent = () => {
     CartServices.getListCartByAccountId(accountId, 0, token)
       .then((res) => {
         setCarts(res.data);
+
+        const itemsInfo = res.data.map((cartItem) => ({
+          nameproduct: cartItem.productDetail.name,
+          quantity: cartItem.quantity,
+          price: cartItem.productDetail.price,
+        }));
+        setCartItemsInfo(itemsInfo);
       })
       .catch((error) => {
         console.error("Error loading carts:", error);
@@ -192,6 +205,14 @@ const CheckoutComponent = () => {
       })
       .catch((error) => {
         console.error("Error loading list discount:", error);
+      });
+    getAccountById(accountId, token)
+      .then((response) => {
+        setAccount(response.data);
+        console.log("Account info:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching account:", error);
       });
   }, [accountId]);
 
@@ -268,10 +289,12 @@ const CheckoutComponent = () => {
         amount: totalCostAfterDiscount,
         paymentMethod: selectedOptions,
         deliveryMethod: selectedOption,
-        name: deliveryAddressStatusDefault.recipient_full_name,
-        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        name: account.name,
+        phone: account.phone,
         address: deliveryAddressStatusDefault.specific_address,
         note,
+        products: cartItemsInfo,
+        accountId: accountId,
       };
       fetch("http://localhost:8080/payment/create_payment", {
         method: "POST",
@@ -289,6 +312,15 @@ const CheckoutComponent = () => {
           console.error("Error placing order:", error);
         });
       openSuccessModal();
+      CartServices.removeAllCart(accountId, 0, token)
+        .then(() => {
+          setCarts([]);
+          updateCartItemCount();
+          history.push("/home");
+        })
+        .catch((error) => {
+          console.error("Error removing all items from the cart:", error);
+        });
     } else {
       const orderData = {
         amount: totalCostBeforeDiscount,
@@ -298,6 +330,8 @@ const CheckoutComponent = () => {
         phone: deliveryAddressStatusDefault.recipient_phone_number,
         address: deliveryAddressStatusDefault.specific_address,
         note,
+        products: cartItemsInfo,
+        accountId: accountId,
       };
       setOrderData(orderData);
 
@@ -313,7 +347,14 @@ const CheckoutComponent = () => {
         .then((data) => {
           console.log(data);
           const paymentUrl = data.url;
-
+          CartServices.removeAllCart(accountId, 0, token)
+            .then(() => {
+              setCarts([]);
+              updateCartItemCount();
+            })
+            .catch((error) => {
+              console.error("Error removing all items from the cart:", error);
+            });
           window.location.href = paymentUrl;
         })
         .catch((error) => {
@@ -347,6 +388,9 @@ const CheckoutComponent = () => {
 
   const closeDiscountModal = () => {
     setIsDiscountModalOpen(false);
+  };
+  const createDelivery = () => {
+    history.push("/profile");
   };
 
   return (
@@ -491,7 +535,10 @@ const CheckoutComponent = () => {
                           I'm sorry! DrugMart couldn't find any delivery
                           addresses in your cart.
                         </h6>
-                        <button className="btn btn-primary mb-4">
+                        <button
+                          onClick={createDelivery}
+                          className="btn btn-primary mb-4"
+                        >
                           Create a New Address
                         </button>
                       </div>
