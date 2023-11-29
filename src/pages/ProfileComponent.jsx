@@ -34,6 +34,7 @@ const ProfileComponent = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [r, setR] = useState(null);
   const { accountId, token } = useAuth();
+
   useEffect(() => {
     getAccountById(accountId, token)
       .then((response) => {

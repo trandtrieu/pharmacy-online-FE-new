@@ -19,6 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { useCart } from "../CartProvider";
+import { getAccountById } from "../services/AccountService";
 
 const HeaderComponent = (props) => {
   const [keyword, setKeyword] = useState("");
@@ -30,6 +31,7 @@ const HeaderComponent = (props) => {
   const [username, setUsername] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [account, setAccount] = useState({});
 
   const { accountId, token } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +56,16 @@ const HeaderComponent = (props) => {
       searchProductAndFilter();
     }
   };
-
+  useEffect(() => {
+    getAccountById(accountId, token)
+      .then((response) => {
+        setAccount(response.data);
+        console.log("Account info:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching account:", error);
+      });
+  }, [accountId, token]);
   const handleCartClick = () => {
     history.push("/cart");
   };
@@ -346,6 +357,15 @@ const HeaderComponent = (props) => {
                     <Link to="/cart-prescription" className="nav-item nav-link">
                       Prescription Cart
                     </Link>
+
+                    {account.roles === "ADMIN" ? (
+                      <a
+                        href="http://localhost:3006/product-manage"
+                        className="nav-item nav-link"
+                      >
+                        Admin
+                      </a>
+                    ) : null}
                   </div>
 
                   <div
@@ -373,73 +393,25 @@ const HeaderComponent = (props) => {
                         </span>
                       </span>
                     </Link>
-
-                    <Link
-                      to="#"
-                      className="btn px-3 ml-3 position-relative"
-                      onClick={handleToggleDropdown}
-                    >
-                      <FontAwesomeIcon
-                        icon={faBell}
-                        style={{ color: "#FFFFFF", fontSize: "1.2rem" }}
-                      />
-                      <span
-                        className="badge bg-danger rounded-circle"
-                        style={{
-                          position: "absolute",
-                          top: "-3px",
-                          right: "0.35rem",
-                        }}
+                    {isLoggedIn && (
+                      <Link
+                        to="#"
+                        className="btn px-3 ml-3 position-relative"
+                        onClick={handleToggleDropdown}
                       >
-                        <span
-                          className="text-light"
-                          style={{ padding: "0.5px" }}
-                        >
-                          0
+                        <span className="text-primary">
+                          Hello {account.username}
                         </span>
-                      </span>
-                    </Link>
-
-                    {isDropdownOpen && (
-                      // Dropdown content goes here
-                      <div
-                        style={{
-                          position: "absolute",
-                          zIndex: "100",
-                          backgroundColor: "#fff",
-                          width: "400px",
-                          top: "60px",
-                          right: "-50px",
-                        }}
-                        className="abc rounded p-3"
+                      </Link>
+                    )}
+                    {/* Additional content for when the user is not logged in */}
+                    {!isLoggedIn && (
+                      <Link
+                        to="/login"
+                        className="btn px-3 ml-3 position-relative"
                       >
-                        <div className="notify_item">
-                          {/* <div className="notify_img">
-                          </div> */}
-                          <div className="notify_info">
-                            <p>
-                              Alex commented on
-                              <span>
-                                Timeline Share Lorem, ipsum dolor sit amet
-                                consectetur adipisicing elit. Et iusto laborum
-                              </span>
-                            </p>
-                            <span className="notify_time">10 minutes ago</span>
-                          </div>
-                          <div className="notify_info">
-                            <p>
-                              Alex commented on<span>Timeline Share</span>
-                            </p>
-                            <span className="notify_time">10 minutes ago</span>
-                          </div>
-                          <div className="notify_info">
-                            <p>
-                              Alex commented on<span>Timeline Share</span>
-                            </p>
-                            <span className="notify_time">10 minutes ago</span>
-                          </div>
-                        </div>
-                      </div>
+                        Login
+                      </Link>
                     )}
 
                     <></>

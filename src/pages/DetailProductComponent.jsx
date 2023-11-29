@@ -7,13 +7,12 @@ import {
   faHeart,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
-import WishListServices from "../services/WishListServices";
 import FeedbackServices from "../services/FeedbackServices";
 import ReplyServices from "../services/ReplyServices";
 import FeedbackComponent from "./FeedbackComponent";
 import { AuthContext } from "../AuthContext";
 import Modal from "react-modal";
-import addProductToCart from "../utils/cartutils";
+import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
 
 class DetailProductComponent extends Component {
@@ -43,8 +42,7 @@ class DetailProductComponent extends Component {
   static contextType = AuthContext;
 
   componentDidMount() {
-    Modal.setAppElement("#root"); // Replace "#root" with the root element of your React application
-
+    Modal.setAppElement("#root");
     ProductServices.getProductById(this.state.productId)
       .then((res) => {
         const productData = res.data;
@@ -306,9 +304,10 @@ class DetailProductComponent extends Component {
       return { quantity: newQuantity };
     });
   };
-  handleAddToCart = (productId, quantity) => {
+  handleAddToCart = async (productId, quantity) => {
     const { accountId, token } = this.context;
-    addProductToCart(accountId, productId, quantity, token);
+    await addProductToCart(accountId, productId, quantity, token);
+    await window.location.reload();
   };
   handleAddtoWishlist = (productId) => {
     const { accountId, token } = this.context;
@@ -326,6 +325,7 @@ class DetailProductComponent extends Component {
 
   render() {
     const { accountId, token } = this.context;
+
     return (
       <>
         {/* Shop Detail Start */}
@@ -407,7 +407,9 @@ class DetailProductComponent extends Component {
                   )}
                 </div>
                 <div className="mb-3">
-                  <span className="h2">${this.state.product.price}</span>
+                  <span className="h2">
+                    {convertDollarToVND(this.state.product.price)} VND
+                  </span>
                   <span className="text-muted">/per box</span>
                 </div>
                 <div className="row">
@@ -428,18 +430,31 @@ class DetailProductComponent extends Component {
                         className="input-group quantity mb-3"
                         style={{ width: "130px" }}
                       >
-                        <div className="input-group-btn">
-                          <button
-                            className="btn btn-primary btn-minus"
-                            onClick={() => this.handleQuantityChange(-1)}
-                          >
-                            <i className="fa fa-minus" />
-                          </button>
-                        </div>
+                        {this.state.quantity > 0 ? (
+                          <div className="input-group-btn">
+                            <button
+                              className="btn btn-primary btn-minus"
+                              onClick={() => this.handleQuantityChange(-1)}
+                            >
+                              <i className="fa fa-minus" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="input-group-btn">
+                            <button
+                              className="btn btn-primary btn-minus"
+                              onClick={() => this.handleQuantityChange(-1)}
+                              disabled
+                            >
+                              <i className="fa fa-minus" />
+                            </button>
+                          </div>
+                        )}
                         <input
                           type="text"
                           className="form-control bg-secondary border-0 text-center"
                           value={this.state.quantity}
+                          min={1}
                         />
                         <div className="input-group-btn">
                           <button
@@ -582,7 +597,7 @@ class DetailProductComponent extends Component {
               <div className="px-0 border rounded-2 shadow-0">
                 <div className="card">
                   <div className="card-body">
-                    <h5 className="card-title">Similar items</h5>
+                    <h5 className="card-title">Other items</h5>
                     {this.state.products.map((product) => (
                       <div className="d-flex mb-3" key={product.product_id}>
                         <a href="/" className="me-3">
@@ -590,12 +605,15 @@ class DetailProductComponent extends Component {
                             className="img-md img-thumbnail"
                             src={product.imageUrls[0]}
                             alt={`Imagee 0`}
-                            style={{ minWidth: "96px", height: "96px" }}
+                            style={{ width: "100px", height: "96px" }}
                           />
                         </a>
                         <div className="info ml-3">
-                          <p>{this.state.product.name}</p>
-                          <strong className="text-dark"> $38.90</strong>
+                          <p>{product.name}</p>
+                          <strong className="text-dark">
+                            {" "}
+                            {convertDollarToVND(product.price)} VND{" "}
+                          </strong>
                         </div>
                       </div>
                     ))}

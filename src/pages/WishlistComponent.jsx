@@ -43,7 +43,6 @@ const WishlistComponent = () => {
         console.error("Error loading wishlist:", error);
       });
   }, [accountId, token, updateWishlistItemCount]);
-  // Other code remains the same
 
   const openModal = (productId) => {
     setSelectedProduct(productId);
@@ -58,8 +57,6 @@ const WishlistComponent = () => {
     if (selectedProduct) {
       WishListServices.deleteWishlistProduct(accountId, selectedProduct, token)
         .then((response) => {
-          // Item removed successfully
-          // Fetch updated wishlist
           WishListServices.wishlist(accountId, token)
             .then((res) => {
               setWishlists(res.data);
@@ -169,7 +166,14 @@ const WishlistComponent = () => {
                             >
                               {wishlistItem.imageUrls.length > 0 && (
                                 <img
-                                  src={wishlistItem.imageUrls[0]}
+                                  // src={wishlistItem.imageUrls[0]}
+                                  src={
+                                    wishlistItem.imageUrls[0]?.startsWith(
+                                      "https"
+                                    )
+                                      ? wishlistItem.imageUrls[0]
+                                      : `assets/images/${wishlistItem.imageUrls[0]}`
+                                  }
                                   alt=""
                                   style={{ height: "100%", width: "100%" }}
                                 />
@@ -216,15 +220,18 @@ const WishlistComponent = () => {
                                 >
                                   <FontAwesomeIcon icon={faCircleInfo} />
                                 </button>
-                                <button
-                                  className="btn btn-outline-primary btn-sm mt-2"
-                                  type="button"
-                                  onClick={() =>
-                                    addProductToCart(wishlistItem.productId)
-                                  }
-                                >
-                                  <FontAwesomeIcon icon={faCartShopping} />
-                                </button>
+
+                                {wishlistItem.quantity !== 0 ? (
+                                  <button
+                                    className="btn btn-outline-primary btn-sm mt-2"
+                                    type="button"
+                                    onClick={() =>
+                                      addProductToCart(wishlistItem.productId)
+                                    }
+                                  >
+                                    <FontAwesomeIcon icon={faCartShopping} />
+                                  </button>
+                                ) : null}
                                 <button
                                   className="btn btn-outline-primary btn-sm mt-2"
                                   type="button"

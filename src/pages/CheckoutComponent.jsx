@@ -880,7 +880,7 @@ const CheckoutComponent = () => {
                   style={customStyles1}
                 >
                   <div className="d-flex align-items-center justify-content-center">
-                    <h4 className="mr-5">Your discount coupons </h4>
+                    <h5 className="mr-5">Your discount coupons </h5>
                     <h3>
                       {" "}
                       <FontAwesomeIcon
@@ -896,8 +896,16 @@ const CheckoutComponent = () => {
                     style={{ height: "255px", overflowY: "auto" }}
                   >
                     {listDiscount.map((discountItem) => (
-                      <div className="row coupon ">
-                        <div class="col-md-8 ">
+                      <div
+                        className="row coupon "
+                        style={{ border: "1px dashed" }}
+                      >
+                        <div
+                          class="col-md-8 "
+                          style={{
+                            borderRight: " dashed",
+                          }}
+                        >
                           <div className="coupon-list-detail">
                             <h4>{discountItem.code}</h4>
                             <p>Discount: {discountItem.discountPercentage} %</p>

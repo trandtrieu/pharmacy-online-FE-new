@@ -1,11 +1,19 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable eqeqeq */
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faReply, faStar, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faReply,
+  faStar,
+  faTrash,
+  faUserTie,
+} from "@fortawesome/free-solid-svg-icons";
 import FeedbackServices from "../services/FeedbackServices";
 import ReplyServices from "../services/ReplyServices";
 import { toast } from "react-toastify";
 import ProductServices from "../services/ProductServices";
 import { AuthContext } from "../AuthContext";
+import { getAccountById } from "../services/AccountService";
 
 class FeedbackComponent extends Component {
   constructor(props) {
@@ -29,6 +37,7 @@ class FeedbackComponent extends Component {
       totalFeedback: "",
       product: "",
       imageUrls: [],
+      account: "",
     };
     this.deleteFeedback = this.deleteFeedback.bind(this);
   }
@@ -40,6 +49,16 @@ class FeedbackComponent extends Component {
       const imageUrls = productData.imageUrls || [];
       this.setState({ product: productData, imageUrls });
     });
+    const { accountId, token } = this.context;
+
+    getAccountById(accountId, token)
+      .then((response) => {
+        this.setState({ account: response.data });
+        console.log("Account info:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching account:", error);
+      });
   }
   deleteFeedback = (id, user_id) => {
     const shouldDelete = window.confirm(
@@ -259,14 +278,19 @@ class FeedbackComponent extends Component {
                   <div className="col-md-3 col-sm-3 ">
                     <img
                       style={{ width: "100%", height: "100%" }}
-                      src={`../assets/images/${this.state.product.imageUrls}`}
+                      src={this.state.product.imageUrls}
+                      // src={
+                      //   this.state.product.imageUrls[0]?.startsWith("https")
+                      //     ? this.state.product.imageUrls[0]
+                      //     : `../assets/images/${this.state.product.imageUrls[0]}`
+                      // }
                       alt="loi"
                       srcSet=""
                       width={100}
                     />
                   </div>
                   <div className="col-md-9 col-sm-9 d-flex align-items-center ">
-                    {/* <h4>{this.state.product.name}</h4> */}
+                    <h4>{this.state.product.name}</h4>
                   </div>
                 </div>
                 <div class="modal-body">
@@ -380,7 +404,11 @@ class FeedbackComponent extends Component {
                         <img
                           className="mr-3 rounded-circle"
                           alt="Bootstrap Media Preview"
-                          src="https://tse1.mm.bing.net/th?id=OIP.a1qV9wx2tjVVv86EW-lZaAHaE8&pid=Api&P=0&h=220"
+                          src={
+                            feedback.avatar?.startsWith("https")
+                              ? feedback.avatar
+                              : `../assets/images/${feedback.avatar}`
+                          }
                         />
 
                         <div className="media-body">
@@ -388,6 +416,7 @@ class FeedbackComponent extends Component {
                             <div className="col-8 d-flex">
                               <h5>
                                 <b className="mr-2">{feedback.user_name}</b>
+
                                 <b className="mr-2"></b>
                                 <span>{this.starRating(feedback.rating)}</span>
                               </h5>
@@ -453,7 +482,13 @@ class FeedbackComponent extends Component {
                                     <img
                                       alt=""
                                       className="rounded-circle mr-3 "
-                                      src="https://scontent.xx.fbcdn.net/v/t1.15752-9/396643098_1499022063974040_6274169702054090360_n.jpg?stp=dst-jpg_s206x206&_nc_cat=101&ccb=1-7&_nc_sid=510075&_nc_ohc=D5IR0pjWX8AAX-3e1p1&_nc_oc=AQlze1JL0dPlVA6q8X__lZrwqW59WXORB-6wWvS0WqGuxjMbhD7nsErQPomniGxzUx1-JAAejyWqyGjT-0tgYGHl&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdTxfLI6tXHQ4Wl3HDm0xqqn_gMq5ee9SqlKuKEeukBhXg&oe=6567E054"
+                                      src={
+                                        this.state.account.avatar?.startsWith(
+                                          "https"
+                                        )
+                                          ? this.state.account.avatar
+                                          : `../assets/images/${this.state.account.avatar}`
+                                      }
                                     />
                                     <textarea
                                       className="form-control ml-1 shadow-none textarea rounded"
@@ -493,14 +528,41 @@ class FeedbackComponent extends Component {
                                   <img
                                     className="rounded-circle mr-3"
                                     alt="Bootstrap Media Another Preview"
-                                    src="https://tse3.mm.bing.net/th?id=OIP.-eS1RlYwKg5bUqgPtV_WYAHaHa&pid=Api&P=0&h=220"
+                                    //     src={reply.avatar}
+                                    src={
+                                      reply.avatar?.startsWith("https")
+                                        ? reply.avatar
+                                        : `../assets/images/${reply.avatar}`
+                                    }
                                   />
                                   <div className="media-body">
                                     <div className="row">
                                       <div className="col-12 d-flex">
                                         <h5>
-                                          <b>{reply.user_name}</b>
-                                          {/* <span style={{ opacity: '0.7' }}></span> */}
+                                          <b
+                                            className="mr-2"
+                                            style={{
+                                              fontSize: "17px",
+                                              // opacity: "0.8",
+                                              fontWeight: "",
+                                            }}
+                                          >
+                                            {reply.user_name}
+                                          </b>
+
+                                          {reply.roles === "ADMIN" ? (
+                                            <span
+                                              style={{
+                                                backgroundColor: "#eaeffa",
+                                                padding: " 1px 3px",
+                                                borderRadius: "3px",
+                                              }}
+                                            >
+                                              <FontAwesomeIcon
+                                                icon={faUserTie}
+                                              />
+                                            </span>
+                                          ) : null}
                                         </h5>
                                       </div>
                                     </div>

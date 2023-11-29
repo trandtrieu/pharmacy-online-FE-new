@@ -1,7 +1,6 @@
 import { toast } from "react-toastify";
 import CartServices from "../services/CartServices";
 import ProductServices from "../services/ProductServices";
-import { useState } from "react";
 
 export function calculateTotalPrice(carts) {
   let subTotal = 0;
