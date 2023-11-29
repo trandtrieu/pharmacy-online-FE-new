@@ -29,7 +29,15 @@ export const convertDollarToVND = (soTien) => {
     return "";
   }
 };
+export const convertFirstLetter = (str) => {
+  // Kiểm tra xem chuỗi có rỗng không
+  if (str.length === 0) {
+    return str;
+  }
 
+  // Chuyển đổi chữ cái đầu tiên thành chữ hoa và ghép nối với phần còn lại của chuỗi
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 const addProductToCart = async (accountId, productId, quantity, token) => {
   try {
     const productDetails = await ProductServices.getProductById(productId);

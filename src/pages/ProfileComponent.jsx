@@ -12,6 +12,8 @@ import {
   updateAccount,
   updateImage,
 } from "../services/AccountService";
+import OrderServices from "../services/OrderServices";
+import OrderAccount from "../account/OrderAccount";
 
 const imagePath = "../assets/images/";
 
@@ -34,7 +36,11 @@ const ProfileComponent = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [r, setR] = useState(null);
   const { accountId, token } = useAuth();
-
+  const [order_wait, setOrder_wait] = useState([]);
+  const [order_confirmed, setOrder_confirmed] = useState([]);
+  const [order_delivering, setOrder_delivering] = useState([]);
+  const [order_delivered, setOrder_delivered] = useState([]);
+  const [order_cancel, setOrder_cancel] = useState([]);
   useEffect(() => {
     getAccountById(accountId, token)
       .then((response) => {
@@ -62,7 +68,51 @@ const ProfileComponent = () => {
       .catch((error) => {
         console.error("Error loading DeliveryAddress:", error);
       });
-
+    //order-wait-for-confirmation
+    OrderServices.getOrderUserIdByWaitForConfirmation(accountId, token)
+      .then((res) => {
+        setOrder_wait(res.data);
+        console.log("Order-wait loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+    //confirmed
+    OrderServices.getOrderUserIdByConfirmed(accountId, token)
+      .then((res) => {
+        setOrder_confirmed(res.data);
+        console.log("Order-confirmed loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+    //delivering
+    OrderServices.getOrderUserIdByDelivering(accountId, token)
+      .then((res) => {
+        setOrder_delivering(res.data);
+        console.log("Order-delivering loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+    //delivered
+    OrderServices.getOrderUserIdByDelivered(accountId, token)
+      .then((res) => {
+        setOrder_delivered(res.data);
+        console.log("Order-delivered loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+    //cancel
+    OrderServices.getOrderUserIdByCancel(accountId, token)
+      .then((res) => {
+        setOrder_cancel(res.data);
+        console.log("Order-cancel loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
     fetch("https://provinces.open-api.vn/api/p/")
       .then((response) => response.json())
       .then((data) => {
@@ -87,7 +137,16 @@ const ProfileComponent = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId, token]);
-
+  const fetchOrderProcessing = () => {
+    OrderServices.getOrderUserIdByWaitForConfirmation(accountId, token)
+      .then((res) => {
+        setOrder_wait(res.data);
+        console.log("Order-wait loaded successfully:", res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading Order:", error);
+      });
+  };
   const fetchDistricts = (provincesID) => {
     fetch(`https://provinces.open-api.vn/api/p/${provincesID}/?depth=2`)
       .then((response) => response.json())
@@ -494,22 +553,15 @@ const ProfileComponent = () => {
                   createNewDeliveryAddress={createNewDeliveryAddress}
                   accountId={accountId}
                 />
-                <div className="tab-pane fade" id="account-orders">
-                  <div className="card-body pb-2">
-                    <div className="form-group">
-                      <label className="form-label">cc password</label>
-                      {/* <input type="password" className="form-control" /> */}
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">New password</label>
-                      {/* <input type="password" className="form-control" /> */}
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Repeat new password</label>
-                    </div>{" "}
-                    {/* <input type="password" className="form-control" /> */}
-                  </div>
-                </div>
+                <OrderAccount
+                  order_wait={order_wait}
+                  order_confirmed={order_confirmed}
+                  order_delivering={order_delivering}
+                  order_delivered={order_delivered}
+                  order_cancel={order_cancel}
+                  accountId={accountId}
+                  token={token}
+                />
               </div>
             </div>
           </div>
