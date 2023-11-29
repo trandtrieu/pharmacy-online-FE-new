@@ -389,6 +389,9 @@ const CheckoutComponent = () => {
   const closeDiscountModal = () => {
     setIsDiscountModalOpen(false);
   };
+  const createDelivery = () => {
+    history.push("/profile");
+  };
 
   return (
     <>
@@ -532,7 +535,10 @@ const CheckoutComponent = () => {
                           I'm sorry! DrugMart couldn't find any delivery
                           addresses in your cart.
                         </h6>
-                        <button className="btn btn-primary mb-4">
+                        <button
+                          onClick={createDelivery}
+                          className="btn btn-primary mb-4"
+                        >
                           Create a New Address
                         </button>
                       </div>
