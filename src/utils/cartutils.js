@@ -38,6 +38,18 @@ export const convertFirstLetter = (str) => {
   // Chuyển đổi chữ cái đầu tiên thành chữ hoa và ghép nối với phần còn lại của chuỗi
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+export const customStylespro = {
+  content: {
+    top: "35%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    width: "80%",
+    transform: "translate(-40%, -10%)",
+  },
+};
 const addProductToCart = async (accountId, productId, quantity, token) => {
   try {
     const productDetails = await ProductServices.getProductById(productId);

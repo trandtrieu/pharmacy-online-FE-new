@@ -231,19 +231,33 @@ const HeaderComponent = (props) => {
                 </div>
 
                 <div className="btn-group">
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm rounded-pill dropdown-toggle"
-                    data-toggle="dropdown"
-                    style={{
-                      padding: "9px 11px",
-                      fontSize: "16px",
-                      fontWeight: "normal",
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faUser} /> Account
-                  </button>
-
+                  {isLoggedIn ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm rounded-pill dropdown-toggle"
+                      data-toggle="dropdown"
+                      style={{
+                        padding: "9px 11px",
+                        fontSize: "16px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faUser} /> Account
+                    </button>
+                  ) : (
+                    <Link
+                      type="button"
+                      className="btn btn-primary btn-sm rounded-pill "
+                      style={{
+                        padding: "9px 11px",
+                        fontSize: "16px",
+                        fontWeight: "normal",
+                      }}
+                      to="/login"
+                    >
+                      <FontAwesomeIcon icon={faUser} /> Login
+                    </Link>
+                  )}
                   <div className="dropdown-menu dropdown-menu-right">
                     {isLoggedIn ? (
                       <button
@@ -260,11 +274,7 @@ const HeaderComponent = (props) => {
                       <button onClick={handleLogout} className="dropdown-item">
                         Logout
                       </button>
-                    ) : (
-                      <Link to="/login" className="dropdown-item">
-                        Login
-                      </Link>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -407,15 +417,6 @@ const HeaderComponent = (props) => {
                         <span className="text-primary">
                           Hello {account.username}
                         </span>
-                      </Link>
-                    )}
-                    {/* Additional content for when the user is not logged in */}
-                    {!isLoggedIn && (
-                      <Link
-                        to="/login"
-                        className="btn px-3 ml-3 position-relative"
-                      >
-                        Login
                       </Link>
                     )}
 

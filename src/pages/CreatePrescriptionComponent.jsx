@@ -36,6 +36,7 @@ const dropzoneStyles = {
 const dropzoneActive = {
   borderColor: "green",
 };
+const acceptedImageFormats = [".jpg", ".jpeg", ".png", ".gif"];
 
 const CreatePrescriptionComponent = ({ history }) => {
   const { accountId, token } = useAuth();
@@ -114,7 +115,8 @@ const CreatePrescriptionComponent = ({ history }) => {
       })
       .catch((error) => {
         console.error("Error:", error);
-        toast.error("Failed to send prescription");
+        toast.error("You must login before using this feature!");
+        history.push("/login");
       });
   };
 
@@ -128,13 +130,23 @@ const CreatePrescriptionComponent = ({ history }) => {
 
   const onDrop = (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
-      setState((prevState) => ({
-        ...prevState,
-        imageFile: acceptedFiles[0],
-        droppedImage: URL.createObjectURL(acceptedFiles[0]),
-      }));
+      const file = acceptedFiles[0];
+      const fileExtension = file.name.slice(
+        ((file.name.lastIndexOf(".") - 1) >>> 0) + 2
+      );
+
+      if (acceptedImageFormats.includes(`.${fileExtension.toLowerCase()}`)) {
+        setState((prevState) => ({
+          ...prevState,
+          imageFile: file,
+          droppedImage: URL.createObjectURL(file),
+        }));
+      } else {
+        alert("Invalid image format. Please upload a valid image.");
+      }
     }
   };
+
   const openImageModal = () => {
     window.open(state.droppedImage, "_blank");
   };
@@ -186,7 +198,7 @@ const CreatePrescriptionComponent = ({ history }) => {
                         ...(isDragActive ? dropzoneActive : {}),
                       }}
                     >
-                      <input {...getInputProps()} accept="image/*" />
+                      <input {...getInputProps()} accept=".jpg, .png" />
                       {state.droppedImage ? (
                         // Check if a dropped image exists
                         <div style={{ position: "relative" }}>

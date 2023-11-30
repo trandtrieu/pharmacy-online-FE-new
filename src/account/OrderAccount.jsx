@@ -1,13 +1,9 @@
-import {
-  faCheckDouble,
-  faLocationDot,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { convertDollarToVND, convertFirstLetter } from "../utils/cartutils";
 import OrderServices from "../services/OrderServices";
 import { toast } from "react-toastify";
+import { useState } from "react";
+import ProductDetailModal from "./ProductDetailModal";
 
 const OrderAccount = ({
   order_wait,
@@ -18,6 +14,18 @@ const OrderAccount = ({
   accountId,
   token,
 }) => {
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const viewDetailOrder = (orderId) => {
+    setSelectedOrderId(orderId);
+    setIsModalOpen(true);
+  };
+
+  const closeProductDetailModal = () => {
+    setSelectedOrderId(null);
+    setIsModalOpen(false);
+  };
   const cancelOrder = async (orderId) => {
     try {
       await OrderServices.updateOrderStatus(orderId, token);
@@ -136,11 +144,8 @@ const OrderAccount = ({
                     </div>
                     <div className="col-md-2 d-flex align-items-center justify-content-center ">
                       <div className="">
-                        <button
-                          className="btn btn-danger rounded"
-                          // onClick={() => viewDetailOrder(order.id)}
-                        >
-                          Cancel
+                        <button onClick={() => viewDetailOrder(order.id)}>
+                          View Detail
                         </button>
                       </div>
                     </div>
@@ -199,6 +204,16 @@ const OrderAccount = ({
                         <strong>PaymentMethod:</strong>{" "}
                         {confirmed.paymentMethod}
                       </p>
+                    </div>{" "}
+                    <div className="col-md-2 d-flex align-items-center justify-content-center ">
+                      <div className="">
+                        <button
+                          className="btn btn-danger rounded"
+                          onClick={() => viewDetailOrder(confirmed.id)}
+                        >
+                          View Detail
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -256,21 +271,16 @@ const OrderAccount = ({
                         {delivering.paymentMethod}
                       </p>
                     </div>
-                    {/* <div
-
-                                        className="col-md-2"
-                                    >
-                                        <div>
-                                            <span style={{
-                                                backgroundColor: "#5dac46",
-                                                padding: 10,
-                                                color: "#fff",
-                                                borderRadius: 20,
-                                            }}>
-                                                Received
-                                            </span>
-                                        </div>
-                                    </div> */}
+                    <div className="col-md-2 d-flex align-items-center justify-content-center ">
+                      <div className="">
+                        <button
+                          className="btn btn-danger rounded"
+                          onClick={() => viewDetailOrder(delivering.id)}
+                        >
+                          View Detail
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))
@@ -340,6 +350,16 @@ const OrderAccount = ({
                           Received
                         </span>
                       </div>
+                    </div>{" "}
+                    <div className="col-md-2 d-flex align-items-center justify-content-center ">
+                      <div className="">
+                        <button
+                          className="btn btn-danger rounded"
+                          onClick={() => viewDetailOrder(delivered.id)}
+                        >
+                          View Detail
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -395,20 +415,16 @@ const OrderAccount = ({
                         <strong>PaymentMethod:</strong> {order.paymentMethod}
                       </p>
                     </div>
-                    {/* <div className="col-md-2  d-flex align-items-center justify-content-center">
-                    <div>
-                      <span
-                        style={{
-                          backgroundColor: "#5dac46",
-                          padding: 10,
-                          color: "#fff",
-                          borderRadius: 20,
-                        }}
-                      >
-                        Received
-                      </span>
+                    <div className="col-md-2 d-flex align-items-center justify-content-center ">
+                      <div className="">
+                        <button
+                          className="btn btn-danger rounded"
+                          onClick={() => viewDetailOrder(order.id)}
+                        >
+                          View Detail
+                        </button>
+                      </div>
                     </div>
-                  </div> */}
                   </div>
                 </div>
               ))
@@ -417,7 +433,13 @@ const OrderAccount = ({
             )}
           </div>
         </div>
-      </div>
+      </div>{" "}
+      <ProductDetailModal
+        isOpen={isModalOpen}
+        onRequestClose={closeProductDetailModal}
+        orderId={selectedOrderId}
+        token={token}
+      />
     </>
   );
 };

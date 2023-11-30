@@ -11,8 +11,8 @@ class OrderServices {
       },
     };
 
-    return axios.get(Order_API_BASE_URL + "/" + orderId + "/products", config);
-  }
+    return axios.get(Order_API_BASE_URL + "" + orderId + "/products", config);
+  } //http://localhost:8080/pharmacy-online/order/1/products
 
   //wait for confirmation
   getOrderUserIdByWaitForConfirmation(user_id, accessToken) {

@@ -77,6 +77,10 @@ const VoucherComponent = () => {
   };
 
   const saveToAccount = (id) => {
+    if (!accountId) {
+      toast.warn("Please login!");
+      return;
+    }
     addDiscountToAccount(token, accountId, id)
       .then(toast.success("Saved, shop now?"))
       .catch((error) => console.log(error));
