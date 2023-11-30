@@ -617,3 +617,59 @@ Style for previous button */
   padding: 2px 5px;
 
 }
+/* ---------------------------------------------GIÁ sản phẩm------------------- */
+.text-center {
+  text-align: center;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.product-item-box {
+  /* Thêm kiểu cho hộp sản phẩm nếu cần */
+  /* border: 1px solid #ddd; */
+  padding: 10px;
+}
+
+.product-link:hover {
+  /* Thêm kiểu khi di chuột qua liên kết sản phẩm nếu cần */
+  text-decoration: none;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.price-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.price {
+  color: #1250DC;
+  margin-right: 5px;
+}
+
+.unit {
+  font-size: 20%;
+}
+
+.name-container {
+  font-size: 1.2rem; 
+}
+
+
+.product-name {
+  font-size: 1.1rem; /* Điều chỉnh kích thước chữ theo ý muốn */
+}

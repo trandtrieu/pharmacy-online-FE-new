@@ -345,6 +345,7 @@ class DetailProductComponent extends Component {
                     >
                       <img
                         className="w-100 h-100"
+                        style={{ margin: "80px 0" }}
                         // src={imageUrl}
                         // src={
                         //   imageUrl?.startsWith("https")

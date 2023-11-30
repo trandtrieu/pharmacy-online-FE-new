@@ -420,7 +420,12 @@ function ShopComponent() {
                     <div className="product-img position-relative overflow-hidden">
                       {product.imageUrls.length > 0 && (
                         <img
-                          className="img-fluid w-100"
+                          className="img-fluid img-product-mai"
+                          style={{
+                            marginTop: "20px",
+                            width: "90%",
+                            marginLeft: "5%",
+                          }}
                           src={
                             product.imageUrls[0]?.startsWith("https")
                               ? product.imageUrls[0]
@@ -482,15 +487,29 @@ function ShopComponent() {
                     <div className="text-center py-4">
                       <div className="product-item-box">
                         <a
-                          className="h6 text-decoration-none text-truncate product-link"
+                          className="h6 text-decoration-none name-container"
                           href
                           onClick={() => viewProduct(product.productId)}
                         >
-                          {product.name}
+                          <div className="product-name-container ">
+                            <span className="product-name text-truncate product-link">
+                              {product.name}
+                            </span>
+                          </div>
                         </a>
                       </div>
                       <div className="d-flex align-items-center justify-content-center mt-2">
-                        <h5>{convertDollarToVND(product.price)} VND</h5>
+                        <h5 style={{ color: "#1250DC" }}>
+                          {convertDollarToVND(product.price)} VND
+                          <span
+                            style={{
+                              fontSize: "1rem",
+                              fontWeight: "revert",
+                            }}
+                          >
+                            / box
+                          </span>
+                        </h5>
                       </div>
                     </div>
                   </div>
