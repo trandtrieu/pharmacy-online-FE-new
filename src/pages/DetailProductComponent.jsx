@@ -13,7 +13,7 @@ import ReplyServices from "../services/ReplyServices";
 import FeedbackComponent from "./FeedbackComponent";
 import { AuthContext } from "../AuthContext";
 import Modal from "react-modal";
-import addProductToCart from "../utils/cartutils";
+import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
 
 class DetailProductComponent extends Component {
@@ -306,6 +306,11 @@ class DetailProductComponent extends Component {
       return { quantity: newQuantity };
     });
   };
+
+  viewProduct = (productId) => {
+    this.props.history.push(`/detail-product/${productId}`);
+  };
+
   handleAddToCart = (productId, quantity) => {
     const { accountId, token } = this.context;
     addProductToCart(accountId, productId, quantity, token);
@@ -483,7 +488,10 @@ class DetailProductComponent extends Component {
                     </div>
                   </div>
                 ) : (
-                  <div className="d-flex flex-column align-items-start">
+                  <div
+                    className="d-flex flex-column align-items-start"
+                    style={{ paddingBottom: "15px" }}
+                  >
                     <p className="note-block-addcart">
                       <span>Note:</span> This product is only sold when
                       prescribed by a doctor, all information on the Website and
@@ -578,13 +586,17 @@ class DetailProductComponent extends Component {
                 </div>
               </div>
             </div>
-            <div className="col-lg-4">
+            {/* <div className="col-lg-4">
               <div className="px-0 border rounded-2 shadow-0">
                 <div className="card">
                   <div className="card-body">
                     <h5 className="card-title">Similar items</h5>
                     {this.state.products.map((product) => (
-                      <div className="d-flex mb-3" key={product.product_id}>
+                      <div
+                        className="d-flex mb-3"
+                        key={product.product_id}
+                        onClick={() => this.viewProduct(product.productId)}
+                      >
                         <a href="/" className="me-3">
                           <img
                             className="img-md img-thumbnail"
@@ -596,6 +608,38 @@ class DetailProductComponent extends Component {
                         <div className="info ml-3">
                           <p>{this.state.product.name}</p>
                           <strong className="text-dark"> $38.90</strong>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div> */}
+            <div className="col-lg-4">
+              <div className="px-0 border rounded-2 shadow-0">
+                <div className="card">
+                  <div className="card-body">
+                    <h5 className="card-title">Other items</h5>
+                    {this.state.products.map((product) => (
+                      <div
+                        className="d-flex mb-3"
+                        key={product.product_id}
+                        onClick={() => this.viewProduct(product.productId)}
+                      >
+                        <a href="/" className="me-3">
+                          <img
+                            className="img-md img-thumbnail"
+                            src={product.imageUrls[0]}
+                            alt={`Imagee 0`}
+                            style={{ minWidth: "96px", height: "96px" }}
+                          />
+                        </a>
+                        <div className="info ml-3">
+                          <p>{product.name}</p>
+                          <strong className="text-dark">
+                            {" "}
+                            {convertDollarToVND(product.price)} VND{" "}
+                          </strong>
                         </div>
                       </div>
                     ))}

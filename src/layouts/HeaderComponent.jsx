@@ -62,8 +62,10 @@ const HeaderComponent = (props) => {
   const handleSearch = (e) => {
     e.preventDefault();
 
-    history.push(`/shop/search?keyword=${keyword}&price=${priceFilter}`);
-    searchProductAndFilter(keyword, priceFilter);
+    if (keyword.trim() !== "") {
+      history.push(`/shop/search?keyword=${keyword}&price=${priceFilter}`);
+      searchProductAndFilter(keyword, priceFilter);
+    }
   };
 
   const handlePriceFilterChange = (newPriceFilter) => {
@@ -73,6 +75,10 @@ const HeaderComponent = (props) => {
   };
 
   const searchProductAndFilter = (keyword, priceFilter) => {
+    if (keyword.trim() === "") {
+      return;
+    }
+
     console.log(
       "Searching for keyword: " + keyword + " with price filter: " + priceFilter
     );

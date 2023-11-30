@@ -579,3 +579,41 @@ Style for previous button */
 .scroll-to-top-span.visible {
   display: inline-block;
 }
+/* ---------------------------------------------------------------PHÂN TRANG------------------------------------- */
+.pagination-container {
+  margin-top: 20px;
+}
+
+.pagination {
+  list-style: none;
+  display: flex;
+  padding: 0;
+}
+
+.pagination .page-item {
+  margin: 0 1px;
+}
+
+.pagination .page-link {
+  color: #007bff;
+  text-decoration: none;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  cursor: not-allowed;
+  background-color: #ffffff;
+}
+
+.pagination .page-link i {
+  font-size: 12px; 
+  vertical-align: middle;
+  padding: 2px 5px;
+  
+}
+

@@ -17,17 +17,47 @@ function ShopComponent() {
   const [selectedPriceRange, setSelectedPriceRange] = useState("price-all");
   const { accountId, token } = useAuth();
   const { updateCartItemCount } = useCart();
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(12);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [productsPerPageShowing, setProductsPerPage] = useState(10);
+  const setCurrentProducts = (newProducts) => {
+    setDisplayedProducts(newProducts);
+  };
 
   useEffect(() => {
     ProductServices.getProducts()
       .then((res) => {
         setProducts(res.data);
         calculateProductCounts(res.data);
+        // Cập nhật danh sách sản phẩm hiển thị trên trang
+        setDisplayedProducts(res.data.slice(0, productsPerPage));
       })
       .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
+        console.error("Error loading products:", error);
       });
   }, []);
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const paginate = (pageNumber) => {
+    const startIndex = (pageNumber - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    setCurrentProducts(products.slice(startIndex, endIndex));
+    setCurrentPage(pageNumber);
+  };
+
+  const handleProductsPerPageChange = (value) => {
+    setProductsPerPage(value);
+    setCurrentPage(1); // Reset trang về trang 1 khi số sản phẩm hiển thị thay đổi
+    setDisplayedProducts(products.slice(0, value)); // Cập nhật danh sách hiển thị
+  };
 
   const viewProduct = (productId) => {
     history.push(`/detail-product/${productId}`);
@@ -193,13 +223,32 @@ function ShopComponent() {
     const { id } = event.target;
     const newProductCounts = { ...productCounts };
 
+    // if (id in priceRanges) {
+    //   newProductCounts[id] = event.target.checked
+    //     ? calculateProductCountForRange(id)
+    //     : 0;
+    //   setSelectedPriceRange(id);
+    // } else {
+    //   setSelectedPriceRange("price-all");
+    // }
     if (id in priceRanges) {
       newProductCounts[id] = event.target.checked
         ? calculateProductCountForRange(id)
         : 0;
-      setSelectedPriceRange(id); // Update the selected price range
+      setSelectedPriceRange(id);
+
+      // Lọc dữ liệu cục bộ dựa trên mức giá được chọn
+      const { min, max } = priceRanges[id];
+      const newFilteredProducts = products
+        .filter((product) => product.price >= min && product.price <= max)
+        .slice(0, productsPerPage);
+
+      setFilteredProducts(newFilteredProducts);
+
+      // Cập nhật danh sách sản phẩm hiển thị trên trang
+      setDisplayedProducts(newFilteredProducts);
     } else {
-      setSelectedPriceRange("price-all"); // Set "price-all" as the default if nothing is selected
+      setSelectedPriceRange("price-all");
     }
 
     const allCheckboxIds = [
@@ -374,13 +423,25 @@ function ShopComponent() {
                         Showing
                       </button>
                       <div className="dropdown-menu dropdown-menu-right">
-                        <a className="dropdown-item" href="/">
+                        <a
+                          className="dropdown-item"
+                          href="#"
+                          onClick={() => handleProductsPerPageChange(10)}
+                        >
                           10
                         </a>
-                        <a className="dropdown-item" href="/">
+                        <a
+                          className="dropdown-item"
+                          href="#"
+                          onClick={() => handleProductsPerPageChange(20)}
+                        >
                           20
                         </a>
-                        <a className="dropdown-item" href="/">
+                        <a
+                          className="dropdown-item"
+                          href="#"
+                          onClick={() => handleProductsPerPageChange(30)}
+                        >
                           30
                         </a>
                       </div>
@@ -388,7 +449,7 @@ function ShopComponent() {
                   </div>
                 </div>
               </div>
-              {products.map((product) => (
+              {currentProducts.map((product) => (
                 <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
                   <div
                     className="product-item bg-light mb-4"
@@ -474,8 +535,68 @@ function ShopComponent() {
                 </div>
               ))}
             </div>
+
+            <div className="d-flex justify-content-center text-center pt-3 pagination-container">
+              <ul className="pagination">
+                <li
+                  className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+                >
+                  <a
+                    onClick={(e) => {
+                      e.preventDefault();
+                      paginate(currentPage - 1);
+                    }}
+                    className="page-link"
+                    href="#"
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </a>
+                </li>
+                {Array.from(
+                  { length: Math.ceil(products.length / productsPerPage) },
+                  (_, i) => (
+                    <li
+                      key={i}
+                      className={`page-item ${
+                        currentPage === i + 1 ? "active" : ""
+                      }`}
+                    >
+                      <a
+                        onClick={(e) => {
+                          e.preventDefault();
+                          paginate(i + 1);
+                        }}
+                        className="page-link"
+                        href="#"
+                      >
+                        {i + 1}
+                      </a>
+                    </li>
+                  )
+                )}
+                <li
+                  className={`page-item ${
+                    currentPage === Math.ceil(products.length / productsPerPage)
+                      ? "disabled"
+                      : ""
+                  }`}
+                >
+                  <a
+                    onClick={(e) => {
+                      e.preventDefault();
+                      paginate(currentPage + 1);
+                    }}
+                    className="page-link"
+                    href="#"
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
           {/* Shop Product End */}
+          {/* Phân trang */}
         </div>
       </div>
     </>
