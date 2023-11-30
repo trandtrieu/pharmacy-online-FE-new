@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import CarouselBlogComponent from "../layouts/CarouselBlogComponent";
 import BlogServices from "../services/BlogServices";
+import ReactPaginate from "react-paginate";
 
 class BlogComponent extends Component {
   constructor(props) {
@@ -8,13 +9,32 @@ class BlogComponent extends Component {
 
     this.state = {
       blogs: [],
+      pageCount: 0, // Tổng số trang
+      currentPage: 0, // Trang hiện tại
+      blogsPerPage: 6, // Số blog trên mỗi trang
     };
     this.addBlog = this.addBlog.bind(this);
+    this.handlePageClick = this.handlePageClick.bind(this);
   }
 
   componentDidMount() {
     BlogServices.getBlog().then((res) => {
       this.setState({ blogs: res.data });
+      this.loadBlogs();
+    });
+  }
+  loadBlogs() {
+    BlogServices.getBlog().then((res) => {
+      const blogs = res.data;
+      const pageCount = Math.ceil(blogs.length / this.state.blogsPerPage);
+
+      // Đảo ngược thứ tự của mảng blogs
+      const reversedBlogs = blogs.reverse();
+
+      this.setState({
+        blogs: reversedBlogs,
+        pageCount: pageCount,
+      });
     });
   }
 
@@ -26,11 +46,32 @@ class BlogComponent extends Component {
     this.props.history.push("/add-blog");
   }
 
+  handlePageClick(data) {
+    const selectedPage = data.selected;
+    this.setState({
+      currentPage: selectedPage,
+    });
+  }
+
   render() {
+    const { blogs, currentPage, blogsPerPage } = this.state;
+    const indexOfLastBlog = (currentPage + 1) * blogsPerPage;
+    const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+    const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
+
     const getText = (html) => {
       const doc = new DOMParser().parseFromString(html, "text/html");
       return doc.body.textContent;
     }; //render text dang html trong content
+
+    // Sort blogs by create_date in descending order
+    const sortedBlogs = [...this.state.blogs].sort(
+      (a, b) => new Date(a.create_date) - new Date(b.create_date)
+    );
+
+    // Select the first 3 blogs
+    const mostPopularBlogs = sortedBlogs.slice(0, 4);
+
     return (
       <>
         <CarouselBlogComponent />
@@ -61,15 +102,19 @@ class BlogComponent extends Component {
           Pharmacy Blogs
         </h3>
 
-        <section className="post container-fluid">
+        <section
+          className="post container-fluid"
+          style={{ overflow: "hidden", paddingBottom: "20px" }}
+        >
           {/* which is width: 100% at all breakpoints */}
           <div className="card-column">
             <div
               className="d-flex justify-content-center "
               style={{ marginLeft: "70px" }}
             >
-              <div className="row px-xl-5" style={{ paddingRight: "40px" }}>
-                {this.state.blogs.map((blog) => (
+              <div className="row" style={{ paddingRight: "40px" }}>
+                {/* <div className="col-md-4"> */}
+                {currentBlogs.map((blog) => (
                   <div
                     className="post-box"
                     style={{
@@ -101,28 +146,44 @@ class BlogComponent extends Component {
                     {/* <button onClick={() => this.viewBlog(blog.blogId)}>{blog.blogId} </button> */}
                   </div>
                 ))}
+                {/* </div> */}
               </div>
             </div>
+            <br></br>
+            <div className="pagination-container">
+              <ReactPaginate
+                previousLabel={"Previous"}
+                nextLabel={"Next"}
+                breakLabel={"..."}
+                pageCount={this.state.pageCount}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={7}
+                onPageChange={this.handlePageClick}
+                containerClassName={"pagination"}
+                subContainerClassName={"pages pagination"}
+                activeClassName={"active"}
+              />
+            </div>
           </div>
-          <div class="container">
-            <div class="col">
-              <h4 className="tag-title" style={{ marginTop: "20px" }}>
-                Most Popular
+          <div class="container" style={{ maxWidth: "100%" }}>
+            <div class="col-md-3">
+              <h4 className="tag-title" style={{ marginTop: "20px",width:"350px"}}>
+              Latest Blog
               </h4>
 
-              {/* <div class="row"> */}
-              {this.state.blogs.map((blog) => (
-                <div
-                  class="card-blog"
-                  style={{ width: "25rem" }}
-                  key={blog.blog_id}
-                  onClick={() => {
-                    this.viewBlog(blog.blog_id);
-                  }}
-                >
+              <div class="row" style={{}}>
+                {mostPopularBlogs.map((blog) => (
                   <div
+                    class="card-blog"
+                    style={{ width: "20rem" }}
+                    key={blog.blog_id}
+                    onClick={() => {
+                      this.viewBlog(blog.blog_id);
+                    }}
+                  >
+                    {/* <div
                     class="card mb-3"
-                    style={{ width: "24rem", borderRadius: "1rem" }}
+                    style={{ width: "24rem", borderRadius: "1rem", height:"100px" }}
                   >
                     {blog.imgUrls && blog.imgUrls.length > 0 && (
                       <img
@@ -130,25 +191,69 @@ class BlogComponent extends Component {
                         src={`/assets/images/${blog.imgUrls[0]}`}
                         alt="..."
                         style={{
-                          height: "100px",
+                          height: "90px",
                           objectFit: "cover",
                           margin: "auto",
-                          padding: "0.3rem",
+                          paddingLeft:"5px",
                           borderRadius: "1rem",
-                          maxWidth: "30%",
+                          maxWidth:"30%"
                         }}
                       />
                     )}
-                    <div class="card-body" style={{ padding: "0.8rem" }}>
-                      <h8 className="title">{blog.title}</h8>
+                    <div class="card-body" style={{ paddingLeft:"10px" }}>
+                      <h8 className="title" >
+                        {blog.title.substring(0,46)}...
+                      </h8>
                       <p className="card-content">
-                        {getText(blog.content.substring(0, 30))}...
+                        {getText(blog.content.substring(0, 24))}...
                       </p>
                     </div>
+                  </div> */}
+                    <div
+                      class="card mb-3"
+                      style={{
+                        width: "24rem",
+                        borderRadius: "1rem",
+                        height: "100px",
+                      }}
+                    >
+                      <div class="row g-0">
+                        {blog.imgUrls && blog.imgUrls.length > 0 && (
+                          <div class="col-md-4">
+                            <img
+                              class="card-image-top"
+                              src={`/assets/images/${blog.imgUrls[0]}`}
+                              alt="..."
+                              style={{
+                                height: "90px",
+                                objectFit: "cover",
+                                margin: "auto",
+                                paddingLeft: "5px",
+                                paddingTop:"7px",
+                                borderRadius: "1rem",
+                                maxWidth: "100%",
+                              }}
+                            />
+                          </div>
+                        )}
+                        <div class="col-md-8">
+                          <div
+                            class="card-body"
+                            style={{ paddingLeft: "10px" }}
+                          >
+                            <h8 className="title">
+                              {blog.title.substring(0, 40)}...
+                            </h8>
+                            <p className="card-content">
+                              {getText(blog.content.substring(0, 22))}...
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
-              {/* </div> */}
+                ))}
+              </div>
             </div>
           </div>
         </section>

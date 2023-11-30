@@ -18,7 +18,7 @@ body {
 .card {
     position: relative;
     display: flex;
-    padding: 20px;
+    /* padding: 20px; */
     flex-direction: column;
     min-width: 0;
     word-wrap: break-word;

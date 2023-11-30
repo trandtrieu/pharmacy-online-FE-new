@@ -30,6 +30,7 @@ import ReturnPage from "./pages/ReturnPage";
 import HealthService from "./pages/HealthService";
 import CartPrescriptionComponent from "./pages/CartPrescriptionComponent";
 import CheckoutPrescriptionComponent from "./pages/CheckoutPrescriptionComponent";
+import BlogList from "./layouts/BlogList";
 function App() {
   return (
     <>
@@ -87,6 +88,7 @@ function App() {
 
               <Route path="/blog" component={BlogComponent} />
               <Route path="/bill" component={ReturnPage} />
+              {/* <Route path="/blog" component={BlogList}/> */}
 
               <Route
                 path="/blog-detail/:blog_id"

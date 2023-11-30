@@ -1,5 +1,6 @@
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faHouseUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
 import BlogServices from "../services/BlogServices";
@@ -9,6 +10,7 @@ class BlogDetailComponent extends Component {
     super(props);
     this.state = {
       blog_id: this.props.match.params.blog_id,
+      // blog: {},
       blog: {},
       blogs: [],
     };
@@ -34,12 +36,22 @@ class BlogDetailComponent extends Component {
       this.setState({ blog: res.data });
     });
   }
+  home() {
+    this.props.history.push("/blog");
+  }
 
   render() {
     const getText = (html) => {
       const doc = new DOMParser().parseFromString(html, "text/html");
       return doc.body.textContent;
     }; //render text dang html trong content
+    // const getParagraphs = (html) => {
+    //   const doc = new DOMParser().parseFromString(html, "text/html");
+    //   const paragraphs = doc.body.textContent.split('\n').map((paragraph, index) => (
+    //     <p key={index}>{paragraph}</p>
+    //   ));
+    //   return paragraphs;
+    // };
     return (
       <>
         <div className="detail">
@@ -47,6 +59,12 @@ class BlogDetailComponent extends Component {
             <div className="body">
               {/* {this.state.blogs.map((blog) => ( */}
               <div className="container">
+                <h1
+                  className="title"
+                  style={{ marginTop: "30px", marginBottom: "30px" }}
+                >
+                  {this.state.blog.title}
+                </h1>
                 {this.state.blog.imgUrls &&
                   this.state.blog.imgUrls.length > 0 && (
                     <img
@@ -56,19 +74,19 @@ class BlogDetailComponent extends Component {
                     />
                   )}
                 {/* <img className="content-img" src={`../assets/images/${this.state.blog.imgUrls[0]}`} alt="content-img"/> */}
-                <h1 className="title" style={{ marginTop: "10px" }}>
-                  {this.state.blog.title}
-                </h1>
-                <h6 className="blog-date" style={{ marginTop: "20px" }}>
-                  {this.state.blog.create_date}
-                  {/* {this.state.blog.create_time} */}
-                </h6>
-                <h6 className="blog-date">
-                  {/* {this.state.blog.create_date} */}
-                  {this.state.blog.create_time}
-                </h6>
 
-                <button
+                <h5
+                  className="blog-date"
+                  style={{ marginTop: "20px", textAlign: "left" }}
+                >
+                  {this.state.blog.create_date} {this.state.blog.create_time}
+                </h5>
+                {/* <h5 className="blog-date"> */}
+                {/* {this.state.blog.create_date} */}
+                {/* {this.state.blog.create_time} */}
+                {/* </h5> */}
+
+                {/* <button
                   className="btn btn-danger"
                   onClick={() => this.deleteBlog(this.state.blog.blog_id)}
                 >
@@ -81,20 +99,37 @@ class BlogDetailComponent extends Component {
                   style={{ marginLeft: "10px" }}
                 >
                   <FontAwesomeIcon icon={faPenToSquare} />
+                </button> */}
+                {/* <div className="col-lg-8 col-md-10 mx-auto"> */}
+
+                <button
+                  className="btn btn-info"
+                  style={{
+                    display: "flex",
+                    borderRadius: "10px",
+                    height: "30px",
+                    paddingTop: "5px",
+                  }}
+                  onClick={this.home.bind(this)}
+                >
+                  <FontAwesomeIcon icon={faHouseUser} />
                 </button>
+                
 
                 <p
-                  className="content"
+                  className="content text-start "
                   style={{
                     textAlign: "justify",
-                    lineHeight: "30px",
+                    lineHeight: "40px",
                     justifyContent: "center",
                     fontSize: "17px",
+                    height:"100%"
                   }}
                 >
                   {getText(this.state.blog.content)}
                 </p>
               </div>
+              {/* </div> */}
 
               {/* // ))} */}
             </div>

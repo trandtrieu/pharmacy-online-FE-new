@@ -377,7 +377,7 @@ h1,
 h2,
 h3,
 h4,
-h5,
+
 h6,
 .h1,
 .h2,
@@ -388,7 +388,7 @@ h6,
   margin-bottom: 0.5rem;
   font-weight: 500;
   line-height: 1.2;
-  color: #3D464D;
+  color: #262a33;
 }
 
 h1,
@@ -641,7 +641,7 @@ pre code {
   padding-left: 15px; */
   margin-right: auto;
   margin-left: auto;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 }
 
 @media (min-width: 576px) {
@@ -6591,7 +6591,7 @@ a.close.disabled {
   box-sizing: content-box;
   flex: 0 1 auto;
   width: 30px;
-  height: 3px;
+  height: 3px;ca
   margin-right: 3px;
   margin-left: 3px;
   text-indent: -999px;
@@ -6622,8 +6622,9 @@ a.close.disabled {
   z-index: 10;
   padding-top: 20px;
   padding-bottom: 20px;
-  color: #fff;
-  text-align: center;
+  padding-left: 20px;
+  color: black;
+  text-align: left;
 }
 
 @keyframes spinner-border {

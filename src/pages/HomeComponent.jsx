@@ -18,6 +18,7 @@ import FeatureCategory from "../layouts/FeatureCategory";
 import ScrollToTop from "../layouts/ScrollToTop";
 import addProductToCart from "../utils/cartutils";
 import addWishListProduct from "../utils/wishlistutils";
+import BlogList from "../layouts/BlogList";
 function HomeProduct(props) {
   const history = useHistory();
 
@@ -313,6 +314,7 @@ function HomeProduct(props) {
         <FavouriteBrand />
         <FeatureCategory />
         <PrescriptionBanner />
+        <BlogList/>
         <div className="container-fluid pt-5 pb-3">
           <div className="row px-xl-5">
             <div className="col-md-6">
