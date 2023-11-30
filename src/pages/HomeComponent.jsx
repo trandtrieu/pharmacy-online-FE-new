@@ -291,13 +291,13 @@ function HomeProduct(props) {
                                     >
                                       {product.name}
                                     </a>
-                                    <div className="product-star">
+                                    {/* <div className="product-star">
                                       <FontAwesomeIcon icon={faStar} />
                                       <FontAwesomeIcon icon={faStar} />
                                       <FontAwesomeIcon icon={faStar} />
                                       <FontAwesomeIcon icon={faStar} />
                                       <FontAwesomeIcon icon={faStar} />
-                                    </div>
+                                    </div> */}
                                     <div
                                       className="d-flex align-items-center justify-content-center mt-2"
                                       style={{ fontSize: "10px" }}
@@ -320,7 +320,7 @@ function HomeProduct(props) {
             )}
           </div>
         </div>
-        {/* <FavouriteBrand /> */}
+        <FavouriteBrand />
         <FeatureCategory />
         <PrescriptionBanner />
         <div className="container-fluid pt-5 pb-3">

@@ -12,7 +12,7 @@ import { useAuth } from "../AuthContext";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import Modal from "react-modal";
 import { useCart } from "../CartProvider";
-import { convertDollarToVND } from "../utils/cartutils";
+import addProductToCart, { convertDollarToVND } from "../utils/cartutils";
 const customStyles = {
   content: {
     top: "35%",
@@ -32,6 +32,7 @@ const WishlistComponent = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const { updateWishlistItemCount } = useCart();
+  const { updateCartItemCount } = useCart();
 
   useEffect(() => {
     updateWishlistItemCount();
@@ -53,9 +54,13 @@ const WishlistComponent = () => {
     setModalIsOpen(false);
   };
 
-  const handleConfirmationDelete = () => {
+  const handleConfirmationDelete = async () => {
     if (selectedProduct) {
-      WishListServices.deleteWishlistProduct(accountId, selectedProduct, token)
+      await WishListServices.deleteWishlistProduct(
+        accountId,
+        selectedProduct,
+        token
+      )
         .then((response) => {
           WishListServices.wishlist(accountId, token)
             .then((res) => {
@@ -77,15 +82,9 @@ const WishlistComponent = () => {
     setSelectedProduct(null);
     setModalIsOpen(false);
   };
-  const addProductToCart = (productId) => {
-    CartServices.addToCart(accountId, productId, 1, token)
-      .then((response) => {
-        console.log("Product added to cart:", response.data);
-        toast.success("Product added to cart successfully!");
-      })
-      .catch((error) => {
-        console.error("Error adding product to cart:", error);
-      });
+  const handleAddToCart = async (productId) => {
+    await addProductToCart(accountId, productId, 1, token);
+    await updateCartItemCount();
   };
 
   const viewProduct = (productId) => {
@@ -226,7 +225,7 @@ const WishlistComponent = () => {
                                     className="btn btn-outline-primary btn-sm mt-2"
                                     type="button"
                                     onClick={() =>
-                                      addProductToCart(wishlistItem.productId)
+                                      handleAddToCart(wishlistItem.productId)
                                     }
                                   >
                                     <FontAwesomeIcon icon={faCartShopping} />
