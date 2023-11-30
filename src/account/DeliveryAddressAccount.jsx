@@ -4,7 +4,19 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useState } from "react";
+import ReactModal from "react-modal";
+const customStyles = {
+  content: {
+    top: "35%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    width: "30%",
+    transform: "translate(-40%, -10%)",
+  },
+};
 
 const DeliveryAddressAccount = ({
   deliveryAddress,
@@ -21,11 +33,26 @@ const DeliveryAddressAccount = ({
   setDefaultAddress,
   accountId,
 }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState(null);
+
   const handleAddressClick = (addressId) => {
     // Đặt địa chỉ được chọn khi click vào đó
     setSelectedAddressId(addressId);
     console.log(addressId);
   };
+  const handleDeleteClick = (addressId) => {
+    setAddressToDelete(addressId);
+    setShowDeleteModal(true);
+  };
+  const handleConfirmDelete = () => {
+    // Thực hiện xóa địa chỉ giao hàng
+    deleteDeliveryAddress(accountId, addressToDelete);
+
+    // Đóng modal xác nhận
+    setShowDeleteModal(false);
+  };
+
   return (
     <>
       {" "}
@@ -124,10 +151,8 @@ const DeliveryAddressAccount = ({
                     </div>
                     <div className="col-md-1">
                       <button
-                        onClick={() =>
-                          deleteDeliveryAddress(accountId, delivery.address_id)
-                        }
-                        className="btn "
+                        onClick={() => handleDeleteClick(delivery.address_id)}
+                        className="btn btn-danger"
                       >
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
@@ -344,6 +369,25 @@ const DeliveryAddressAccount = ({
           </div>
         </div>
       </div>
+      <ReactModal
+        isOpen={showDeleteModal}
+        contentLabel="Confirm Delete Modal"
+        onRequestClose={() => setShowDeleteModal(false)}
+        style={customStyles}
+      >
+        <div>
+          <p>Are you sure you want to delete this delivery address?</p>
+          <button className="btn btn-danger" onClick={handleConfirmDelete}>
+            Delete
+          </button>{" "}
+          <button
+            className="btn btn-info"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </ReactModal>
     </>
   );
 };

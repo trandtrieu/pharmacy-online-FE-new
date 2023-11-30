@@ -20,6 +20,13 @@ const CategoryProduct = (props) => {
   const [showNotification, setShowNotification] = useState(false);
   const { accountId, token } = useAuth();
   const { updateCartItemCount } = useCart();
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(12);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const setCurrentProducts = (newProducts) => {
+    setDisplayedProducts(newProducts);
+  };
 
   const showFilterEmptyNotification = () => {
     console.log("Setting showNotification to true");
@@ -27,8 +34,9 @@ const CategoryProduct = (props) => {
     setTimeout(() => {
       console.log("Setting showNotification to false");
       setShowNotification(false);
-    }, 5000);
+    }, 2000);
   };
+
   const priceRanges = {
     "price-all": { min: 0, max: 9999999000 },
     "price-1": { min: 0, max: 100000 },
@@ -37,6 +45,7 @@ const CategoryProduct = (props) => {
     "price-4": { min: 500000, max: 1000000 },
     "price-5": { min: 1000000, max: 9999999000 },
   };
+
   const fetchData = async (priceFilter) => {
     try {
       setIsLoading(true);
@@ -54,8 +63,9 @@ const CategoryProduct = (props) => {
       if (response.data) {
         setProducts(response.data);
         calculateProductCounts(response.data);
+        setDisplayedProducts(response.data.slice(0, productsPerPage));
         console.log("Products loaded successfully:", response.data);
-        setShowNotification(response.data.length === 0); // Show notification if no products found
+        setShowNotification(response.data.length === 0);
       } else {
         setProducts([]);
         setProductCounts({});
@@ -67,6 +77,20 @@ const CategoryProduct = (props) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const paginate = (pageNumber) => {
+    const startIndex = (pageNumber - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    setCurrentProducts(products.slice(startIndex, endIndex));
+    setCurrentPage(pageNumber);
   };
 
   const calculateProductCounts = (productData) => {
@@ -107,7 +131,7 @@ const CategoryProduct = (props) => {
       fetchData(newPriceFilter);
       return newPriceFilter;
     });
-    showFilterEmptyNotification(); // Reset the notification state
+    showFilterEmptyNotification();
   };
 
   const renderProducts = () => {
@@ -119,7 +143,7 @@ const CategoryProduct = (props) => {
       );
     }
 
-    return products.map((product) => (
+    return currentProducts.map((product) => (
       <div className="col-lg-4 col-md-6 col-sm-6 pb-1" key={product.productId}>
         <div className="product-item bg-light mb-4">
           <div className="product-img position-relative overflow-hidden">
@@ -197,7 +221,7 @@ const CategoryProduct = (props) => {
           {rangeId === "price-all"
             ? "Price-all"
             : index === Object.keys(priceRanges).length - 1
-            ? "Greater than $1000"
+            ? "Greater than 1.000.000 VND"
             : `${convertDollarToVND(
                 priceRanges[rangeId].min
               )}  - ${convertDollarToVND(priceRanges[rangeId].max)} VND`}
@@ -236,122 +260,153 @@ const CategoryProduct = (props) => {
                 </div>
               )}
 
-              {showNotification || products.length === 0
-                ? null
-                : products.map((product) => (
-                    <div
-                      className="col-lg-4 col-md-6 col-sm-6 pb-1"
-                      key={product.productId}
-                    >
-                      <div className="product-item bg-light mb-4">
-                        <div className="product-img position-relative overflow-hidden">
-                          {product.imageUrls.length > 0 && (
-                            <img
-                              className="img-fluid w-100"
-                              src={`${product.imageUrls[0]}`}
-                              alt={`Imagee 0`}
-                            />
+              {!showNotification &&
+                products.length > 0 &&
+                currentProducts.map((product) => (
+                  <div
+                    className="col-lg-4 col-md-6 col-sm-6 pb-1"
+                    key={product.productId}
+                  >
+                    <div className="product-item bg-light mb-4">
+                      <div className="product-img position-relative overflow-hidden">
+                        {product.imageUrls.length > 0 && (
+                          <img
+                            className="img-fluid w-100"
+                            src={`${product.imageUrls[0]}`}
+                            alt={`Imagee 0`}
+                          />
+                        )}
+                        <div className="product-action">
+                          {product.type === 0 ? (
+                            <>
+                              <a
+                                className="btn btn-outline-dark btn-square"
+                                href
+                                onClick={() =>
+                                  handleAddToCart(product.productId)
+                                }
+                              >
+                                <i className="fa fa-shopping-cart" />
+                              </a>
+                              <a
+                                className="btn btn-outline-dark btn-square"
+                                href
+                                onClick={() =>
+                                  handleAddtoWishlist(product.productId)
+                                }
+                              >
+                                <i className="far fa-heart" />
+                              </a>{" "}
+                              <a
+                                className="btn btn-outline-dark btn-square"
+                                href
+                                onClick={() => viewProduct(product.productId)}
+                              >
+                                <FontAwesomeIcon icon={faCircleInfo} />
+                              </a>
+                            </>
+                          ) : (
+                            <>
+                              <a
+                                className="btn btn-outline-dark btn-square"
+                                href
+                                onClick={() =>
+                                  handleAddtoWishlist(product.productId)
+                                }
+                              >
+                                <i className="far fa-heart" />
+                              </a>
+                              <a
+                                className="btn btn-outline-dark btn-square"
+                                href
+                                onClick={() => viewProduct(product.productId)}
+                              >
+                                <FontAwesomeIcon icon={faCircleInfo} />
+                              </a>
+                            </>
                           )}
-                          <div className="product-action">
-                            {product.type === 0 ? (
-                              <>
-                                <a
-                                  className="btn btn-outline-dark btn-square"
-                                  href
-                                  onClick={() =>
-                                    handleAddToCart(product.productId)
-                                  }
-                                >
-                                  <i className="fa fa-shopping-cart" />
-                                </a>
-                                <a
-                                  className="btn btn-outline-dark btn-square"
-                                  href
-                                  onClick={() =>
-                                    handleAddtoWishlist(product.productId)
-                                  }
-                                >
-                                  <i className="far fa-heart" />
-                                </a>{" "}
-                                <a
-                                  className="btn btn-outline-dark btn-square"
-                                  href
-                                  onClick={() => viewProduct(product.productId)}
-                                >
-                                  <FontAwesomeIcon icon={faCircleInfo} />
-                                </a>
-                              </>
-                            ) : (
-                              <>
-                                <a
-                                  className="btn btn-outline-dark btn-square"
-                                  href
-                                  onClick={() =>
-                                    handleAddtoWishlist(product.productId)
-                                  }
-                                >
-                                  <i className="far fa-heart" />
-                                </a>
-                                <a
-                                  className="btn btn-outline-dark btn-square"
-                                  href
-                                  onClick={() => viewProduct(product.productId)}
-                                >
-                                  <FontAwesomeIcon icon={faCircleInfo} />
-                                </a>
-                              </>
-                            )}
-                          </div>
                         </div>
-                        <div className="text-center py-4">
-                          <a
-                            className="h6 text-decoration-none text-truncate"
-                            href
-                            onClick={() => viewProduct(product.productId)}
-                          >
-                            {product.name}
-                          </a>
-                          <div className="d-flex align-items-center justify-content-center mt-2">
-                            <h5>{convertDollarToVND(product.price)} VND</h5>
-                          </div>
+                      </div>
+                      <div className="text-center py-4">
+                        <a
+                          className="h6 text-decoration-none text-truncate"
+                          href
+                          onClick={() => viewProduct(product.productId)}
+                        >
+                          {product.name}
+                        </a>
+                        <div className="d-flex align-items-center justify-content-center mt-2">
+                          <h5>{convertDollarToVND(product.price)} VND</h5>
                         </div>
                       </div>
                     </div>
-                  ))}
-              {!showNotification && products.length > 0 && (
-                <div className="col-12">
-                  <nav>
-                    <ul className="pagination justify-content-center">
-                      <li className="page-item disabled">
-                        <a className="page-link" href="/">
-                          Previous
-                        </a>
-                      </li>
-                      <li className="page-item active">
-                        <a className="page-link" href="/">
-                          1
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="/">
-                          2
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="/">
-                          3
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="/">
-                          Next
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
-              )}
+                  </div>
+                ))}
             </div>
+
+            {!showNotification && products.length > 0 && (
+              <div className="d-flex justify-content-center text-center pt-3 pagination-container">
+                <ul className="pagination">
+                  <li
+                    className={`page-item ${
+                      currentPage === 1 ? "disabled" : ""
+                    }`}
+                  >
+                    <a
+                      onClick={(e) => {
+                        e.preventDefault();
+                        paginate(currentPage - 1);
+                      }}
+                      className="page-link"
+                      href="#"
+                    >
+                      <i className="fas fa-chevron-left"></i>
+                    </a>
+                  </li>
+                  {Array.from(
+                    { length: Math.ceil(products.length / productsPerPage) },
+                    (_, i) => (
+                      <li
+                        key={i}
+                        className={`page-item ${
+                          currentPage === i + 1 ? "active" : ""
+                        }`}
+                      >
+                        <a
+                          onClick={(e) => {
+                            e.preventDefault();
+                            paginate(i + 1);
+                          }}
+                          className="page-link"
+                          href="#"
+                        >
+                          {i + 1}
+                        </a>
+                      </li>
+                    )
+                  )}
+                  <li
+                    className={`page-item ${
+                      currentPage ===
+                      Math.ceil(products.length / productsPerPage)
+                        ? "disabled"
+                        : ""
+                    }`}
+                  >
+                    <a
+                      onClick={(e) => {
+                        e.preventDefault();
+                        paginate(currentPage + 1);
+                      }}
+                      className="page-link"
+                      href="#"
+                    >
+                      <i className="fas fa-chevron-right"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

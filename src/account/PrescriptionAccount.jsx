@@ -84,7 +84,7 @@ const PrescriptionAccount = ({
           </div>
         ) : (
           prescriptions.map((prescriptionItem) => (
-            <div className="card mb-2" key={prescriptionItem.id}>
+            <div className="card mb-2 p-0" key={prescriptionItem.id}>
               <div className="card-header bg-light">
                 <h6 className="card-title m-0 p-0">
                   Code: <span>#{prescriptionItem.id}</span>

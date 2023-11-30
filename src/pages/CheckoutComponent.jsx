@@ -307,6 +307,8 @@ const CheckoutComponent = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
+          toast.success("Order successfully");
+          history.push("/profile");
         })
         .catch((error) => {
           console.error("Error placing order:", error);
@@ -347,6 +349,8 @@ const CheckoutComponent = () => {
         .then((data) => {
           console.log(data);
           const paymentUrl = data.url;
+
+          window.location.href = paymentUrl;
           CartServices.removeAllCart(accountId, 0, token)
             .then(() => {
               setCarts([]);
@@ -355,7 +359,6 @@ const CheckoutComponent = () => {
             .catch((error) => {
               console.error("Error removing all items from the cart:", error);
             });
-          window.location.href = paymentUrl;
         })
         .catch((error) => {
           console.error("Error placing order:", error);

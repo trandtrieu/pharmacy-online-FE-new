@@ -4,6 +4,7 @@ import CartServices from "../services/CartServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronRight,
+  faCircleXmark,
   faLocationDot,
   faPhone,
   faStore,
@@ -18,6 +19,9 @@ import DeliveryAddressServices from "../services/DeliveryAddressServices";
 import { convertDollarToVND } from "../utils/cartutils";
 import { useDataContext } from "../services/DataContext";
 import "../style/CheckOutModal.css";
+import { useCart } from "../CartProvider";
+import DiscountServices from "../services/DiscountServices";
+import { getAccountById } from "../services/AccountService";
 const customStyles = {
   content: {
     top: "35%",
@@ -29,15 +33,31 @@ const customStyles = {
     transform: "translate(-40%, -10%)",
   },
 };
-
+const customStyles1 = {
+  content: {
+    top: "35%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    width: "30%",
+    transform: "translate(-40%, -10%)",
+    // height: "400px",
+  },
+};
 const CheckoutComponent = () => {
   const history = useHistory();
+  const [cartItemsInfo, setCartItemsInfo] = useState([]);
+
   const { setOrderData } = useDataContext();
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   const [deliveryAddress, setDeliveryAddress] = useState([]);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponCode, setCouponCode] = useState("");
+  const [listDiscount, setListDiscount] = useState([]);
+  const [carts, setCarts] = useState([]);
+
   const [cartsFromPresciption, setCartsFromPresciption] = useState([]);
   const [selectedOption, setSelectedOption] = useState("delivery");
   const [isChecked, setIsChecked] = useState(false);
@@ -62,7 +82,9 @@ const CheckoutComponent = () => {
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const { accountId, token } = useAuth();
-
+  const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
+  const [account, setAccount] = useState({});
+  const { updateCartItemCount } = useCart();
   const openSuccessModal = () => {
     setIsSuccessModalOpen(true);
   };
@@ -258,10 +280,12 @@ const CheckoutComponent = () => {
         amount: totalCostAfterDiscountPrescription,
         paymentMethod: selectedOptions,
         deliveryMethod: selectedOption,
-        name: deliveryAddressStatusDefault.recipient_full_name,
-        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        name: account.name,
+        phone: account.phone,
         address: deliveryAddressStatusDefault.specific_address,
         note,
+        products: cartItemsInfo,
+        accountId: accountId,
       };
       fetch("http://localhost:8080/payment/create_payment", {
         method: "POST",
@@ -279,6 +303,15 @@ const CheckoutComponent = () => {
           console.error("Error placing order:", error);
         });
       openSuccessModal();
+      CartServices.removeAllCart(accountId, 0, token)
+        .then(() => {
+          setCarts([]);
+          updateCartItemCount();
+          history.push("/home");
+        })
+        .catch((error) => {
+          console.error("Error removing all items from the cart:", error);
+        });
     } else {
       const orderData = {
         amount: totalCostBeforeDiscountPrescription,
@@ -288,6 +321,8 @@ const CheckoutComponent = () => {
         phone: deliveryAddressStatusDefault.recipient_phone_number,
         address: deliveryAddressStatusDefault.specific_address,
         note,
+        products: cartItemsInfo,
+        accountId: accountId,
       };
       setOrderData(orderData);
 
@@ -303,7 +338,14 @@ const CheckoutComponent = () => {
         .then((data) => {
           console.log(data);
           const paymentUrl = data.url;
-
+          CartServices.removeAllCart(accountId, 0, token)
+            .then(() => {
+              setCarts([]);
+              updateCartItemCount();
+            })
+            .catch((error) => {
+              console.error("Error removing all items from the cart:", error);
+            });
           window.location.href = paymentUrl;
         })
         .catch((error) => {
@@ -330,6 +372,56 @@ const CheckoutComponent = () => {
         console.log(token);
         toast.error("Error setting default delivery address:", error);
       });
+  };
+  const openDiscountModal = () => {
+    setIsDiscountModalOpen(true);
+  };
+
+  const closeDiscountModal = () => {
+    setIsDiscountModalOpen(false);
+  };
+  useEffect(() => {
+    DiscountServices.getListDiscountByAccountId(accountId)
+      .then((res) => {
+        setListDiscount(res.data);
+        console.log("list discount " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading list discount:", error);
+      });
+    getAccountById(accountId, token)
+      .then((response) => {
+        setAccount(response.data);
+        console.log("Account info:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching account:", error);
+      });
+  }, [accountId]);
+  const applyDiscountCoupon = (selectedCoupon) => {
+    setCheckingCoupon(true);
+
+    setTimeout(() => {
+      CheckoutServices.applyCode(accountId, 2, selectedCoupon.code, token)
+        .then((res) => {
+          if (res && res.discountAmount !== undefined) {
+            setCouponDiscount(res.discountAmount);
+            setTotalCostBeforeDiscountPrescription(res.totalCostAfterDiscount);
+            setAppliedCoupon(selectedCoupon.code);
+            setIsCouponApplied(true);
+            toast.success("Apply coupon successfully");
+          } else {
+            toast.error("Apply coupon failed");
+          }
+        })
+        .catch((error) => {
+          toast.error("Apply coupon failed");
+        })
+        .finally(() => {
+          setCheckingCoupon(false);
+          closeDiscountModal(); // Close the discount modal after applying the coupon
+        });
+    }, 1000);
   };
   return (
     <>
@@ -406,10 +498,7 @@ const CheckoutComponent = () => {
                 </div>
                 <div className="col-md-6 px-xl-0">
                   <p className="mb-md-0 text-md-right">
-                    <button
-                      className="btn text-primary"
-                      onClick={openNoteModal}
-                    >
+                    <button className="btn text-info" onClick={openNoteModal}>
                       Enter note
                     </button>
                   </p>
@@ -596,7 +685,10 @@ const CheckoutComponent = () => {
             <p className="ml-1" style={{ fontSize: "13px" }}>
               <span className="text-danger">(*) </span>Only one voucher per
               order
-            </p>
+            </p>{" "}
+            <button className="btn btn-primary" onClick={openDiscountModal}>
+              Choose discount coupon
+            </button>
             <h5 className="section-title position-relative text-uppercase mb-3 mt-4">
               <span className="bg-secondary pr-3">Order Total</span>
             </h5>
@@ -815,6 +907,54 @@ const CheckoutComponent = () => {
           </div>
         </div>
       </div>
+      <ReactModal
+        isOpen={isDiscountModalOpen}
+        onRequestClose={closeDiscountModal}
+        style={customStyles1}
+      >
+        <div className="d-flex align-items-center justify-content-center">
+          <h5 className="mr-5">Your discount coupons </h5>
+          <h3>
+            {" "}
+            <FontAwesomeIcon
+              icon={faCircleXmark}
+              className="text-danger"
+              onClick={closeDiscountModal}
+            />
+          </h3>
+        </div>
+
+        <div className="" style={{ height: "255px", overflowY: "auto" }}>
+          {listDiscount.map((discountItem) => (
+            <div className="row coupon " style={{ border: "1px dashed" }}>
+              <div
+                class="col-md-8 "
+                style={{
+                  borderRight: " dashed",
+                }}
+              >
+                <div className="coupon-list-detail">
+                  <h4>{discountItem.code}</h4>
+                  <p>Discount: {discountItem.discountPercentage} %</p>
+                  <p>Expired date: {discountItem.expiryDate}</p>
+                  <p>
+                    Condition:
+                    {convertDollarToVND(discountItem.condition)} VND
+                  </p>
+                </div>
+              </div>
+              <div className="col-md-4 d-flex align-items-center justify-content-center">
+                <button
+                  className="btn btn-info"
+                  onClick={() => applyDiscountCoupon(discountItem)}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </ReactModal>
     </>
   );
 };

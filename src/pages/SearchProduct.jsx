@@ -20,6 +20,15 @@ export const SearchProduct = () => {
   const [showNotification, setShowNotification] = useState(false);
   const { updateCartItemCount } = useCart();
   const { accountId, token } = useAuth();
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(12);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [productsPerPageShowing, setProductsPerPage] = useState(10);
+  const setCurrentProducts = (newProducts) => {
+    setDisplayedProducts(newProducts);
+  };
+
   const priceRanges = {
     "price-all": { min: 0, max: 9999999000 },
     "price-1": { min: 0, max: 100000 },
@@ -96,6 +105,7 @@ export const SearchProduct = () => {
           const filteredProducts = response.data;
           setProducts(filteredProducts);
           calculateProductCounts(filteredProducts);
+          setDisplayedProducts(response.data.slice(0, productsPerPage));
         } else {
           setProducts([]);
           setProductCounts({});
@@ -109,6 +119,20 @@ export const SearchProduct = () => {
 
     fetchData();
   }, [keyword, priceFilter, selectedPriceFilter]);
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const paginate = (pageNumber) => {
+    const startIndex = (pageNumber - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    setCurrentProducts(products.slice(startIndex, endIndex));
+    setCurrentPage(pageNumber);
+  };
 
   const handlePriceFilterChange = (newPriceFilter) => {
     if (selectedPriceFilter === newPriceFilter) {
@@ -194,9 +218,9 @@ export const SearchProduct = () => {
                 </div>
               )}
 
-              {showNotification || products.length === 0
+              {showNotification || currentProducts.length === 0
                 ? null
-                : products.map((product) => (
+                : currentProducts.map((product) => (
                     <div
                       className="col-lg-4 col-md-6 col-sm-6 pb-1"
                       key={product.productId}
@@ -280,40 +304,71 @@ export const SearchProduct = () => {
                       </div>
                     </div>
                   ))}
-              {!showNotification && products.length > 0 && (
-                <div className="col-12">
-                  <nav>
-                    <ul className="pagination justify-content-center">
-                      <li className="page-item disabled">
-                        <a className="page-link" href="/">
-                          Previous
-                        </a>
-                      </li>
-                      <li className="page-item active">
-                        <a className="page-link" href="/">
-                          1
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="/">
-                          2
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="/">
-                          3
-                        </a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="/">
-                          Next
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
-              )}
             </div>
+
+            {!showNotification && products.length > 0 && (
+              <div className="d-flex justify-content-center text-center pt-3 pagination-container">
+                <ul className="pagination">
+                  <li
+                    className={`page-item ${
+                      currentPage === 1 ? "disabled" : ""
+                    }`}
+                  >
+                    <a
+                      onClick={(e) => {
+                        e.preventDefault();
+                        paginate(currentPage - 1);
+                      }}
+                      className="page-link"
+                      href="#"
+                    >
+                      <i className="fas fa-chevron-left"></i>
+                    </a>
+                  </li>
+                  {Array.from(
+                    { length: Math.ceil(products.length / productsPerPage) },
+                    (_, i) => (
+                      <li
+                        key={i}
+                        className={`page-item ${
+                          currentPage === i + 1 ? "active" : ""
+                        }`}
+                      >
+                        <a
+                          onClick={(e) => {
+                            e.preventDefault();
+                            paginate(i + 1);
+                          }}
+                          className="page-link"
+                          href="#"
+                        >
+                          {i + 1}
+                        </a>
+                      </li>
+                    )
+                  )}
+                  <li
+                    className={`page-item ${
+                      currentPage ===
+                      Math.ceil(products.length / productsPerPage)
+                        ? "disabled"
+                        : ""
+                    }`}
+                  >
+                    <a
+                      onClick={(e) => {
+                        e.preventDefault();
+                        paginate(currentPage + 1);
+                      }}
+                      className="page-link"
+                      href="#"
+                    >
+                      <i className="fas fa-chevron-right"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>
