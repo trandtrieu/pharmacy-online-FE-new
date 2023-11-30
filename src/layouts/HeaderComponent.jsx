@@ -103,9 +103,9 @@ const HeaderComponent = (props) => {
       });
   };
   useEffect(() => {
-    // CategoryServices.getCategoryType().then((res) => {
-    //   setCategories(res.data);
-    // });
+    CategoryServices.getCategoryType().then((res) => {
+      setCategories(res.data);
+    });
     if (token) {
       setIsLoggedIn(true);
     } else {
@@ -291,39 +291,66 @@ const HeaderComponent = (props) => {
             style={{ zIndex: "1000", marginRight: "0px" }}
           >
             <div className="col-lg-3 d-none d-lg-block">
-              <a
-                className="btn d-flex align-items-center justify-content-between bg-primary w-100"
-                data-toggle="collapse"
-                href="#navbar-vertical"
-                style={{ height: "65px", padding: "0 30px" }}
+              <div
+                style={{ zIndex: 1000, width: "270px" }}
+                class="dropdown btn align-items-center justify-content-between bg-primary "
               >
-                <h6 className="text-dark m-0">
-                  <i className="fa fa-bars mr-2" />
-                  Categories
-                </h6>
-                <i className="fa fa-angle-down text-dark" />
-              </a>
+                <button
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "none",
+                    height: "51px",
+                    display: "flex",
+                  }}
+                  class="drop-cate btn dropdown-toggle"
+                  type="button"
+                  id="dropdownMenuButton"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <div style={{}}>
+                    <h6
+                      className="text-black m-0"
+                      style={{ paddingRight: "72px" }}
+                    >
+                      <i className="fa fa-bars mr-2" />
+                      Categories
+                    </h6>
+                  </div>
+                </button>
 
-              <nav
-                className="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
-                id="navbar-vertical"
-                style={{ width: "calc(100% - 30px)" }}
-              >
-                <div className="navbar-nav w-100">
+                <div
+                  className="dropdown-menu"
+                  // style={{ top: "4px" }}
+                  aria-labelledby="dropdownMenuButton"
+                  // style={{ paddingTop: "40px" }}
+                >
                   {categories.map((category) => (
-                    <li key={category.category_id}>
-                      <button
-                        className="btn"
-                        onClick={() =>
-                          viewProductByCategory(category.category_id)
-                        }
+                    <>
+                      <div
+                        key={category.category_id}
+                        className="row align-items-center"
                       >
-                        {category.category_name}
-                      </button>
-                    </li>
+                        {/* <img
+                          src={`../assets/images/${category.category_image}`}
+                          alt={category.category_name}
+                          className="img-fluid col-lg-3"
+                        /> */}
+                        <a
+                          onClick={() =>
+                            viewProductByCategory(category.category_id)
+                          }
+                          className="dropdown-item btn col-lg-8"
+                          href=""
+                        >
+                          {category.category_name}
+                        </a>
+                      </div>
+                    </>
                   ))}
                 </div>
-              </nav>
+              </div>
             </div>
 
             <div className="col-lg-9">
