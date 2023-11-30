@@ -211,6 +211,11 @@ const UpdatePrescriptionComponent = ({ history }) => {
                 {errors.imageFile && (
                   <div className="invalid-feedback">{errors.imageFile}</div>
                 )}
+                <label className="text-danger">
+                  <span className="label-require">*</span> Our system has
+                  recorded the previous image. If you wish to modify the
+                  prescription, you are allowed to edit this item.{" "}
+                </label>
               </div>
               <h4>
                 <FontAwesomeIcon icon={faUser} className="icon1" /> Enter

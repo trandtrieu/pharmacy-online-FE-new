@@ -292,12 +292,17 @@ const HeaderComponent = (props) => {
           >
             <div className="col-lg-3 d-none d-lg-block">
               <div
-                style={{ zIndex: 1000 }}
-                class="dropdown btn d-flex align-items-center justify-content-between bg-primary "
+                style={{ zIndex: 1000, width: "270px" }}
+                class="dropdown btn align-items-center justify-content-between bg-primary "
               >
                 <button
-                  style={{ backgroundColor: "transparent", border: "none" }}
-                  class="btn  dropdown-toggle"
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "none",
+                    height: "51px",
+                    display: "flex",
+                  }}
+                  class="drop-cate btn dropdown-toggle"
                   type="button"
                   id="dropdownMenuButton"
                   data-toggle="dropdown"
@@ -305,13 +310,22 @@ const HeaderComponent = (props) => {
                   aria-expanded="false"
                 >
                   <div style={{}}>
-                    <h6 className="text-black m-0">
+                    <h6
+                      className="text-black m-0"
+                      style={{ paddingRight: "72px" }}
+                    >
                       <i className="fa fa-bars mr-2" />
                       Categories
                     </h6>
                   </div>
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+                <div
+                  className="dropdown-menu"
+                  // style={{ top: "4px" }}
+                  aria-labelledby="dropdownMenuButton"
+                  // style={{ paddingTop: "40px" }}
+                >
                   {categories.map((category) => (
                     <>
                       <div

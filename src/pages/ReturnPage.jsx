@@ -98,7 +98,7 @@ const ReturnPage = () => {
   } else {
     return (
       <div className="transaction_container">
-        <h1 className="transaction_failed">Transaction failed</h1>;
+        <h1 className="transaction_failed">Transaction failed</h1>
         <p>Please check and pay again</p>
         <Link to="/">
           <button className="btn_failed">Return to home page</button>

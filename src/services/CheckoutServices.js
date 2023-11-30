@@ -78,6 +78,82 @@ class CheckoutServiceServices {
     }
   }
 
+  getSubTotalCartByPharmacy(accountId, cart_type, accessToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    return axios.get(
+      CART_API_BASE_URL +
+        "/get-total-cart-cost-by-pharmacy?accountId=" +
+        accountId +
+        "&cartType=" +
+        cart_type,
+      config
+    );
+  }
+
+  getShippingCostByPharmacy(accountId, cart_type, accessToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    return axios.get(
+      CART_API_BASE_URL +
+        "/get-shipping-cost-by-pharmacy?accountId=" +
+        accountId +
+        "&cartType=" +
+        cart_type,
+      config
+    );
+  }
+  getSubtotalAndShippingCostByPharmacy(accountId, cart_type, bearerToken) {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    };
+
+    return axios.get(
+      CART_API_BASE_URL +
+        "/get-total-cart-cost-with-shipping-by-pharmacy?accountId=" +
+        accountId +
+        "&cartType=" +
+        cart_type,
+      config
+    );
+  } //http://localhost:8080/pharmacy-online/cart/get-total-cart-cost-with-shipping?accountId=1&cartType=0
+
+  async applyCodeByPharmacy(accountId, cart_type, code, authToken) {
+    try {
+      const response = await axios.post(
+        CART_API_BASE_URL +
+          "/apply-discount-by-pharmacy?accountId=" +
+          accountId +
+          "&cartType=" +
+          cart_type +
+          "&discountCode=" +
+          code,
+        {},
+        {
+          headers: {
+            Authorization: "Bearer " + authToken,
+          },
+        }
+      );
+      const discountAmount = response.data.discountAmount;
+      const totalCostAfterDiscount = response.data.totalCostAfterDiscount;
+      return { discountAmount, totalCostAfterDiscount };
+    } catch (error) {
+      console.error("Lỗi:", error);
+      throw error;
+    }
+  }
+
   getTotalQuantity(accountId, cart_type, token) {
     const config = {
       headers: {

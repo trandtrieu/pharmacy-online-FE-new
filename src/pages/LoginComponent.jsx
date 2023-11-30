@@ -322,19 +322,6 @@ export function LoginComponent() {
           <button type="submit" value="submit" className="btn-login">
             Register
           </button>
-          <span className="span-login">or use your account</span>
-          <div class="social-container">
-            <a href="#" class="social">
-              <i class="">
-                <FontAwesomeIcon icon={faSquareFacebook} />
-              </i>
-            </a>
-            <a href="#" class="social">
-              <i class="">
-                <FontAwesomeIcon icon={faGoogle} />
-              </i>
-            </a>
-          </div>
         </form>
       </div>
 
@@ -390,19 +377,6 @@ export function LoginComponent() {
           <button type="submit" value="submit" className="btn-login">
             Login
           </button>
-          <span className="span-login">Or use your account</span>
-          <div class="social-container">
-            <a href="#" class="social">
-              <i class="">
-                <FontAwesomeIcon icon={faSquareFacebook} />
-              </i>
-            </a>
-            <a href="#" class="social">
-              <i class="">
-                <FontAwesomeIcon icon={faGoogle} />
-              </i>
-            </a>
-          </div>
         </form>
       </div>
 

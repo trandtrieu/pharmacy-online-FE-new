@@ -56,6 +56,7 @@ const PrescriptionAccount = ({
         </button>
       </Modal>
       <div className="tab-pane fade active show m-3" id="account-prescripitons">
+        <h5>Manage My Prescriptions</h5>{" "}
         {prescriptions.length === 0 ? (
           <div className="container-fluid">
             <div className="row">

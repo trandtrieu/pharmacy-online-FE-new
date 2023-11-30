@@ -477,7 +477,7 @@ class FeedbackComponent extends Component {
                               className="media mt-4"
                             >
                               <form style={{ width: "80%" }} action="">
-                                <div className="bg-light p-2">
+                                <div className="bg-light">
                                   <div className="d-flex flex-row align-items-start">
                                     <img
                                       alt=""

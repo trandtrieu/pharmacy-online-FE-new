@@ -236,7 +236,13 @@ const ProfileComponent = () => {
       recipient_phone_number: phoneRecipient,
       specific_address: `${specificAddressRecipient}, ${ward}, ${district}, ${province}.`,
     };
-
+    const isValidPhoneNumber = /^0[0-9]{9}$/.test(
+      deliveryAddressData.recipient_phone_number
+    );
+    if (!isValidPhoneNumber) {
+      toast.error("Phone must be 10 digits");
+      return;
+    }
     if (
       !deliveryAddressData.recipient_full_name ||
       !deliveryAddressData.recipient_phone_number ||
@@ -259,7 +265,6 @@ const ProfileComponent = () => {
         });
     }
   };
-
   const setDefaultAddress = (accountId, address_id) => {
     DeliveryAddressServices.setDefaultDeliveryAddress(
       accountId,
@@ -449,7 +454,6 @@ const ProfileComponent = () => {
                         type="text"
                         readOnly
                         className="form-control mb-1"
-                        defaultValue="nmaxwell"
                         value={account.username}
                       />
                     </div>
@@ -459,7 +463,6 @@ const ProfileComponent = () => {
                         type="text"
                         onChange={handleNameChange}
                         className="form-control"
-                        defaultValue="Nelle Maxwell"
                         value={account.name}
                       />
                     </div>
@@ -470,7 +473,6 @@ const ProfileComponent = () => {
                         readOnly
                         onChange={handleMailChange}
                         className="form-control mb-1"
-                        defaultValue="nmaxwell@mail.com"
                         value={account.mail}
                       />
                       {/* <div className="alert alert-warning mt-3">
@@ -485,7 +487,6 @@ const ProfileComponent = () => {
                         type="date"
                         onChange={handleDOBChange}
                         className="form-control"
-                        defaultValue="Company Ltd."
                         value={account.dob}
                       />
                     </div>

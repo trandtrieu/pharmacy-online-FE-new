@@ -290,7 +290,7 @@ const CartComponent = ({ history }) => {
                 <div className="col-md-2">
                   <h6
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-content="Pharmacity provides free delivery for orders with a value of 100$ or higher."
+                    data-tooltip-content="DrugMart provides free delivery for orders with a value of 300.000 VND or higher."
                   >
                     Policy <FontAwesomeIcon icon={faCircleQuestion} />
                   </h6>

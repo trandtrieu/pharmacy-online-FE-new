@@ -31,14 +31,13 @@ const ProductDetailModal = ({ isOpen, onRequestClose, orderId, token }) => {
       contentLabel="Product Details Modal"
       style={customStylespro}
     >
-      <h2>Product Details</h2>
+      <h2>Product Details: {orderId} </h2>
 
       {Array.isArray(details) && details.length > 0 ? (
-        <table>
+        <table className="table table-bordered">
           <thead>
             <tr>
               <th>Name</th>
-              <th>Quantity</th>
               <th>Price</th>
             </tr>
           </thead>
@@ -46,8 +45,9 @@ const ProductDetailModal = ({ isOpen, onRequestClose, orderId, token }) => {
             {details.map((product, index) => (
               <tr key={index}>
                 <td>{product.nameproduct}</td>
-                <td>{product.quantity}</td>
-                <td>{convertDollarToVND(product.price)} VND</td>
+                <td>
+                  {convertDollarToVND(product.price)} VND x {product.quantity}{" "}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -59,16 +59,21 @@ const DeliveryAddressAccount = ({
       <div className="tab-pane fade" id="account-delivery-address">
         <div className="card-body pb-2">
           <div className="form-group d-flex align-items-center justify-content-between">
-            <div>Manage Delivery Address</div>
             <div>
-              <button
-                data-toggle="modal"
-                data-target={`#setDefault`}
-                className="btn btn-info rounded "
-              >
-                Set Default Delivery Address
-              </button>
+              {" "}
+              <h5>Manage Delivery Address</h5>{" "}
             </div>
+            {deliveryAddress.length > 1 && (
+              <div>
+                <button
+                  data-toggle="modal"
+                  data-target={`#setDefault`}
+                  className="btn btn-info rounded"
+                >
+                  Set Default Delivery Address
+                </button>
+              </div>
+            )}
             <div>
               <button
                 data-toggle="modal"
@@ -126,9 +131,9 @@ const DeliveryAddressAccount = ({
                       )}
                     </div>
 
-                    <div className="col-md-1">
+                    <div className="col-md-1 d-flex align-items-center  justify-content-center">
                       <div
-                        className="text-center  pt-1 pb-1"
+                        className="text-center"
                         style={{
                           width: "100%",
                           backgroundColor: "#d7ffcb",
@@ -149,10 +154,10 @@ const DeliveryAddressAccount = ({
                       </p>
                       <p>{delivery.specific_address}</p>
                     </div>
-                    <div className="col-md-1">
+                    <div className="col-md-1 d-flex align-items-center  justify-content-center">
                       <button
                         onClick={() => handleDeleteClick(delivery.address_id)}
-                        className="btn btn-danger"
+                        className="btn"
                       >
                         <FontAwesomeIcon icon={faTrash} />
                       </button>

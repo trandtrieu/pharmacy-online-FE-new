@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactModal from "react-modal";
 import { useAuth } from "../AuthContext";
-import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
@@ -124,40 +124,74 @@ const CheckoutComponent = () => {
   };
 
   const applyDiscountCoupon = (selectedCoupon) => {
-    setCheckingCoupon(true);
+    if (selectedOption === "pharmacy") {
+      toast.success("selectedOption" + selectedOption);
+      setCheckingCoupon(true);
 
-    setTimeout(() => {
-      CheckoutServices.applyCode(accountId, 0, selectedCoupon.code, token)
-        .then((res) => {
-          if (res && res.discountAmount !== undefined) {
-            setCouponDiscount(res.discountAmount);
-            setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
-            setAppliedCoupon(selectedCoupon.code);
-            setIsCouponApplied(true);
-            toast.success("Apply coupon successfully");
-          } else {
+      setTimeout(() => {
+        CheckoutServices.applyCodeByPharmacy(
+          accountId,
+          0,
+          selectedCoupon.code,
+          token
+        )
+          .then((res) => {
+            if (res && res.discountAmount !== undefined) {
+              setCouponDiscount(res.discountAmount);
+              setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
+              setAppliedCoupon(selectedCoupon.code);
+              setIsCouponApplied(true);
+              toast.success("Apply coupon successfully");
+            } else {
+              toast.error("Apply coupon failed");
+            }
+          })
+          .catch((error) => {
             toast.error("Apply coupon failed");
-          }
-        })
-        .catch((error) => {
-          toast.error("Apply coupon failed");
-        })
-        .finally(() => {
-          setCheckingCoupon(false);
-          closeDiscountModal(); // Close the discount modal after applying the coupon
-        });
-    }, 1000);
+          })
+          .finally(() => {
+            setCheckingCoupon(false);
+            closeDiscountModal(); // Close the discount modal after applying the coupon
+          });
+      }, 1000);
+    } else if (selectedOption === "delivery") {
+      setCheckingCoupon(true);
+      toast.success("selectedOption" + selectedOption);
+
+      setTimeout(() => {
+        CheckoutServices.applyCode(accountId, 0, selectedCoupon.code, token)
+          .then((res) => {
+            if (res && res.discountAmount !== undefined) {
+              setCouponDiscount(res.discountAmount);
+              setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
+              setAppliedCoupon(selectedCoupon.code);
+              setIsCouponApplied(true);
+              toast.success("Apply coupon successfully");
+            } else {
+              toast.error("Apply coupon failed");
+            }
+          })
+          .catch((error) => {
+            toast.error("Apply coupon failed");
+          })
+          .finally(() => {
+            setCheckingCoupon(false);
+            closeDiscountModal(); // Close the discount modal after applying the coupon
+          });
+      }, 1000);
+    }
   };
 
   useEffect(() => {
     CartServices.getListCartByAccountId(accountId, 0, token)
       .then((res) => {
         setCarts(res.data);
-
+        console.log("abc" + carts);
         const itemsInfo = res.data.map((cartItem) => ({
           nameproduct: cartItem.productDetail.name,
           quantity: cartItem.quantity,
           price: cartItem.productDetail.price,
+          product_id: cartItem.productDetail.productId,
         }));
         setCartItemsInfo(itemsInfo);
       })
@@ -172,6 +206,33 @@ const CheckoutComponent = () => {
       .catch((error) => {
         console.error("Error fetching total quantity:", error);
       });
+  }, [accountId, token]);
+
+  useEffect(() => {
+    if (selectedOption === "pharmacy") {
+      console.log("selected option: " + selectedOption);
+      loadSubTotalCostByPharmacy();
+      loadShippingCostByPharmacy();
+      loadSubtotalAndShippingCostByPharmacy();
+    } else {
+      loadSubTotalCost();
+      loadShippingCost();
+      loadSubtotalAndShippingCost();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountId, token]);
+
+  const loadSubtotalAndShippingCostByPharmacy = () => {
+    CheckoutServices.getSubtotalAndShippingCostByPharmacy(accountId, 0, token)
+      .then((res) => {
+        setTotalCostBeforeDiscount(res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching total quantity:", error);
+      });
+  };
+  const loadSubtotalAndShippingCost = () => {
     CheckoutServices.getSubtotalAndShippingCost(accountId, 0, token)
       .then((res) => {
         setTotalCostBeforeDiscount(res.data);
@@ -179,13 +240,7 @@ const CheckoutComponent = () => {
       .catch((error) => {
         console.error("Error fetching total quantity:", error);
       });
-  }, [accountId, token]);
-
-  useEffect(() => {
-    loadSubTotalCost();
-    loadShippingCost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId, token]);
+  };
   useEffect(() => {
     DeliveryAddressServices.getDeliveryAddressByUserid(accountId, token)
       .then((res) => {
@@ -230,6 +285,18 @@ const CheckoutComponent = () => {
     CheckoutServices.getSubTotalCart(accountId, 0, token)
       .then((res) => {
         setSubTotalCost(res.data);
+        setTotalCostAfterDiscount(res.data + shippingCost);
+        console.log("subtotal: " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching total cost:", error);
+      });
+  };
+
+  const loadSubTotalCostByPharmacy = () => {
+    CheckoutServices.getSubTotalCartByPharmacy(accountId, 0, token)
+      .then((res) => {
+        setSubTotalCost(res.data);
 
         setTotalCostAfterDiscount(res.data + shippingCost);
         console.log("subtotal: " + res.data);
@@ -241,6 +308,16 @@ const CheckoutComponent = () => {
 
   const loadShippingCost = () => {
     CheckoutServices.getShippingCost(accountId, 0, token)
+      .then((res) => {
+        setShippingCost(res.data);
+        console.log("shipping cost: " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching total cost:", error);
+      });
+  };
+  const loadShippingCostByPharmacy = () => {
+    CheckoutServices.getShippingCostByPharmacy(accountId, 0, token)
       .then((res) => {
         setShippingCost(res.data);
         console.log("shipping cost: " + res.data);
@@ -261,6 +338,31 @@ const CheckoutComponent = () => {
 
   const handleRadioChange = (event) => {
     setSelectedOption(event.target.value);
+    if (event.target.value === "pharmacy") {
+      loadSubTotalCostByPharmacy();
+      loadShippingCostByPharmacy();
+      loadSubtotalAndShippingCostByPharmacy();
+    } else {
+      loadSubTotalCost();
+      loadShippingCost();
+      loadSubtotalAndShippingCost();
+    }
+  };
+
+  const handleRadioChange1 = (event) => {
+    const selectedMethod = event.target.value;
+
+    // Check if the selected method is "pharmacy"
+    if (selectedMethod === "pharmacy") {
+      // Set shipping cost to 0
+      setShippingCost(0);
+
+      // Subtract 30,000 VND from totalCostAfterDiscount
+      setTotalCostBeforeDiscount(subTotalCost);
+    }
+
+    // Update the selectedOption state
+    setSelectedOption(selectedMethod);
   };
 
   const handleCheckboxChange = () => {
@@ -286,12 +388,19 @@ const CheckoutComponent = () => {
     localStorage.getItem("token");
     if (selectedOptions === "cash") {
       const orderData = {
-        amount: totalCostAfterDiscount,
+        // amount: totalCostAfterDiscount,
+        amount: totalCostBeforeDiscount,
+
         paymentMethod: selectedOptions,
         deliveryMethod: selectedOption,
         name: account.name,
         phone: account.phone,
-        address: deliveryAddressStatusDefault.specific_address,
+        // address: deliveryAddressStatusDefault.specific_address,
+        address:
+          selectedOption === "pharmacy"
+            ? " Hoa Hai, Ngu Hanh Son, Da Nang"
+            : deliveryAddressStatusDefault.specific_address,
+
         note,
         products: cartItemsInfo,
         accountId: accountId,
@@ -318,7 +427,6 @@ const CheckoutComponent = () => {
         .then(() => {
           setCarts([]);
           updateCartItemCount();
-          history.push("/home");
         })
         .catch((error) => {
           console.error("Error removing all items from the cart:", error);
@@ -614,11 +722,11 @@ const CheckoutComponent = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="col-md-1 d-flex align-items-center">
+                  {/* <div className="col-md-1 d-flex align-items-center">
                     <button className="btn">
                       <FontAwesomeIcon icon={faChevronRight} />
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             )}
@@ -899,37 +1007,46 @@ const CheckoutComponent = () => {
                     className=""
                     style={{ height: "255px", overflowY: "auto" }}
                   >
-                    {listDiscount.map((discountItem) => (
-                      <div
-                        className="row coupon "
-                        style={{ border: "1px dashed" }}
-                      >
+                    {listDiscount && listDiscount.length > 0 ? (
+                      listDiscount.map((discountItem) => (
                         <div
-                          class="col-md-8 "
-                          style={{
-                            borderRight: " dashed",
-                          }}
+                          className="row coupon "
+                          style={{ border: "1px dashed" }}
                         >
-                          <div className="coupon-list-detail">
-                            <h4>{discountItem.code}</h4>
-                            <p>Discount: {discountItem.discountPercentage} %</p>
-                            <p>Expired date: {discountItem.expiryDate}</p>
-                            <p>
-                              Condition:
-                              {convertDollarToVND(discountItem.condition)} VND
-                            </p>
+                          <div
+                            class="col-md-8 "
+                            style={{
+                              borderRight: " dashed",
+                            }}
+                          >
+                            <div className="coupon-list-detail">
+                              <h4>{discountItem.code}</h4>
+                              <p>
+                                Discount: {discountItem.discountPercentage} %
+                              </p>
+                              <p>Expired date: {discountItem.expiryDate}</p>
+                              <p>
+                                Condition:
+                                {convertDollarToVND(discountItem.condition)} VND
+                              </p>
+                            </div>
+                          </div>
+                          <div className="col-md-4 d-flex align-items-center justify-content-center">
+                            <button
+                              className="btn btn-info"
+                              onClick={() => applyDiscountCoupon(discountItem)}
+                            >
+                              Apply
+                            </button>
                           </div>
                         </div>
-                        <div className="col-md-4 d-flex align-items-center justify-content-center">
-                          <button
-                            className="btn btn-info"
-                            onClick={() => applyDiscountCoupon(discountItem)}
-                          >
-                            Apply
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <>
+                        <p>No discount coupons available.</p>
+                        <Link to="/voucher">Get voucher</Link>
+                      </>
+                    )}
                   </div>
                 </ReactModal>
               </div>

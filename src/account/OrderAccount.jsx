@@ -129,7 +129,7 @@ const OrderAccount = ({
                         <strong>Address:</strong> {order.address}
                       </p>
                       <p>
-                        <strong>PaymentMethod:</strong> {order.paymentMethod}
+                        <strong>Payment method:</strong> {order.paymentMethod}
                       </p>
                     </div>
                     <div className="col-md-2 d-flex align-items-center justify-content-center ">
@@ -142,10 +142,13 @@ const OrderAccount = ({
                         </button>
                       </div>
                     </div>
-                    <div className="col-md-2 d-flex align-items-center justify-content-center ">
+                    <div className="col-md-2 d-flex m-2">
                       <div className="">
-                        <button onClick={() => viewDetailOrder(order.id)}>
-                          View Detail
+                        <button
+                          className="btn btn-info"
+                          onClick={() => viewDetailOrder(order.id)}
+                        >
+                          Detail
                         </button>
                       </div>
                     </div>
@@ -201,17 +204,17 @@ const OrderAccount = ({
                         <strong>Address:</strong> {confirmed.address}
                       </p>
                       <p>
-                        <strong>PaymentMethod:</strong>{" "}
+                        <strong>Payment method:</strong>{" "}
                         {confirmed.paymentMethod}
                       </p>
                     </div>{" "}
                     <div className="col-md-2 d-flex align-items-center justify-content-center ">
                       <div className="">
                         <button
-                          className="btn btn-danger rounded"
+                          className="btn btn-info rounded"
                           onClick={() => viewDetailOrder(confirmed.id)}
                         >
-                          View Detail
+                          View
                         </button>
                       </div>
                     </div>
@@ -267,17 +270,17 @@ const OrderAccount = ({
                         <strong>Address:</strong> {delivering.address}
                       </p>
                       <p>
-                        <strong>PaymentMethod:</strong>{" "}
+                        <strong>Payment method:</strong>{" "}
                         {delivering.paymentMethod}
                       </p>
                     </div>
                     <div className="col-md-2 d-flex align-items-center justify-content-center ">
                       <div className="">
                         <button
-                          className="btn btn-danger rounded"
+                          className="btn btn-info rounded"
                           onClick={() => viewDetailOrder(delivering.id)}
                         >
-                          View Detail
+                          View
                         </button>
                       </div>
                     </div>
@@ -333,7 +336,7 @@ const OrderAccount = ({
                         <strong>Address:</strong> {delivered.address}
                       </p>
                       <p>
-                        <strong>PaymentMethod:</strong>{" "}
+                        <strong>Payment method:</strong>{" "}
                         {delivered.paymentMethod}
                       </p>
                     </div>
@@ -354,10 +357,10 @@ const OrderAccount = ({
                     <div className="col-md-2 d-flex align-items-center justify-content-center ">
                       <div className="">
                         <button
-                          className="btn btn-danger rounded"
+                          className="btn btn-info rounded"
                           onClick={() => viewDetailOrder(delivered.id)}
                         >
-                          View Detail
+                          View
                         </button>
                       </div>
                     </div>
@@ -412,16 +415,16 @@ const OrderAccount = ({
                         <strong>Address:</strong> {order.address}
                       </p>
                       <p>
-                        <strong>PaymentMethod:</strong> {order.paymentMethod}
+                        <strong>Payment method:</strong> {order.paymentMethod}
                       </p>
                     </div>
                     <div className="col-md-2 d-flex align-items-center justify-content-center ">
                       <div className="">
                         <button
-                          className="btn btn-danger rounded"
+                          className="btn btn-info rounded"
                           onClick={() => viewDetailOrder(order.id)}
                         >
-                          View Detail
+                          Detail product
                         </button>
                       </div>
                     </div>

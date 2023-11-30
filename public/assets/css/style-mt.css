@@ -54,6 +54,7 @@
   flex-direction: column;
   align-items: center;
   height: 100%;
+
 }
 
 .product-star {
@@ -616,4 +617,142 @@ Style for previous button */
   vertical-align: middle;
   padding: 2px 5px;
 
+}
+
+/* ---------------------------------------------GIÁ sản phẩm------------------- */
+.text-center {
+  text-align: center;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.product-item-box {
+  /* Thêm kiểu cho hộp sản phẩm nếu cần */
+  /* border: 1px solid #ddd; */
+  padding: 10px;
+}
+
+.product-link:hover {
+  /* Thêm kiểu khi di chuột qua liên kết sản phẩm nếu cần */
+  text-decoration: none;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.price-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.price {
+  color: #1250DC;
+  margin-right: 5px;
+}
+
+.unit {
+  font-size: 20%;
+}
+
+.name-container {
+  font-size: 1.2rem;
+}
+
+
+.product-name {
+  font-size: 1.1rem;
+  /* Điều chỉnh kích thước chữ theo ý muốn */
+}
+
+/* -------------------------------------------------------- */
+
+/* 
+.navbar {
+  background-color: #343a40; 
+}
+
+.navbar-toggler-icon {
+  background-color: #fff; 
+}
+
+.navbar-nav .nav-link {
+  color: #fff !important;
+}
+
+.dropdown-menu {
+  background-color: #343a40; 
+}
+
+.dropdown-item {
+  color: #fff !important; 
+}
+
+.navbar-brand img {
+  max-width: 100%; 
+}
+
+.form-control {
+  border-radius: 0; 
+}
+
+.btn-primary {
+  border-radius: 0; 
+}
+
+.cart-new button {
+  padding: 9px 11px;
+  font-weight: normal;
+}
+
+.btn-group .btn {
+  padding: 9px 11px;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-nav.mr-auto.py-0 {
+    margin-top: 15px;
+  }
+} */
+
+
+.dropdown-toggle {
+  padding: 17px 20px;
+}
+
+.dropdown-menu {
+  padding: 15px;
+  /* Adjust the padding as needed */
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  /* Adjust the padding as needed */
+  color: #333;
+  /* Text color */
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  /* Hover background color */
+  color: #007bff;
+  /* Hover text color */
 }

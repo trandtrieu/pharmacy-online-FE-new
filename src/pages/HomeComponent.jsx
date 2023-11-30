@@ -135,11 +135,7 @@ function HomeProduct(props) {
                   className="img-fluid"
                   onClick={handleHealthServicesClick}
                 />
-                <img
-                  src="https://www.pharmacity.vn/images/new.gif"
-                  alt=""
-                  className="new-icon"
-                />
+
                 <h5 className="option-carousel-text mt-2">
                   <span>Health services</span>
                 </h5>
@@ -147,12 +143,20 @@ function HomeProduct(props) {
             </div>
 
             <div className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex align-items-center justify-content-center">
-              <div className="option-carousel-item text-center">
+              <div
+                className="option-carousel-item text-center "
+                style={{ position: "relative" }}
+              >
                 <Link to="/voucher">
                   <img
                     src="https://data-service.pharmacity.io/pmc-upload-media/production/pmc-ecm-asm/home/homeservices/my-coupon.webp"
                     alt=""
                     className="img-fluid"
+                  />{" "}
+                  <img
+                    src="https://www.pharmacity.vn/images/new.gif"
+                    alt=""
+                    className="new-icon"
                   />
                 </Link>
 

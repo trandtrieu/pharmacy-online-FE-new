@@ -60,16 +60,19 @@ const CreatePrescriptionComponent = ({ history }) => {
     }
     if (!state.name) {
       errors.name = "Name is required";
+    } else if (!/^[\p{L}\s]+$/u.test(state.name) || /\d/.test(state.name)) {
+      errors.name = "Name should not contain special characters or numbers";
     }
+
     if (!state.phone) {
       errors.phone = "Phone is required";
-    } else if (!/^\d{10}$/.test(state.phone)) {
-      errors.phone = "Phone number must have exactly 10 digits";
+    } else if (!/^(0[1-9][0-9]{8})$/u.test(state.phone)) {
+      errors.phone = "Invalid phone number format";
     }
     if (!state.email) {
       errors.email = "Email is required";
-    } else if (!state.email.includes("@")) {
-      errors.email = "Email cannot contain the @ symbol";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email)) {
+      errors.email = "Invalid email format";
     }
 
     setState((prevState) => ({ ...prevState, errors }));
