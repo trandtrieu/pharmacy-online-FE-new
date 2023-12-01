@@ -34,6 +34,7 @@ const ProfileComponent = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [r, setR] = useState(null);
   const { accountId, token } = useAuth();
+  const [errors, setErrors] = useState({})
   useEffect(() => {
     getAccountById(accountId, token)
       .then((response) => {
@@ -98,9 +99,9 @@ const ProfileComponent = () => {
         if (districts !== undefined) {
           districts.map(
             (value) =>
-              (document.getElementById(
-                "districts"
-              ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
+            (document.getElementById(
+              "districts"
+            ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
           );
         }
       })
@@ -120,9 +121,9 @@ const ProfileComponent = () => {
         if (wards !== undefined) {
           wards.map(
             (value) =>
-              (document.getElementById(
-                "wards"
-              ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
+            (document.getElementById(
+              "wards"
+            ).innerHTML += `<option value='${value.code}'>${value.name}</option>`)
           );
         }
       })
@@ -323,24 +324,104 @@ const ProfileComponent = () => {
     }));
   };
 
+  const handleNameBlur = e => {
+    if (e.target.value == "") {
+      setErrors(
+        pre => ({
+          ...pre,
+          nameError: "Name can't be empty"
+        }
+        )
+      )
+    } else {
+      setErrors(
+        pre => ({
+          ...pre,
+          nameError: ""
+        }
+        )
+      )
+
+    }
+  }
+
+  const handlePhoneBlur = e => {
+    const phoneRegex = /^\d{10}$/
+    if (!phoneRegex.test(e.target.value)) {
+      setErrors(
+        pre => ({
+          ...pre,
+          phoneError: "Phone must be 10 digits"
+        }
+        )
+      )
+    } else {
+      setErrors(
+        pre => ({
+          ...pre,
+          phoneError: ""
+        }
+        )
+      )
+    }
+  }
+
+  const handleDOBBlur = e => {
+
+    const selectedDOB = new Date(account.dob);
+
+    const minAgeDate = new Date();
+    minAgeDate.setFullYear(minAgeDate.getFullYear() - 18); // Minimum age of 10 years
+    if (selectedDOB > minAgeDate) {
+      setErrors(
+        pre => (
+          {
+            ...pre,
+            dobError: "you must be 18 years old"
+          }
+        )
+      )
+    } else {
+      setErrors(
+        pre => (
+          {
+            ...pre,
+            dobError: ""
+          }
+        )
+      )
+
+    }
+  }
+
   const handleUpdateAccount = (e) => {
     e.preventDefault();
-    let accountUpdate = {
-      name: account.name,
-      dob: account.dob,
-      phone: account.phone,
-      mail: account.mail,
-    };
+    if (errors.phoneError || errors.dobError || errors.nameError) {
+      toast.warning("Fill all required feild")
+    } else {
+      let accountUpdate = {
+        name: account.name,
+        dob: account.dob,
+        phone: account.phone,
+        mail: account.mail,
+      };
 
-    updateAccount(accountId, accountUpdate, token).then((response) => {
-      console.log(response.data);
-      toast.success("Update information successfully.");
-    });
+      updateAccount(accountId, accountUpdate, token).then((response) => {
+        console.log(response.data);
+        toast.success("Update information successfully.");
+      }).catch(
+        error => console.log(error)
+      );
+    }
+
   };
 
-  const handleMailChange = (e) => {};
+  const handleMailChange = (e) => { };
   return (
     <>
+      {
+        console.log(errors)
+      }
       <div className="container light-style flex-grow-1 container-p-y">
         <div className="card overflow-hidden">
           <div className="row no-gutters row-bordered row-border-light">
@@ -395,11 +476,13 @@ const ProfileComponent = () => {
                       <input
                         type="text"
                         onChange={handleNameChange}
+                        onBlur={handleNameBlur}
                         className="form-control"
                         defaultValue="Nelle Maxwell"
                         value={account.name}
                       />
                     </div>
+                    <p className="text-danger">{errors.nameError}</p>
                     <div className="form-group">
                       <label className="form-label">E-mail</label>
                       <input
@@ -421,21 +504,27 @@ const ProfileComponent = () => {
                       <input
                         type="date"
                         onChange={handleDOBChange}
+                        onBlur={handleDOBBlur}
                         className="form-control"
                         defaultValue="Company Ltd."
                         value={account.dob}
                       />
                     </div>
+                    <p className="text-danger">{errors.dobError}</p>
+
                     <div className="form-group">
                       <label className="form-label">Phone</label>
                       <input
                         type="text"
                         className="form-control"
                         onChange={handlePhoneChange}
+                        onBlur={handlePhoneBlur}
                         defaultValue="Company Ltd."
                         value={account.phone}
                       />
                     </div>
+                    <p className="text-danger">{errors.phoneError}</p>
+
 
                     <button
                       onClick={handleUpdateAccount}
