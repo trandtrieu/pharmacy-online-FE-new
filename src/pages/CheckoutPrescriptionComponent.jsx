@@ -12,16 +12,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactModal from "react-modal";
 import { useAuth } from "../AuthContext";
-import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import CheckoutServices from "../services/CheckoutServices";
 import { toast } from "react-toastify";
 import DeliveryAddressServices from "../services/DeliveryAddressServices";
 import { convertDollarToVND } from "../utils/cartutils";
 import { useDataContext } from "../services/DataContext";
 import "../style/CheckOutModal.css";
-import { useCart } from "../CartProvider";
 import DiscountServices from "../services/DiscountServices";
 import { getAccountById } from "../services/AccountService";
+import { useCart } from "../CartProvider";
 const customStyles = {
   content: {
     top: "35%",
@@ -45,6 +45,7 @@ const customStyles1 = {
     // height: "400px",
   },
 };
+
 const CheckoutComponent = () => {
   const history = useHistory();
   const [cartItemsInfo, setCartItemsInfo] = useState([]);
@@ -54,11 +55,10 @@ const CheckoutComponent = () => {
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   const [deliveryAddress, setDeliveryAddress] = useState([]);
   const [couponDiscount, setCouponDiscount] = useState(0);
-  const [couponCode, setCouponCode] = useState("");
   const [listDiscount, setListDiscount] = useState([]);
-  const [carts, setCarts] = useState([]);
 
-  const [cartsFromPresciption, setCartsFromPresciption] = useState([]);
+  const [couponCode, setCouponCode] = useState("");
+  const [carts, setCarts] = useState([]);
   const [selectedOption, setSelectedOption] = useState("delivery");
   const [isChecked, setIsChecked] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -67,9 +67,8 @@ const CheckoutComponent = () => {
     useState("");
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState("");
-  const [totalQuantityPrescription, setTotalQuantityPrescription] = useState(0);
-
-  const [subTotalCostPrescription, setSubTotalCostPrescription] = useState(0);
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [subTotalCost, setSubTotalCost] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
   const [
     totalCostAfterDiscountPrescription,
@@ -81,10 +80,13 @@ const CheckoutComponent = () => {
   ] = useState(0);
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const { accountId, token } = useAuth();
+
   const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
+
+  const { accountId, token } = useAuth();
   const [account, setAccount] = useState({});
   const { updateCartItemCount } = useCart();
+
   const openSuccessModal = () => {
     setIsSuccessModalOpen(true);
   };
@@ -92,62 +94,192 @@ const CheckoutComponent = () => {
   const handleRadioChanges = (event) => {
     setSelectedOptions(event.target.value);
   };
-
   const handleCouponAction = () => {
-    if (isCouponApplied) {
-      cancelCoupon();
-    } else {
+    if (selectedOption === "pharmacy") {
+      if (isCouponApplied) {
+        cancelCoupon();
+      } else {
+        setCheckingCoupon(true);
+
+        setTimeout(() => {
+          CheckoutServices.applyCodeByPharmacy(accountId, 2, couponCode, token)
+            .then((res) => {
+              if (res && res.discountAmount !== undefined) {
+                setCouponDiscount(res.discountAmount);
+                setTotalCostBeforeDiscountPrescription(
+                  res.totalCostAfterDiscount
+                );
+                setAppliedCoupon(couponCode);
+                setIsCouponApplied(true);
+                toast.success("Apply coupon successfully");
+              } else {
+                console.error(
+                  "Invalid response format for applying coupon:",
+                  res
+                );
+                toast.error("Apply coupon failed");
+              }
+            })
+            .catch((error) => {
+              console.error("Error applying the coupon:", error);
+              toast.error("Apply coupon failed");
+            })
+            .finally(() => {
+              setCheckingCoupon(false);
+            });
+        }, 3000);
+      }
+    } else if (selectedOption === "delivery") {
+      if (isCouponApplied) {
+        cancelCoupon();
+      } else {
+        setCheckingCoupon(true);
+
+        setTimeout(() => {
+          CheckoutServices.applyCode(accountId, 2, couponCode, token)
+            .then((res) => {
+              if (res && res.discountAmount !== undefined) {
+                setCouponDiscount(res.discountAmount);
+                setTotalCostBeforeDiscountPrescription(
+                  res.totalCostAfterDiscount
+                );
+                setAppliedCoupon(couponCode);
+                setIsCouponApplied(true);
+                toast.success("Apply coupon successfully");
+              } else {
+                console.error(
+                  "Invalid response format for applying coupon:",
+                  res
+                );
+                toast.error("Apply coupon failed");
+              }
+            })
+            .catch((error) => {
+              console.error("Error applying the coupon:", error);
+              toast.error("Apply coupon failed");
+            })
+            .finally(() => {
+              setCheckingCoupon(false);
+            });
+        }, 3000);
+      }
+    }
+  };
+
+  const applyDiscountCoupon = (selectedCoupon) => {
+    if (selectedOption === "pharmacy") {
+      toast.success("selectedOption" + selectedOption);
       setCheckingCoupon(true);
 
       setTimeout(() => {
-        CheckoutServices.applyCode(accountId, 2, couponCode, token)
+        CheckoutServices.applyCodeByPharmacy(
+          accountId,
+          0,
+          selectedCoupon.code,
+          token
+        )
           .then((res) => {
             if (res && res.discountAmount !== undefined) {
               setCouponDiscount(res.discountAmount);
               setTotalCostBeforeDiscountPrescription(
                 res.totalCostAfterDiscount
               );
-
-              setAppliedCoupon(couponCode);
+              setAppliedCoupon(selectedCoupon.code);
               setIsCouponApplied(true);
               toast.success("Apply coupon successfully");
             } else {
-              console.error(
-                "Invalid response format for applying coupon:",
-                res
-              );
               toast.error("Apply coupon failed");
             }
           })
           .catch((error) => {
-            console.error("Error applying the coupon:", error);
             toast.error("Apply coupon failed");
           })
           .finally(() => {
-            // Chuyển nút Checking thành trạng thái Apply
             setCheckingCoupon(false);
+            closeDiscountModal(); // Close the discount modal after applying the coupon
           });
-      }, 3000); // Thời gian chờ 3 giây
+      }, 1000);
+    } else if (selectedOption === "delivery") {
+      setCheckingCoupon(true);
+      toast.success("selectedOption" + selectedOption);
+
+      setTimeout(() => {
+        CheckoutServices.applyCode(accountId, 2, selectedCoupon.code, token)
+          .then((res) => {
+            if (res && res.discountAmount !== undefined) {
+              setCouponDiscount(res.discountAmount);
+              setTotalCostBeforeDiscountPrescription(
+                res.totalCostAfterDiscount
+              );
+              setAppliedCoupon(selectedCoupon.code);
+              setIsCouponApplied(true);
+              toast.success("Apply coupon successfully");
+            } else {
+              toast.error("Apply coupon failed");
+            }
+          })
+          .catch((error) => {
+            toast.error("Apply coupon failed");
+          })
+          .finally(() => {
+            setCheckingCoupon(false);
+            closeDiscountModal(); // Close the discount modal after applying the coupon
+          });
+      }, 1000);
     }
   };
+
   useEffect(() => {
     CartServices.getListCartByAccountId(accountId, 2, token)
       .then((res) => {
-        setCartsFromPresciption(res.data);
+        setCarts(res.data);
+        console.log("abc" + carts);
+        const itemsInfo = res.data.map((cartItem) => ({
+          nameproduct: cartItem.productDetail.name,
+          quantity: cartItem.quantity,
+          price: cartItem.productDetail.price,
+          product_id: cartItem.productDetail.productId,
+        }));
+        setCartItemsInfo(itemsInfo);
       })
       .catch((error) => {
         console.error("Error loading carts:", error);
       });
-    // if (carts.length === 0) {
-    //   history.push("/404");
-    // }
+
     CheckoutServices.getTotalQuantity(accountId, 2, token)
       .then((res) => {
-        setTotalQuantityPrescription(res.data);
+        setTotalQuantity(res.data);
       })
       .catch((error) => {
         console.error("Error fetching total quantity:", error);
       });
+  }, [accountId, token]);
+
+  useEffect(() => {
+    if (selectedOption === "pharmacy") {
+      console.log("selected option: " + selectedOption);
+      loadSubTotalCostByPharmacy();
+      loadShippingCostByPharmacy();
+      loadSubtotalAndShippingCostByPharmacy();
+    } else {
+      loadSubTotalCost();
+      loadShippingCost();
+      loadSubtotalAndShippingCost();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountId, token]);
+
+  const loadSubtotalAndShippingCostByPharmacy = () => {
+    CheckoutServices.getSubtotalAndShippingCostByPharmacy(accountId, 2, token)
+      .then((res) => {
+        setTotalCostBeforeDiscountPrescription(res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching total quantity:", error);
+      });
+  };
+  const loadSubtotalAndShippingCost = () => {
     CheckoutServices.getSubtotalAndShippingCost(accountId, 2, token)
       .then((res) => {
         setTotalCostBeforeDiscountPrescription(res.data);
@@ -155,13 +287,7 @@ const CheckoutComponent = () => {
       .catch((error) => {
         console.error("Error fetching total quantity:", error);
       });
-  }, [accountId, token]);
-
-  useEffect(() => {
-    loadSubTotalCostPrescription();
-    loadShippingCost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId, token]);
+  };
   useEffect(() => {
     DeliveryAddressServices.getDeliveryAddressByUserid(accountId, token)
       .then((res) => {
@@ -174,6 +300,25 @@ const CheckoutComponent = () => {
   }, [accountId, token]);
 
   useEffect(() => {
+    DiscountServices.getListDiscountByAccountId(accountId)
+      .then((res) => {
+        setListDiscount(res.data);
+        console.log("list discount " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error loading list discount:", error);
+      });
+    getAccountById(accountId, token)
+      .then((response) => {
+        setAccount(response.data);
+        console.log("Account info:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching account:", error);
+      });
+  }, [accountId]);
+
+  useEffect(() => {
     DeliveryAddressServices.getDeliveryAddressByStatusDefault(accountId, token)
       .then((res) => {
         setDeliveryAddressStatusDefault(res.data);
@@ -183,10 +328,22 @@ const CheckoutComponent = () => {
         console.error("Error loading delivery-address status default:", error);
       });
   }, [accountId, token]);
-  const loadSubTotalCostPrescription = () => {
+  const loadSubTotalCost = () => {
     CheckoutServices.getSubTotalCart(accountId, 2, token)
       .then((res) => {
-        setSubTotalCostPrescription(res.data);
+        setSubTotalCost(res.data);
+        setTotalCostAfterDiscountPrescription(res.data + shippingCost);
+        console.log("subtotal: " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching total cost:", error);
+      });
+  };
+
+  const loadSubTotalCostByPharmacy = () => {
+    CheckoutServices.getSubTotalCartByPharmacy(accountId, 2, token)
+      .then((res) => {
+        setSubTotalCost(res.data);
 
         setTotalCostAfterDiscountPrescription(res.data + shippingCost);
         console.log("subtotal: " + res.data);
@@ -206,49 +363,53 @@ const CheckoutComponent = () => {
         console.error("Error fetching total cost:", error);
       });
   };
-
-  const applyCoupon = () => {
-    // Chuyển nút Apply thành trạng thái Checking
-    setCheckingCoupon(true);
-
-    setTimeout(() => {
-      CheckoutServices.applyCode(accountId, 2, couponCode, token)
-        .then((res) => {
-          if (res && res.discountAmount !== undefined) {
-            setCouponDiscount(res.discountAmount);
-            setTotalCostBeforeDiscountPrescription(res.totalCostAfterDiscount);
-            setAppliedCoupon(couponCode);
-            setIsCouponApplied(true); // Set the state to indicate that a coupon is applied
-            toast.success("Apply coupon successfully");
-          } else {
-            console.error("Invalid response format for applying coupon:", res);
-            toast.error("Apply coupon failed");
-          }
-        })
-        .catch((error) => {
-          console.error("Error applying the coupon:", error);
-          toast.error("Apply coupon failed");
-        })
-        .finally(() => {
-          // Chuyển nút Checking thành trạng thái Apply
-          setCheckingCoupon(false);
-        });
-    }, 3000); // Thời gian chờ 3 giây
+  const loadShippingCostByPharmacy = () => {
+    CheckoutServices.getShippingCostByPharmacy(accountId, 2, token)
+      .then((res) => {
+        setShippingCost(res.data);
+        console.log("shipping cost: " + res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching total cost:", error);
+      });
   };
+
   const cancelCoupon = () => {
-    // Reset the coupon-related state variables
     setCouponDiscount(0);
-    setTotalCostBeforeDiscountPrescription(
-      subTotalCostPrescription + shippingCost
-    );
+    setTotalCostBeforeDiscountPrescription(subTotalCost + shippingCost);
     setAppliedCoupon("");
-    setIsCouponApplied(false); // Set the state to indicate that the coupon is canceled
-    setCouponCode(""); // Clear the coupon code input
+    setIsCouponApplied(false);
+    setCouponCode("");
     toast.info("Coupon canceled");
   };
 
   const handleRadioChange = (event) => {
     setSelectedOption(event.target.value);
+    if (event.target.value === "pharmacy") {
+      loadSubTotalCostByPharmacy();
+      loadShippingCostByPharmacy();
+      loadSubtotalAndShippingCostByPharmacy();
+    } else {
+      loadSubTotalCost();
+      loadShippingCost();
+      loadSubtotalAndShippingCost();
+    }
+  };
+
+  const handleRadioChange1 = (event) => {
+    const selectedMethod = event.target.value;
+
+    // Check if the selected method is "pharmacy"
+    if (selectedMethod === "pharmacy") {
+      // Set shipping cost to 0
+      setShippingCost(0);
+
+      // Subtract 30,000 VND from totalCostAfterDiscount
+      setTotalCostBeforeDiscountPrescription(subTotalCost);
+    }
+
+    // Update the selectedOption state
+    setSelectedOption(selectedMethod);
   };
 
   const handleCheckboxChange = () => {
@@ -268,21 +429,25 @@ const CheckoutComponent = () => {
   };
 
   const toCart = () => {
-    history.push(`/cart`);
-  };
-  const toCartPrescription = () => {
     history.push(`/cart-prescription`);
   };
   const handlePlaceOrder = () => {
     localStorage.getItem("token");
     if (selectedOptions === "cash") {
       const orderData = {
-        amount: totalCostAfterDiscountPrescription,
+        // amount: totalCostAfterDiscount,
+        amount: totalCostBeforeDiscountPrescription,
+
         paymentMethod: selectedOptions,
         deliveryMethod: selectedOption,
         name: account.name,
         phone: account.phone,
-        address: deliveryAddressStatusDefault.specific_address,
+        // address: deliveryAddressStatusDefault.specific_address,
+        address:
+          selectedOption === "pharmacy"
+            ? " Hoa Hai, Ngu Hanh Son, Da Nang"
+            : deliveryAddressStatusDefault.specific_address,
+
         note,
         products: cartItemsInfo,
         accountId: accountId,
@@ -298,20 +463,13 @@ const CheckoutComponent = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
+          toast.success("Order successfully");
+          history.push("/profile");
         })
         .catch((error) => {
           console.error("Error placing order:", error);
         });
       openSuccessModal();
-      CartServices.removeAllCart(accountId, 0, token)
-        .then(() => {
-          setCarts([]);
-          updateCartItemCount();
-          history.push("/home");
-        })
-        .catch((error) => {
-          console.error("Error removing all items from the cart:", error);
-        });
     } else {
       const orderData = {
         amount: totalCostBeforeDiscountPrescription,
@@ -338,14 +496,7 @@ const CheckoutComponent = () => {
         .then((data) => {
           console.log(data);
           const paymentUrl = data.url;
-          CartServices.removeAllCart(accountId, 0, token)
-            .then(() => {
-              setCarts([]);
-              updateCartItemCount();
-            })
-            .catch((error) => {
-              console.error("Error removing all items from the cart:", error);
-            });
+
           window.location.href = paymentUrl;
         })
         .catch((error) => {
@@ -380,49 +531,11 @@ const CheckoutComponent = () => {
   const closeDiscountModal = () => {
     setIsDiscountModalOpen(false);
   };
-  useEffect(() => {
-    DiscountServices.getListDiscountByAccountId(accountId)
-      .then((res) => {
-        setListDiscount(res.data);
-        console.log("list discount " + res.data);
-      })
-      .catch((error) => {
-        console.error("Error loading list discount:", error);
-      });
-    getAccountById(accountId, token)
-      .then((response) => {
-        setAccount(response.data);
-        console.log("Account info:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching account:", error);
-      });
-  }, [accountId]);
-  const applyDiscountCoupon = (selectedCoupon) => {
-    setCheckingCoupon(true);
-
-    setTimeout(() => {
-      CheckoutServices.applyCode(accountId, 2, selectedCoupon.code, token)
-        .then((res) => {
-          if (res && res.discountAmount !== undefined) {
-            setCouponDiscount(res.discountAmount);
-            setTotalCostBeforeDiscountPrescription(res.totalCostAfterDiscount);
-            setAppliedCoupon(selectedCoupon.code);
-            setIsCouponApplied(true);
-            toast.success("Apply coupon successfully");
-          } else {
-            toast.error("Apply coupon failed");
-          }
-        })
-        .catch((error) => {
-          toast.error("Apply coupon failed");
-        })
-        .finally(() => {
-          setCheckingCoupon(false);
-          closeDiscountModal(); // Close the discount modal after applying the coupon
-        });
-    }, 1000);
+  const createDelivery = () => {
+    history.push("/profile");
+    // history.push("/profile?tab=order");
   };
+
   return (
     <>
       <ReactModal
@@ -451,8 +564,8 @@ const CheckoutComponent = () => {
               <div className="row">
                 <div className="table-header pb-4">
                   <h6>
-                    Cart ({totalQuantityPrescription} products) -{" "}
-                    {convertDollarToVND(subTotalCostPrescription)} VND
+                    Cart ({totalQuantity} products) -{" "}
+                    {convertDollarToVND(subTotalCost)} VND
                     <span
                       className="click-to-change pl-3 "
                       onClick={() => toCart()}
@@ -464,7 +577,7 @@ const CheckoutComponent = () => {
 
                 <table className="table table-light borderless">
                   <tbody className="">
-                    {cartsFromPresciption.map((cartItem) => (
+                    {carts.map((cartItem) => (
                       <tr key={cartItem.productId}>
                         <td className="pr-0">
                           <img
@@ -498,7 +611,7 @@ const CheckoutComponent = () => {
                 </div>
                 <div className="col-md-6 px-xl-0">
                   <p className="mb-md-0 text-md-right">
-                    <button className="btn text-info" onClick={openNoteModal}>
+                    <button className="btn btn-primary" onClick={openNoteModal}>
                       Enter note
                     </button>
                   </p>
@@ -565,7 +678,10 @@ const CheckoutComponent = () => {
                           I'm sorry! DrugMart couldn't find any delivery
                           addresses in your cart.
                         </h6>
-                        <button className="btn btn-primary mb-4">
+                        <button
+                          onClick={createDelivery}
+                          className="btn btn-primary mb-4"
+                        >
                           Create a New Address
                         </button>
                       </div>
@@ -637,11 +753,11 @@ const CheckoutComponent = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="col-md-1 d-flex align-items-center">
+                  {/* <div className="col-md-1 d-flex align-items-center">
                     <button className="btn">
                       <FontAwesomeIcon icon={faChevronRight} />
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             )}
@@ -685,10 +801,11 @@ const CheckoutComponent = () => {
             <p className="ml-1" style={{ fontSize: "13px" }}>
               <span className="text-danger">(*) </span>Only one voucher per
               order
-            </p>{" "}
+            </p>
             <button className="btn btn-primary" onClick={openDiscountModal}>
               Choose discount coupon
             </button>
+
             <h5 className="section-title position-relative text-uppercase mb-3 mt-4">
               <span className="bg-secondary pr-3">Order Total</span>
             </h5>
@@ -696,7 +813,7 @@ const CheckoutComponent = () => {
               <div className="border-bottom pb-2">
                 <div className="d-flex justify-content-between ">
                   <h6>Subtotal</h6>
-                  <h6>{convertDollarToVND(subTotalCostPrescription)} VND</h6>
+                  <h6>{convertDollarToVND(subTotalCost)} VND</h6>
                 </div>
                 <div className="d-flex justify-content-between">
                   <h6 className="font-weight-medium">Shipping</h6>
@@ -704,7 +821,7 @@ const CheckoutComponent = () => {
                     {" "}
                     {shippingCost === 0
                       ? "Free"
-                      : `+ $ ${convertDollarToVND(shippingCost)}`}
+                      : `+  ${convertDollarToVND(shippingCost)} VND`}
                   </h6>
                 </div>
                 {couponDiscount !== 0 && (
@@ -902,59 +1019,75 @@ const CheckoutComponent = () => {
                     </button>
                   </div>
                 </div>
+
+                <ReactModal
+                  isOpen={isDiscountModalOpen}
+                  onRequestClose={closeDiscountModal}
+                  style={customStyles1}
+                >
+                  <div className="d-flex align-items-center justify-content-center">
+                    <h5 className="mr-5">Your discount coupons </h5>
+                    <h3>
+                      {" "}
+                      <FontAwesomeIcon
+                        icon={faCircleXmark}
+                        className="text-danger"
+                        onClick={closeDiscountModal}
+                      />
+                    </h3>
+                  </div>
+
+                  <div
+                    className=""
+                    style={{ height: "255px", overflowY: "auto" }}
+                  >
+                    {listDiscount && listDiscount.length > 0 ? (
+                      listDiscount.map((discountItem) => (
+                        <div
+                          className="row coupon "
+                          style={{ border: "1px dashed" }}
+                        >
+                          <div
+                            class="col-md-8 "
+                            style={{
+                              borderRight: " dashed",
+                            }}
+                          >
+                            <div className="coupon-list-detail">
+                              <h4>{discountItem.code}</h4>
+                              <p>
+                                Discount: {discountItem.discountPercentage} %
+                              </p>
+                              <p>Expired date: {discountItem.expiryDate}</p>
+                              <p>
+                                Condition:
+                                {convertDollarToVND(discountItem.condition)} VND
+                              </p>
+                            </div>
+                          </div>
+                          <div className="col-md-4 d-flex align-items-center justify-content-center">
+                            <button
+                              className="btn btn-info"
+                              onClick={() => applyDiscountCoupon(discountItem)}
+                            >
+                              Apply
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <>
+                        <p>No discount coupons available.</p>
+                        <Link to="/voucher">Get voucher</Link>
+                      </>
+                    )}
+                  </div>
+                </ReactModal>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <ReactModal
-        isOpen={isDiscountModalOpen}
-        onRequestClose={closeDiscountModal}
-        style={customStyles1}
-      >
-        <div className="d-flex align-items-center justify-content-center">
-          <h5 className="mr-5">Your discount coupons </h5>
-          <h3>
-            {" "}
-            <FontAwesomeIcon
-              icon={faCircleXmark}
-              className="text-danger"
-              onClick={closeDiscountModal}
-            />
-          </h3>
-        </div>
-
-        <div className="" style={{ height: "255px", overflowY: "auto" }}>
-          {listDiscount.map((discountItem) => (
-            <div className="row coupon " style={{ border: "1px dashed" }}>
-              <div
-                class="col-md-8 "
-                style={{
-                  borderRight: " dashed",
-                }}
-              >
-                <div className="coupon-list-detail">
-                  <h4>{discountItem.code}</h4>
-                  <p>Discount: {discountItem.discountPercentage} %</p>
-                  <p>Expired date: {discountItem.expiryDate}</p>
-                  <p>
-                    Condition:
-                    {convertDollarToVND(discountItem.condition)} VND
-                  </p>
-                </div>
-              </div>
-              <div className="col-md-4 d-flex align-items-center justify-content-center">
-                <button
-                  className="btn btn-info"
-                  onClick={() => applyDiscountCoupon(discountItem)}
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </ReactModal>
     </>
   );
 };

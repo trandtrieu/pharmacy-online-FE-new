@@ -1,9 +1,14 @@
 import React from "react";
-import { convertDollarToVND, convertFirstLetter } from "../utils/cartutils";
+import {
+  convertDollarToVND,
+  convertFirstLetter,
+  customStylespro,
+} from "../utils/cartutils";
 import OrderServices from "../services/OrderServices";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import ProductDetailModal from "./ProductDetailModal";
+import Modal from "react-modal";
 
 const OrderAccount = ({
   order_wait,
@@ -16,6 +21,9 @@ const OrderAccount = ({
 }) => {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCancelConfirmationOpen, setIsCancelConfirmationOpen] =
+    useState(false);
+  const [cancelOrderId, setCancelOrderId] = useState(null);
 
   const viewDetailOrder = (orderId) => {
     setSelectedOrderId(orderId);
@@ -26,10 +34,23 @@ const OrderAccount = ({
     setSelectedOrderId(null);
     setIsModalOpen(false);
   };
+
+  const openCancelConfirmation = (orderId) => {
+    setCancelOrderId(orderId);
+    setIsCancelConfirmationOpen(true);
+  };
+
+  const closeCancelConfirmation = () => {
+    setCancelOrderId(null);
+    setIsCancelConfirmationOpen(false);
+  };
+
   const cancelOrder = async (orderId) => {
     try {
       await OrderServices.updateOrderStatus(orderId, token);
       toast.success("Order canceled successfully");
+      closeCancelConfirmation(); // Đóng hộp thoại sau khi hủy đơn hàng thành công
+      window.location.reload();
     } catch (error) {
       toast.error("Failed to cancel order");
     }
@@ -136,7 +157,7 @@ const OrderAccount = ({
                       <div className="">
                         <button
                           className="btn btn-danger rounded"
-                          onClick={() => cancelOrder(order.id)}
+                          onClick={() => openCancelConfirmation(order.id)}
                         >
                           Cancel
                         </button>
@@ -437,6 +458,26 @@ const OrderAccount = ({
           </div>
         </div>
       </div>{" "}
+      {isCancelConfirmationOpen && (
+        <Modal
+          isOpen={isCancelConfirmationOpen}
+          onRequestClose={closeCancelConfirmation}
+          contentLabel="Cancel Confirmation"
+          style={customStylespro}
+        >
+          <h3>Cancel your order?</h3>
+          <p>Are you sure you want to cancel this order?</p>
+          <button
+            className="btn btn-danger"
+            onClick={() => cancelOrder(cancelOrderId)}
+          >
+            Yes
+          </button>{" "}
+          <button className="btn btn-info" onClick={closeCancelConfirmation}>
+            No
+          </button>
+        </Modal>
+      )}
       <ProductDetailModal
         isOpen={isModalOpen}
         onRequestClose={closeProductDetailModal}

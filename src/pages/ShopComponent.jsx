@@ -16,7 +16,8 @@ function ShopComponent() {
   const [productCounts, setProductCounts] = useState({});
   const [selectedPriceRange, setSelectedPriceRange] = useState("price-all");
   const { accountId, token } = useAuth();
-  const { updateCartItemCount } = useCart();
+  const { updateCartItemCount, updateWishlistItemCount } = useCart();
+  const { update } = useCart();
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(12);
@@ -66,8 +67,9 @@ function ShopComponent() {
     await addProductToCart(accountId, productId, 1, token);
     await updateCartItemCount();
   };
-  const handleAddtoWishlist = (productId) => {
-    addWishListProduct(accountId, productId, token);
+  const handleAddtoWishlist = async (productId) => {
+    await addWishListProduct(accountId, productId, token);
+    await updateWishlistItemCount();
   };
 
   const searchProductsLatest = () => {
@@ -353,14 +355,7 @@ function ShopComponent() {
             <div className="row pb-3">
               <div className="col-12 pb-1">
                 <div className="d-flex align-items-center justify-content-between mb-4">
-                  <div>
-                    <button className="btn btn-sm btn-light">
-                      <i className="fa fa-th-large" />
-                    </button>
-                    <button className="btn btn-sm btn-light ml-2">
-                      <i className="fa fa-bars" />
-                    </button>
-                  </div>
+                  <div></div>
                   <div className="ml-2" style={{ display: "flex" }}>
                     <div className="btn-group">
                       <button
@@ -370,7 +365,10 @@ function ShopComponent() {
                       >
                         Sorting
                       </button>
-                      <div className="dropdown-menu dropdown-menu-right">
+                      <div
+                        className="dropdown-menu dropdown-menu-right"
+                        style={{ minWidth: "13rem" }}
+                      >
                         <a
                           className="dropdown-item"
                           href="#"
@@ -429,7 +427,7 @@ function ShopComponent() {
                           src={
                             product.imageUrls[0]?.startsWith("https")
                               ? product.imageUrls[0]
-                              : `assets/images/${product.imageUrls[0]}`
+                              : `../assets/images/${product.imageUrls[0]}`
                           }
                           alt={`Imagee 0`}
                         />

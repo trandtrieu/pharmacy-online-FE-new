@@ -154,7 +154,7 @@ const HeaderComponent = (props) => {
         <div className="container-fluid bg-light py-3 px-xl-5 d-none d-lg-block ">
           <div
             className="row align-items-center"
-            style={{ marginRight: "0px" }}
+            style={{ marginRight: "0px", overflowY: "click" }}
           >
             <div className="col-lg-3 text-left">
               <a className="text-decoration-none">
@@ -341,7 +341,7 @@ const HeaderComponent = (props) => {
                           onClick={() =>
                             viewProductByCategory(category.category_id)
                           }
-                          className="dropdown-item btn col-lg-8"
+                          className="dropdown-item btn col-lg-12"
                           href=""
                         >
                           {category.category_name}

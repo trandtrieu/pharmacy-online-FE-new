@@ -58,6 +58,7 @@ class DetailProductComponent extends Component {
     ProductServices.get5ProductsRandom()
       .then((res) => {
         this.setState({ products: res.data });
+        console.log("vcc", this.state.products);
       })
       .catch((error) => {
         console.error("Lỗi khi tải sản phẩm:", error);
@@ -304,10 +305,16 @@ class DetailProductComponent extends Component {
       return { quantity: newQuantity };
     });
   };
-  handleAddToCart = async (productId, quantity) => {
+  handleAddToCart = (productId, quantity) => {
     const { accountId, token } = this.context;
-    await addProductToCart(accountId, productId, quantity, token);
-    await window.location.reload();
+
+    // await addProductToCart(accountId, productId, quantity, token);
+    // await window.location.reload();
+
+    setTimeout(() => {
+      addProductToCart(accountId, productId, quantity, token);
+      window.location.reload();
+    }, 1000);
   };
   handleAddtoWishlist = (productId) => {
     const { accountId, token } = this.context;
@@ -322,7 +329,10 @@ class DetailProductComponent extends Component {
       this.props.history.push(`/login`);
     }
   };
-
+  viewOtherProductDetail = (productId) => {
+    this.props.history.push(`/detail-product/${productId}`);
+    window.location.reload();
+  };
   render() {
     const { accountId, token } = this.context;
 
@@ -600,8 +610,13 @@ class DetailProductComponent extends Component {
                   <div className="card-body">
                     <h5 className="card-title">Other items</h5>
                     {this.state.products.map((product) => (
-                      <div className="d-flex mb-3" key={product.product_id}>
-                        <a href="/" className="me-3">
+                      <div className="d-flex mb-3" key={product.productId}>
+                        <a
+                          className="me-3"
+                          onClick={() => {
+                            this.viewOtherProductDetail(product.productId);
+                          }}
+                        >
                           <img
                             className="img-md img-thumbnail"
                             src={product.imageUrls[0]}

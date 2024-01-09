@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import WishListServices from "../services/WishListServices";
+
 const addWishListProduct = async (accountId, product_id, token) => {
   await WishListServices.addToWishlist(accountId, product_id, token)
     .then((response) => {

@@ -238,7 +238,7 @@ export const SearchProduct = () => {
                               src={
                                 product.imageUrls[0]?.startsWith("https")
                                   ? product.imageUrls[0]
-                                  : `assets/images/${product.imageUrls[0]}`
+                                  : `../assets/images/${product.imageUrls[0]}`
                               }
                               alt={`Imagee 0`}
                             />

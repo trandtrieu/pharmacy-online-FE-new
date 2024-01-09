@@ -90,36 +90,70 @@ const CheckoutComponent = () => {
   };
 
   const handleCouponAction = () => {
-    if (isCouponApplied) {
-      cancelCoupon();
-    } else {
-      setCheckingCoupon(true);
+    if (selectedOption === "pharmacy") {
+      if (isCouponApplied) {
+        cancelCoupon();
+      } else {
+        setCheckingCoupon(true);
 
-      setTimeout(() => {
-        CheckoutServices.applyCode(accountId, 0, couponCode, token)
-          .then((res) => {
-            if (res && res.discountAmount !== undefined) {
-              setCouponDiscount(res.discountAmount);
-              setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
-              setAppliedCoupon(couponCode);
-              setIsCouponApplied(true);
-              toast.success("Apply coupon successfully");
-            } else {
-              console.error(
-                "Invalid response format for applying coupon:",
-                res
-              );
+        setTimeout(() => {
+          CheckoutServices.applyCodeByPharmacy(accountId, 0, couponCode, token)
+            .then((res) => {
+              if (res && res.discountAmount !== undefined) {
+                setCouponDiscount(res.discountAmount);
+                setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
+                setAppliedCoupon(couponCode);
+                setIsCouponApplied(true);
+                toast.success("Apply coupon successfully");
+              } else {
+                console.error(
+                  "Invalid response format for applying coupon:",
+                  res
+                );
+                toast.error("Apply coupon failed");
+              }
+            })
+            .catch((error) => {
+              console.error("Error applying the coupon:", error);
               toast.error("Apply coupon failed");
-            }
-          })
-          .catch((error) => {
-            console.error("Error applying the coupon:", error);
-            toast.error("Apply coupon failed");
-          })
-          .finally(() => {
-            setCheckingCoupon(false);
-          });
-      }, 3000);
+            })
+            .finally(() => {
+              setCheckingCoupon(false);
+            });
+        }, 3000);
+      }
+    } else if (selectedOption === "delivery") {
+      if (isCouponApplied) {
+        cancelCoupon();
+      } else {
+        setCheckingCoupon(true);
+
+        setTimeout(() => {
+          CheckoutServices.applyCode(accountId, 0, couponCode, token)
+            .then((res) => {
+              if (res && res.discountAmount !== undefined) {
+                setCouponDiscount(res.discountAmount);
+                setTotalCostBeforeDiscount(res.totalCostAfterDiscount);
+                setAppliedCoupon(couponCode);
+                setIsCouponApplied(true);
+                toast.success("Apply coupon successfully");
+              } else {
+                console.error(
+                  "Invalid response format for applying coupon:",
+                  res
+                );
+                toast.error("Apply coupon failed");
+              }
+            })
+            .catch((error) => {
+              console.error("Error applying the coupon:", error);
+              toast.error("Apply coupon failed");
+            })
+            .finally(() => {
+              setCheckingCoupon(false);
+            });
+        }, 3000);
+      }
     }
   };
 
@@ -384,7 +418,99 @@ const CheckoutComponent = () => {
   const toCart = () => {
     history.push(`/cart`);
   };
-  const handlePlaceOrder = () => {
+  const handleOrder = () => {
+    localStorage.getItem("token");
+    if (selectedOptions === "cash") {
+      const orderData = {
+        // amount: totalCostAfterDiscount,
+        amount: totalCostBeforeDiscount,
+
+        paymentMethod: selectedOptions,
+        deliveryMethod: selectedOption,
+        name: deliveryAddressStatusDefault.recipient_full_name,
+        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        // address: deliveryAddressStatusDefault.specific_address,
+        address:
+          selectedOption === "pharmacy"
+            ? " Hoa Hai, Ngu Hanh Son, Da Nang"
+            : deliveryAddressStatusDefault.specific_address,
+
+        note,
+        products: cartItemsInfo,
+        accountId: accountId,
+      };
+      fetch("http://localhost:8080/payment/create_payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          toast.success("Order successfully");
+          history.push("/profile");
+        })
+        .catch((error) => {
+          console.error("Error placing order:", error);
+        });
+      openSuccessModal();
+      CartServices.removeAllCart(accountId, 0, token)
+        .then(() => {
+          setCarts([]);
+          updateCartItemCount();
+        })
+        .catch((error) => {
+          console.error("Error removing all items from the cart:", error);
+        });
+    } else {
+      const orderData = {
+        amount: totalCostBeforeDiscount,
+        paymentMethod: selectedOptions,
+        deliveryMethod: selectedOption,
+        name: deliveryAddressStatusDefault.recipient_full_name,
+        phone: deliveryAddressStatusDefault.recipient_phone_number,
+        address:
+          selectedOption === "pharmacy"
+            ? " Hoa Hai, Ngu Hanh Son, Da Nang"
+            : deliveryAddressStatusDefault.specific_address,
+        note,
+        products: cartItemsInfo,
+        accountId: accountId,
+      };
+      setOrderData(orderData);
+
+      fetch("http://localhost:8080/payment/create_payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          const paymentUrl = data.url;
+
+          window.location.href = paymentUrl;
+          CartServices.removeAllCart(accountId, 0, token)
+            .then(() => {
+              setCarts([]);
+              updateCartItemCount();
+            })
+            .catch((error) => {
+              console.error("Error removing all items from the cart:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Error placing order:", error);
+        });
+    }
+  };
+  const handleOrderByPharmacy = () => {
     localStorage.getItem("token");
     if (selectedOptions === "cash") {
       const orderData = {
@@ -395,7 +521,6 @@ const CheckoutComponent = () => {
         deliveryMethod: selectedOption,
         name: account.name,
         phone: account.phone,
-        // address: deliveryAddressStatusDefault.specific_address,
         address:
           selectedOption === "pharmacy"
             ? " Hoa Hai, Ngu Hanh Son, Da Nang"
@@ -471,6 +596,13 @@ const CheckoutComponent = () => {
         .catch((error) => {
           console.error("Error placing order:", error);
         });
+    }
+  };
+  const handlePlaceOrder = () => {
+    if (selectedOption === "pharmacy") {
+      handleOrderByPharmacy();
+    } else if (selectedOption === "delivery") {
+      handleOrder();
     }
   };
   const handleAddressClick = (addressId) => {

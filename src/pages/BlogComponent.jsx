@@ -9,26 +9,23 @@ class BlogComponent extends Component {
 
     this.state = {
       blogs: [],
-      pageCount: 0, // Tổng số trang
-      currentPage: 0, // Trang hiện tại
-      blogsPerPage: 6, // Số blog trên mỗi trang
+      pageCount: 0,
+      currentPage: 0,
+      blogsPerPage: 6,
     };
+
     this.addBlog = this.addBlog.bind(this);
     this.handlePageClick = this.handlePageClick.bind(this);
   }
 
   componentDidMount() {
-    BlogServices.getBlog().then((res) => {
-      this.setState({ blogs: res.data });
-      this.loadBlogs();
-    });
+    this.loadBlogs();
   }
+
   loadBlogs() {
     BlogServices.getBlog().then((res) => {
       const blogs = res.data;
       const pageCount = Math.ceil(blogs.length / this.state.blogsPerPage);
-
-      // Đảo ngược thứ tự của mảng blogs
       const reversedBlogs = blogs.reverse();
 
       this.setState({
@@ -62,38 +59,17 @@ class BlogComponent extends Component {
     const getText = (html) => {
       const doc = new DOMParser().parseFromString(html, "text/html");
       return doc.body.textContent;
-    }; //render text dang html trong content
+    };
 
-    // Sort blogs by create_date in descending order
     const sortedBlogs = [...this.state.blogs].sort(
       (a, b) => new Date(a.create_date) - new Date(b.create_date)
     );
 
-    // Select the first 3 blogs
     const mostPopularBlogs = sortedBlogs.slice(0, 4);
 
     return (
       <>
         <CarouselBlogComponent />
-        {/* <div
-          className="site-blocks-cover"
-          style={{ backgroundImage: 'url("assets/images/blog.jpeg")'}}
-        >
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-7 mx-auto order-lg-2 align-self-center">
-                <div className="site-block-cover-content text-center">
-                  <h2 className="sub-title">
-                    Effective Medicine, New Medicine Everyday
-                  </h2>
-                  <h1 style={{ fontFamily: "Lora, serif" }}>Welcome To Blog</h1>
-                </div>
-              </div>
-            </div>
-          </div>  
-        </div> */}
-
-        {/* <div className="add-button" onClick={this.addBlog}> Add Blog </div> */}
 
         <h3
           className="blog-title"
@@ -106,14 +82,12 @@ class BlogComponent extends Component {
           className="post container-fluid"
           style={{ overflow: "hidden", paddingBottom: "20px" }}
         >
-          {/* which is width: 100% at all breakpoints */}
           <div className="card-column">
             <div
               className="d-flex justify-content-center "
               style={{ marginLeft: "70px" }}
             >
               <div className="row" style={{ paddingRight: "40px" }}>
-                {/* <div className="col-md-4"> */}
                 {currentBlogs.map((blog) => (
                   <div
                     className="post-box"
@@ -136,20 +110,16 @@ class BlogComponent extends Component {
                       className="card-title-blog"
                       style={{ marginTop: "10px" }}
                     >
-                      {" "}
                       {blog.title}
                     </h4>
                     <h6 className="blog-date" style={{ marginTop: "20px" }}>
-                      {" "}
                       {blog.create_date} {blog.create_time}
                     </h6>
                     <p className="card-content-blog">
                       {getText(blog.content.substring(0, 100))}...
                     </p>
-                    {/* <button onClick={() => this.viewBlog(blog.blogId)}>{blog.blogId} </button> */}
                   </div>
                 ))}
-                {/* </div> */}
               </div>
             </div>
             <br></br>
@@ -168,8 +138,9 @@ class BlogComponent extends Component {
               />
             </div>
           </div>
-          <div class="container" style={{ maxWidth: "100%" }}>
-            <div class="col-md-3">
+
+          <div class="container">
+            <div class="col-md-3" style={{ maxWidth: "100%" }}>
               <h4
                 className="tag-title"
                 style={{ marginTop: "20px", width: "350px" }}
@@ -183,9 +154,7 @@ class BlogComponent extends Component {
                     class="card-blog"
                     style={{ width: "20rem" }}
                     key={blog.blog_id}
-                    onClick={() => {
-                      this.viewBlog(blog.blog_id);
-                    }}
+                    onClick={() => this.viewBlog(blog.blog_id)}
                   >
                     <div
                       class="card-blog-new mb-3"

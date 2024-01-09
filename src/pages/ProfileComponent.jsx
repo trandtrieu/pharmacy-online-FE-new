@@ -43,6 +43,7 @@ const ProfileComponent = () => {
   const [order_delivering, setOrder_delivering] = useState([]);
   const [order_delivered, setOrder_delivered] = useState([]);
   const [order_cancel, setOrder_cancel] = useState([]);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     getAccountById(accountId, token)
@@ -391,19 +392,72 @@ const ProfileComponent = () => {
     }));
   };
 
+  const handleNameBlur = (e) => {
+    if (e.target.value == "") {
+      setErrors((pre) => ({
+        ...pre,
+        nameError: "Name can't be empty",
+      }));
+    } else {
+      setErrors((pre) => ({
+        ...pre,
+        nameError: "",
+      }));
+    }
+  };
+
+  const handlePhoneBlur = (e) => {
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(e.target.value)) {
+      setErrors((pre) => ({
+        ...pre,
+        phoneError: "Phone must be 10 digits",
+      }));
+    } else {
+      setErrors((pre) => ({
+        ...pre,
+        phoneError: "",
+      }));
+    }
+  };
+
+  const handleDOBBlur = (e) => {
+    const selectedDOB = new Date(account.dob);
+
+    const minAgeDate = new Date();
+    minAgeDate.setFullYear(minAgeDate.getFullYear() - 18); // Minimum age of 10 years
+    if (selectedDOB > minAgeDate) {
+      setErrors((pre) => ({
+        ...pre,
+        dobError: "you must be 18 years old",
+      }));
+    } else {
+      setErrors((pre) => ({
+        ...pre,
+        dobError: "",
+      }));
+    }
+  };
+
   const handleUpdateAccount = (e) => {
     e.preventDefault();
-    let accountUpdate = {
-      name: account.name,
-      dob: account.dob,
-      phone: account.phone,
-      mail: account.mail,
-    };
+    if (errors.phoneError || errors.dobError || errors.nameError) {
+      toast.warning("Fill all required feild");
+    } else {
+      let accountUpdate = {
+        name: account.name,
+        dob: account.dob,
+        phone: account.phone,
+        mail: account.mail,
+      };
 
-    updateAccount(accountId, accountUpdate, token).then((response) => {
-      console.log(response.data);
-      toast.success("Update information successfully.");
-    });
+      updateAccount(accountId, accountUpdate, token)
+        .then((response) => {
+          console.log(response.data);
+          toast.success("Update information successfully.");
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const handleMailChange = (e) => {};
@@ -464,8 +518,11 @@ const ProfileComponent = () => {
                         onChange={handleNameChange}
                         className="form-control"
                         value={account.name}
+                        onBlur={handleNameBlur}
                       />
                     </div>
+                    <p className="text-danger">{errors.nameError}</p>
+
                     <div className="form-group">
                       <label className="form-label">E-mail</label>
                       <input
@@ -486,20 +543,24 @@ const ProfileComponent = () => {
                       <input
                         type="date"
                         onChange={handleDOBChange}
+                        onBlur={handleDOBBlur}
                         className="form-control"
                         value={account.dob}
                       />
                     </div>
+                    <p className="text-danger">{errors.dobError}</p>
+
                     <div className="form-group">
                       <label className="form-label">Phone</label>
                       <input
                         type="text"
                         className="form-control"
                         onChange={handlePhoneChange}
-                        defaultValue="Company Ltd."
+                        onBlur={handlePhoneBlur}
                         value={account.phone}
                       />
                     </div>
+                    <p className="text-danger">{errors.phoneError}</p>
 
                     <button
                       onClick={handleUpdateAccount}

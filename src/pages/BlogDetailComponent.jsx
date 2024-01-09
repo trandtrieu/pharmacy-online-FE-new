@@ -81,26 +81,6 @@ class BlogDetailComponent extends Component {
                 >
                   {this.state.blog.create_date} {this.state.blog.create_time}
                 </h5>
-                {/* <h5 className="blog-date"> */}
-                {/* {this.state.blog.create_date} */}
-                {/* {this.state.blog.create_time} */}
-                {/* </h5> */}
-
-                {/* <button
-                  className="btn btn-danger"
-                  onClick={() => this.deleteBlog(this.state.blog.blog_id)}
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
-
-                <button
-                  className="btn btn-primary"
-                  onClick={() => this.updateBlog(this.state.blog.blog_id)}
-                  style={{ marginLeft: "10px" }}
-                >
-                  <FontAwesomeIcon icon={faPenToSquare} />
-                </button> */}
-                {/* <div className="col-lg-8 col-md-10 mx-auto"> */}
 
                 <button
                   className="btn btn-info"
